@@ -1,5 +1,7 @@
 # Singapore rainfall: exploration and probability prediction
 
+> **Revised report:** [12-page PDF](report/revised/rainfall_report_revised.pdf) · [editable source and build instructions](report/revised/README.md). This revision streamlines the narrative, clarifies the training and evaluation methods, and redraws two figures from saved results. Build it with `bash report/revised/build.sh`. The original report-generation and submission-packaging commands below still target `report/project_report.pdf`; use the revised PDF explicitly when preparing your final submission.
+
 DSA5208 coursework using the official 2017–2024 five-minute rainfall records and Apache Spark. The final English report covers both tasks. Group names and student IDs are intentionally blank and must be completed before submission.
 
 ## Submission contents

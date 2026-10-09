@@ -1,0 +1,49 @@
+\section{Data and methods}
+
+\subsection{What the records contain}
+We use the eight annual Historical Rainfall across Singapore datasets for 2017--2024. Each observation contains a station identifier, coordinates, a timestamp, rainfall in millimetres and update metadata. All times are interpreted in Singapore time. The measurement is an amount accumulated over a five-minute interval, rather than a rainfall rate. The publisher cautions that records may be missing and have not undergone the quality control applied to official climate records \cite{data}.
+
+The cleaned dataset contains 48,538,625 observations from 91 station IDs. Recorded zeros account for 97.08\% of observations, while positive amounts have a long upper tail (Figure~\ref{fig:profile}). We therefore examine how often rain occurs separately from how much falls during wet intervals. A zero is a measurement of no rain; a missing record provides no such information.
+
+\plot{01_data_profile}{The observation sample by year: record counts, the percentage of recorded zeros, and quantiles of positive five-minute rainfall. Positive-rainfall quantiles exclude dry intervals.}{fig:profile}
+
+\subsection{Cleaning and missing observations}
+The PySpark pipeline standardises identifiers and field types, checks rainfall units and measurement type, and rejects malformed records, invalid timestamps, invalid coordinates, and non-finite or negative rainfall. Timestamps within two seconds of a five-minute boundary are rounded to that boundary; records farther from the grid are excluded. Exact duplicates are removed. If records sharing a station and time disagree on rainfall or coordinates, or include an invalid source record, all records for that station and time are set aside for inspection. Consistent measurements with different update metadata are consolidated using the latest publication timestamps, conservatively delaying their availability for prediction.
+
+The source-to-clean audit reconciles 48,538,713 raw rows with 48,538,625 clean observations. The count falls by 88; because cleaning also consolidates repeated records, this difference is not a count of invalid measurements. All raw timestamps were parseable. High non-negative amounts are retained for review, including the maximum of 37.2 mm in five minutes; the cleaning rules alone do not establish whether an extreme reading is meteorologically valid. The pipeline preserves the raw files and writes rejected records, quality summaries and clean Parquet partitioned by year and month. The repository includes the summary evidence; the full raw and intermediate datasets require reproduction through the documented cloud workflow.
+
+Missingness matters more to this analysis than the small change in row count. The source audit identifies 63 calendar dates without observations anywhere in the network. August 2018, for example, contains 36,410 raw records, all within its first three days. This gap was already present in the annual source file. Timestamp rounding can also move near-midnight records to an adjacent date, so daily raw-to-clean differences need not represent deletions.
+
+For station $s$, year $y$ and month $m$, we measure completeness as
+\[
+ C_{sym}=\frac{N_{sym}}{288D_{ym}},
+\]
+where $N_{sym}$ is the number of valid unique observations and $D_{ym}$ is the number of calendar days. Every station is represented in all 96 year-months; absent months have zero observations and an undefined rainfall total. Low coverage can consequently reflect a station's operating period as well as missing records.
+
+\plot{03_coverage}{Monthly data availability. The upper panel gives median coverage among stations with any observations; the lower panel counts stations meeting the 90\% rule. Grey cells in the lower panel have no qualifying stations.}{fig:coverage}
+
+\subsection{Comparing rainfall over time}
+Monthly summaries require at least 90\% coverage. Annual summaries require 95\% coverage overall and 90\% in every month, preventing a concentrated seasonal gap from being hidden by a high annual average. Daily-distribution summaries require 95\% daily coverage within eligible months. These rules limit missing-data exposure but cannot remove bias if missingness is related to weather. Totals remain observed amounts, without gap filling or scaling by inverse coverage.
+
+Within each year-month, we average eligible station totals equally. Seasonal curves then weight available years equally. Wet frequency is the number of positive intervals divided by observed intervals; conditional intensity is their rainfall sum divided by positive intervals. Hourly summaries pool eligible observations, giving more weight to periods with more observed intervals. Station means describe the sampled network, rather than an area-weighted national rainfall total.
+
+Cross-year comparisons match station IDs within the same calendar month for each year pair. Coordinate stability screens use a tolerance of 0.005 degrees per axis within and between paired periods. We average the within-station changes and express percentage change relative to the earlier pair mean. Plots show only comparisons with at least five common stations; this is a display threshold, not a significance test. Different year pairs can contain different stations.
+
+\subsection{Computing environment}
+Observation-level processing, feature construction and Spark MLlib training ran on Google Cloud Dataproc. Table~\ref{tab:environment} records the experimental configuration. Only saved summaries were downloaded for local analysis and plotting; source snapshots and job metadata accompany the results.
+
+\begin{table}[htbp]\small\centering
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{.22\linewidth}>{\raggedright\arraybackslash}X}
+\toprule Component & Configuration\\\midrule
+Cluster & One master and two workers in \texttt{asia-southeast1-c}\\
+Each VM & \texttt{e2-standard-4}: 4 vCPUs, 16 GB RAM, 80 GB \texttt{pd-balanced} boot disk\\
+Worker capacity & 8 vCPUs and 32 GB RAM, excluding the master\\
+Runtime & Dataproc 2.2.87, Debian 12; Spark/PySpark 3.5.3 on YARN\\
+Spark settings & 6 GB driver memory; 1 GB maximum driver result; 128 shuffle partitions; adaptive SQL; Singapore timezone\\
+Local figures & Apple M2, 16 GB RAM; pandas, Matplotlib and Plotly\\
+Storage & Cloud Storage for raw files, Parquet data and result tables\\
+\bottomrule
+\end{tabularx}
+\caption{Configuration used for the reported experiments.}
+\label{tab:environment}
+\end{table}

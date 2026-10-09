@@ -1,0 +1,74 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=22mm,headheight=15pt]{geometry}
+\usepackage{fontspec}
+\setmainfont{Liberation Serif}
+\setsansfont{Liberation Sans}
+\setmonofont{Liberation Mono}[Scale=MatchLowercase]
+\usepackage{graphicx,booktabs,array,amsmath,xcolor,hyperref,fancyhdr,caption,titlesec,microtype,tabularx,placeins}
+\definecolor{ink}{HTML}{213B48}
+\definecolor{teal}{HTML}{086D78}
+\definecolor{muted}{HTML}{596A73}
+\hypersetup{colorlinks=true,linkcolor=teal,urlcolor=teal,citecolor=teal,
+  pdftitle={Rainfall across Singapore: Patterns and next-30-minute risk},
+  pdfsubject={DSA5208 group project, 2017--2024 rainfall observations}}
+\urlstyle{same}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt minus 1pt}
+\setlength{\textfloatsep}{13pt plus 2pt minus 2pt}
+\setlength{\intextsep}{13pt plus 2pt minus 2pt}
+\setlength{\emergencystretch}{2em}
+\linespread{1.025}
+\raggedbottom
+\renewcommand{\topfraction}{.90}
+\renewcommand{\bottomfraction}{.80}
+\renewcommand{\textfraction}{.08}
+\renewcommand{\floatpagefraction}{.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+\titleformat{\section}{\large\sffamily\bfseries\color{ink}}{\thesection}{.65em}{}
+\titleformat{\subsection}{\normalsize\sffamily\bfseries\color{ink}}{\thesubsection}{.65em}{}
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+\captionsetup{font=small,labelfont=bf,labelsep=period,justification=raggedright,singlelinecheck=false,skip=5pt}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\footnotesize\sffamily\color{muted}Rainfall across Singapore}
+\fancyhead[R]{\footnotesize\sffamily\color{muted}2017--2024}
+\fancyfoot[C]{\footnotesize\thepage}
+\renewcommand{\headrulewidth}{.25pt}
+\graphicspath{{figures/}}
+\newcommand{\plot}[3]{\par\begin{figure}[htbp]\centering\includegraphics[width=\linewidth]{#1.pdf}\caption{#2}\label{#3}\end{figure}\par}
+\begin{document}
+\thispagestyle{empty}
+{\small\sffamily\color{teal}DSA5208 GROUP PROJECT}\par
+\vspace{3mm}
+{\LARGE\sffamily\bfseries\color{ink}Rainfall across Singapore}\par
+\vspace{1mm}
+{\large\sffamily Patterns and next-30-minute risk, 2017--2024}\par
+\vspace{4mm}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\small Group member name & \small Student ID\\[5pt]
+\hrulefill & \hrulefill\\[5pt]
+\hrulefill & \hrulefill\\[5pt]
+\hrulefill & \hrulefill\\
+\end{tabularx}
+\vspace{2mm}
+{\small Revised 10 October 2026 \hfill Submission deadline: 18 October 2026}\par
+\input{sections/01_introduction}
+\input{sections/02_data}
+\FloatBarrier
+\input{sections/03_weather}
+\FloatBarrier
+\input{sections/04_prediction}
+\FloatBarrier
+\input{sections/05_discussion}
+\begingroup\small\raggedright
+\begin{thebibliography}{9}
+\bibitem{data} National Environment Agency. \emph{Historical Rainfall across Singapore}, annual datasets 2017--2024. Data.gov.sg. \url{https://data.gov.sg/collections/2279/view}. Accessed 9 October 2026.
+\bibitem{climate} Meteorological Service Singapore. \emph{Climate of Singapore}. \url{https://www.weather.gov.sg/climate-climate-of-singapore/}. Accessed 9 October 2026.
+\bibitem{geo} geoBoundaries / Urban Redevelopment Authority. Singapore outline and planning-area geometries. Source and licence records are retained in the project assets; planning-area geometry is based on URA Master Plan 2014.
+\bibitem{sparkml} Apache Spark. \emph{Classification and regression}, Spark 3.5.3 documentation. \url{https://dlcdn.apache.org/spark/docs/3.5.3/ml-classification-regression.html}. Accessed 9 October 2026.
+\bibitem{sparkeval} Apache Spark. \emph{BinaryClassificationMetrics}, Spark 3.5.3 Java API. \url{https://spark.apache.org/docs/3.5.3/api/java/org/apache/spark/mllib/evaluation/BinaryClassificationMetrics.html}. Accessed 9 October 2026.
+\end{thebibliography}
+\endgroup
+\end{document}

@@ -1,0 +1,33 @@
+\section{Rainfall patterns, 2017--2024}
+
+\subsection{Seasonality and changes between years}
+
+The clearest seasonal feature is the increase in rainfall towards the end of the year. November has the highest mean observed monthly amount, 320.8~mm, while February has the lowest, 146.1~mm. These averages give equal weight to each available year after averaging its qualified stations. Figure~\ref{fig:monthly} shows the individual year-months behind this summary; Figure~\ref{fig:seasonal} separates rainfall amount into frequency and intensity. The broad pattern agrees with the wetter November--January period and relatively dry February described by the Meteorological Service Singapore \cite{climate}.
+
+\plot{05_monthly_amount}{Mean observed monthly rainfall at qualified stations, 2017--2024. All cells share one colour scale. Grey cells have no qualified station-months.}{fig:monthly}
+
+The frequency and intensity curves help explain what makes a month wet. November has the highest mean wet-interval frequency, approximately 4.30\%, but its mean amount per wet interval is about 0.89~mm. March has a higher conditional intensity, about 1.06~mm, despite a lower monthly total. Thus, November's high accumulation is associated with more frequent rain, rather than the largest amount in each wet interval. This distinction matters for prediction: a season with frequent rain need not have the greatest risk of a large amount within a short window.
+
+\plot{06_seasonality}{Seasonal means of monthly rainfall, wet-interval frequency and rainfall per wet interval. Available years receive equal weight; shading shows their minimum--maximum range.}{fig:seasonal}
+
+Monthly totals also reflect the number of days in a month. February's shorter duration contributes to its low total, so the amount curve alone cannot establish that it has the lowest propensity for rain. The frequency and intensity panels provide complementary measures. Between six and eight years contribute to each calendar-month average, and the shaded ranges describe their observed variation rather than uncertainty in a long-term climate normal.
+
+To examine changes between years, we compare the same calendar month at stations present in both periods and meeting the location-stability checks. December 2024, for example, had a mean of 213.9~mm across 53 common stations, compared with 379.8~mm in December 2023: a reduction of 43.7\%. This provides stronger evidence of a change at those locations than a comparison of two unmatched network means. Figure~\ref{fig:paired} applies the same approach to adjacent-year monthly pairs. The participating stations vary between pairs, so the percentages describe separate comparisons and cannot be chained into a national trend.
+
+\plot{09_paired_changes}{Adjacent-year changes in monthly rainfall at common stable-location stations, relative to the earlier year's mean. Grey cells lack support from at least five common stations; this cutoff is a display rule, not a significance test.}{fig:paired}
+
+Full-year comparisons are more limited. Only 2017, 2022 and 2024 contain stations meeting both the annual and every-month completeness requirements. Their mean observed annual totals are 2,396.6~mm (9 stations), 2,920.9~mm (54 stations) and 2,682.3~mm (29 stations), respectively. Among the 26 stations eligible in both 2022 and 2024, the mean declined by 284.8~mm, or 9.6\%. Comparisons involving 2017 have only three or four common stations. These results support a limited comparison of monitored locations, but neither an eight-year annual trend nor a national wettest-year ranking. Months with adequate coverage in the other years remain part of the monthly analysis.
+
+\subsection{When and where rain occurs}
+
+Rain is more frequent in the afternoon. Across valid intervals in qualified station-months, wet frequency reaches 5.80\% at 15:00--15:59 and falls to 1.10\% at 23:00--23:59, using Singapore time. Figure~\ref{fig:diurnal} shows how this daily pattern varies by month and year. The afternoon enhancement is consistent with MSS's description of Singapore's rainfall \cite{climate} and motivates including hour-of-day features in the predictive model. These pooled frequencies describe observed occurrence; they are not forecasts for a particular afternoon, and the yearly curves can contain different mixes of months and stations.
+
+\plot{10_diurnal}{Wet-observation frequency by month and hour, and by year and hour, in Singapore time. Frequencies are weighted by the number of observed intervals.}{fig:diurnal}
+
+Rainfall also varies substantially across monitoring locations. In December 2024, qualified station totals range from 29.5~mm at S224 to 326.8~mm at S117. The December maps retain 41--69 stations in each of the eight years, making this month a useful illustration of spatial and year-to-year variation. Figure~\ref{fig:spatialdec} shows the measured station values on a common scale. The full set of 96 year-month maps remains in the project repository's supplementary gallery. The map outline comes from the retained boundary assets \cite{geo}. We avoid interpolating a continuous surface because the station network alone does not establish how rainfall varies between gauges; station means likewise should not be interpreted as area-weighted national rainfall.
+
+\plot{13_spatial_month_12}{December rainfall at qualified stations in each study year. All eight panels use a 0--600 mm scale, covering the full range of December station totals. Panel labels give station counts; colours represent measurements at gauges, with no spatial interpolation.}{fig:spatialdec}
+
+\subsection{How sensitive are these summaries to coverage?}
+
+Changing the monthly coverage cutoff produces relatively small changes in the supported monthly means. Relative to the 90\% cutoff, using 80\% gives a median absolute change of 0.61\% across 85 shared year-months, with a maximum of 5.78\%. Using 95\% gives a median change of 0.40\% across 84 shared year-months, with a maximum of 2.97\%. This is reassuring for the descriptive amount summaries, although each cutoff changes the contributing stations. It does not establish that missing observations are random. Residual gaps, uneven station coverage and the short study period remain the main reasons to treat these findings as patterns in the available observations rather than evidence of long-term climate change.

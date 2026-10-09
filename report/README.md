@@ -1,5 +1,9 @@
 # Combined coursework report
 
+The latest editorial revision is [revised/rainfall_report_revised.pdf](revised/rainfall_report_revised.pdf). Its [source and build instructions](revised/README.md) are self-contained; run `bash report/revised/build.sh` from the project root. It uses the existing recorded experiments and retains the AI declaration and blank group-member fields.
+
+The workflow below reproduces the original report. Its numerical templates and packaging command have not been migrated to the revised document.
+
 `project_report.pdf` combines the preserved Task 1 analysis with Task 2 model evaluation. `project_report.tex` is the generated English LaTeX source. Fill in group names and student IDs and review the interpretation before submission.
 
 From the project root:
