@@ -1,0 +1,1 @@
+{"counts": {"calendar": 6374476, "short_term": 5729508, "common": 5729508}, "short_term_coverage_of_calendar_test": 0.8988202324394978, "comparison": "RF models on identical test anchors; trained on their respective eligible samples", "thresholds": [0.0, 0.2, 1.0, 2.0, 5.0, 10.0, 20.0]}

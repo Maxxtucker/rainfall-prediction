@@ -1,0 +1,181 @@
+{
+  "clusterName": "rainfall-spark",
+  "clusterUuid": "b8d5bada-f4cd-4cbe-a19a-7b7e0fa25105",
+  "config": {
+    "configBucket": "rainfall-project-511007-rainfall-maxiaoxiao",
+    "endpointConfig": {
+      "enableHttpPortAccess": true,
+      "httpPorts": {
+        "HDFS NameNode": "https://r3ebk6snxvgarli5xmw4xdaoyy-dot-asia-southeast1.dataproc.googleusercontent.com/hdfs/dfshealth.html",
+        "MapReduce Job History": "https://r3ebk6snxvgarli5xmw4xdaoyy-dot-asia-southeast1.dataproc.googleusercontent.com/jobhistory/",
+        "Spark History Server": "https://r3ebk6snxvgarli5xmw4xdaoyy-dot-asia-southeast1.dataproc.googleusercontent.com/sparkhistory/",
+        "Tez": "https://r3ebk6snxvgarli5xmw4xdaoyy-dot-asia-southeast1.dataproc.googleusercontent.com/apphistory/tez-ui/",
+        "YARN Application Timeline": "https://r3ebk6snxvgarli5xmw4xdaoyy-dot-asia-southeast1.dataproc.googleusercontent.com/apphistory/",
+        "YARN ResourceManager": "https://r3ebk6snxvgarli5xmw4xdaoyy-dot-asia-southeast1.dataproc.googleusercontent.com/yarn/"
+      }
+    },
+    "gceClusterConfig": {
+      "internalIpOnly": true,
+      "resourceManagerTags": {
+        "tagKeys/281484247092652": "tagValues/281483067396502"
+      },
+      "serviceAccount": "rainfall-dataproc@rainfall-project-511007.iam.gserviceaccount.com",
+      "serviceAccountScopes": [
+        "https://www.googleapis.com/auth/cloud-platform",
+        "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
+        "https://www.googleapis.com/auth/devstorage.read_write",
+        "https://www.googleapis.com/auth/logging.write"
+      ],
+      "shieldedInstanceConfig": {
+        "enableIntegrityMonitoring": true,
+        "enableSecureBoot": true,
+        "enableVtpm": true
+      },
+      "subnetworkUri": "https://www.googleapis.com/compute/v1/projects/rainfall-project-511007/regions/asia-southeast1/subnetworks/rainfall-subnet",
+      "tags": [
+        "rainfall-dataproc"
+      ],
+      "zoneUri": "https://www.googleapis.com/compute/v1/projects/rainfall-project-511007/zones/asia-southeast1-c"
+    },
+    "lifecycleConfig": {
+      "autoDeleteTime": "2026-10-09T06:52:42.002414Z",
+      "idleDeleteTtl": "600s"
+    },
+    "masterConfig": {
+      "diskConfig": {
+        "bootDiskSizeGb": 80,
+        "bootDiskType": "pd-balanced"
+      },
+      "imageUri": "https://www.googleapis.com/compute/v1/projects/cloud-dataproc/global/images/dataproc-2-2-deb12-20260903-074907-rc01",
+      "instanceNames": [
+        "rainfall-spark-m"
+      ],
+      "machineTypeUri": "https://www.googleapis.com/compute/v1/projects/rainfall-project-511007/zones/asia-southeast1-c/machineTypes/e2-standard-4",
+      "managedGroupConfig": {
+        "instanceGroupManagerName": "dataproc-goog-reserved-auto-master-ysttumumjfr2i",
+        "instanceGroupManagerUri": "projects/rainfall-project-511007/regions/asia-southeast1/instanceGroupManagers/dataproc-goog-reserved-auto-master-ysttumumjfr2i",
+        "instanceTemplateName": "dataproc-goog-reserved-auto-master-ysttumumjfr2i"
+      },
+      "minCpuPlatform": "AUTOMATIC",
+      "numInstances": 1,
+      "preemptibility": "NON_PREEMPTIBLE",
+      "startupConfig": {
+        "requiredRegistrationFraction": 1.0
+      }
+    },
+    "softwareConfig": {
+      "imageVersion": "2.2.87-debian12",
+      "properties": {
+        "capacity-scheduler:yarn.scheduler.capacity.resource-calculator": "org.apache.hadoop.yarn.util.resource.DominantResourceCalculator",
+        "capacity-scheduler:yarn.scheduler.capacity.root.default.ordering-policy": "fair",
+        "core:fs.gs.block.size": "134217728",
+        "core:fs.gs.metadata.cache.enable": "false",
+        "core:fs.gs.operation.move.enable": "true",
+        "core:hadoop.ssl.enabled.protocols": "TLSv1,TLSv1.1,TLSv1.2",
+        "distcp:mapreduce.map.java.opts": "-Xmx768m",
+        "distcp:mapreduce.map.memory.mb": "1024",
+        "distcp:mapreduce.reduce.java.opts": "-Xmx768m",
+        "distcp:mapreduce.reduce.memory.mb": "1024",
+        "hadoop-env:HADOOP_DATANODE_OPTS": "-Xmx512m",
+        "hdfs:dfs.datanode.address": "0.0.0.0:9866",
+        "hdfs:dfs.datanode.http.address": "0.0.0.0:9864",
+        "hdfs:dfs.datanode.https.address": "0.0.0.0:9865",
+        "hdfs:dfs.datanode.ipc.address": "0.0.0.0:9867",
+        "hdfs:dfs.namenode.handler.count": "20",
+        "hdfs:dfs.namenode.http-address": "0.0.0.0:9870",
+        "hdfs:dfs.namenode.https-address": "0.0.0.0:9871",
+        "hdfs:dfs.namenode.lifeline.rpc-address": "rainfall-spark-m:8050",
+        "hdfs:dfs.namenode.secondary.http-address": "0.0.0.0:9868",
+        "hdfs:dfs.namenode.secondary.https-address": "0.0.0.0:9869",
+        "hdfs:dfs.namenode.service.handler.count": "10",
+        "hdfs:dfs.namenode.servicerpc-address": "rainfall-spark-m:8051",
+        "mapred-env:HADOOP_JOB_HISTORYSERVER_HEAPSIZE": "4000",
+        "mapred:mapreduce.job.maps": "21",
+        "mapred:mapreduce.job.reduce.slowstart.completedmaps": "0.95",
+        "mapred:mapreduce.job.reduces": "7",
+        "mapred:mapreduce.jobhistory.recovery.store.class": "org.apache.hadoop.mapreduce.v2.hs.HistoryServerLeveldbStateStoreService",
+        "mapred:mapreduce.map.cpu.vcores": "1",
+        "mapred:mapreduce.map.java.opts": "-Xmx2708m",
+        "mapred:mapreduce.map.memory.mb": "3386",
+        "mapred:mapreduce.reduce.cpu.vcores": "1",
+        "mapred:mapreduce.reduce.java.opts": "-Xmx2708m",
+        "mapred:mapreduce.reduce.memory.mb": "3386",
+        "mapred:mapreduce.task.io.sort.mb": "256",
+        "mapred:yarn.app.mapreduce.am.command-opts": "-Xmx2708m",
+        "mapred:yarn.app.mapreduce.am.resource.cpu-vcores": "1",
+        "mapred:yarn.app.mapreduce.am.resource.mb": "3386",
+        "spark-env:SPARK_DAEMON_MEMORY": "4000m",
+        "spark:spark.driver.maxResultSize": "2048m",
+        "spark:spark.driver.memory": "4096m",
+        "spark:spark.executor.cores": "2",
+        "spark:spark.executor.instances": "2",
+        "spark:spark.executor.memory": "6157m",
+        "spark:spark.executorEnv.OPENBLAS_NUM_THREADS": "1",
+        "spark:spark.plugins.defaultList": "com.google.cloud.dataproc.DataprocSparkPlugin",
+        "spark:spark.scheduler.mode": "FAIR",
+        "spark:spark.sql.adaptive.enabled": "true",
+        "spark:spark.sql.cbo.enabled": "true",
+        "spark:spark.sql.optimizer.runtime.bloomFilter.join.pattern.enabled": "true",
+        "spark:spark.sql.session.timeZone": "Asia/Singapore",
+        "spark:spark.sql.shuffle.partitions": "128",
+        "spark:spark.ui.port": "0",
+        "spark:spark.yarn.am.memory": "640m",
+        "yarn-env:YARN_NODEMANAGER_HEAPSIZE": "1638",
+        "yarn-env:YARN_RESOURCEMANAGER_HEAPSIZE": "4000",
+        "yarn-env:YARN_TIMELINESERVER_HEAPSIZE": "4000",
+        "yarn:yarn.nodemanager.address": "0.0.0.0:8026",
+        "yarn:yarn.nodemanager.resource.cpu-vcores": "4",
+        "yarn:yarn.nodemanager.resource.memory-mb": "13544",
+        "yarn:yarn.resourcemanager.decommissioning-nodes-watcher.decommission-if-no-shuffle-data": "true",
+        "yarn:yarn.resourcemanager.nodemanager-graceful-decommission-timeout-secs": "86400",
+        "yarn:yarn.scheduler.maximum-allocation-mb": "13544",
+        "yarn:yarn.scheduler.minimum-allocation-mb": "1"
+      }
+    },
+    "tempBucket": "rainfall-project-511007-rainfall-maxiaoxiao",
+    "workerConfig": {
+      "diskConfig": {
+        "bootDiskSizeGb": 80,
+        "bootDiskType": "pd-balanced"
+      },
+      "imageUri": "https://www.googleapis.com/compute/v1/projects/cloud-dataproc/global/images/dataproc-2-2-deb12-20260903-074907-rc01",
+      "instanceNames": [
+        "rainfall-spark-w-0",
+        "rainfall-spark-w-1"
+      ],
+      "machineTypeUri": "https://www.googleapis.com/compute/v1/projects/rainfall-project-511007/zones/asia-southeast1-c/machineTypes/e2-standard-4",
+      "managedGroupConfig": {
+        "instanceGroupManagerName": "dataproc-goog-reserved-auto-primary-d332big5dmcvy",
+        "instanceGroupManagerUri": "projects/rainfall-project-511007/regions/asia-southeast1/instanceGroupManagers/dataproc-goog-reserved-auto-primary-d332big5dmcvy",
+        "instanceTemplateName": "dataproc-goog-reserved-auto-primary-d332big5dmcvy"
+      },
+      "minCpuPlatform": "AUTOMATIC",
+      "numInstances": 2,
+      "preemptibility": "NON_PREEMPTIBLE",
+      "startupConfig": {
+        "requiredRegistrationFraction": 1.0
+      }
+    }
+  },
+  "labels": {
+    "goog-dataproc-autozone": "enabled",
+    "goog-dataproc-cluster-create-timestamp": "1791521562",
+    "goog-dataproc-cluster-name": "rainfall-spark",
+    "goog-dataproc-cluster-uuid": "b8d5bada-f4cd-4cbe-a19a-7b7e0fa25105",
+    "goog-dataproc-drz-resource-uuid": "cluster-b8d5bada-f4cd-4cbe-a19a-7b7e0fa25105",
+    "goog-dataproc-location": "asia-southeast1",
+    "project": "singapore-rainfall",
+    "run": "task1-local-v4"
+  },
+  "projectId": "rainfall-project-511007",
+  "status": {
+    "state": "RUNNING",
+    "stateStartTime": "2026-10-09T04:55:32.705552Z"
+  },
+  "statusHistory": [
+    {
+      "state": "CREATING",
+      "stateStartTime": "2026-10-09T04:52:42.002414Z"
+    }
+  ]
+}

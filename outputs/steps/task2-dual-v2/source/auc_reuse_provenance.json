@@ -1,0 +1,5 @@
+{
+  "source_zip": "training_source_auc_reuse.zip",
+  "sha256": "ee52f50adeef3c63052bd92184218c51a869de2e2e6d5e5d367c2e6fd000557a",
+  "change": "Reuse the same Spark BinaryClassificationMetrics sorted counts for ROC and PR AUC; equivalent numerical results verified in 8 tests. Calendar run used previous source snapshot; short-term and comparison use this snapshot."
+}

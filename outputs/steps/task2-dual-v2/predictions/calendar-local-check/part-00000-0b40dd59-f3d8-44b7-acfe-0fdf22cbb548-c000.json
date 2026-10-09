@@ -1,0 +1,1 @@
+{"station_id":"S50","timestamp":"2026-10-09T21:00:00.000+08:00","target_end":"2026-10-09T21:30:00.000+08:00","threshold_mm":1.0,"probability_exceedance":0.01884125649291108,"model":"random_forest","prediction_kind":"historical_calendar_risk","threshold_beyond_training_support":false}

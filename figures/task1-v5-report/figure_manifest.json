@@ -1,0 +1,186 @@
+[
+  {
+    "id": "01_data_profile",
+    "caption": "Sample size, observed zeros and positive-rainfall quantiles. Zero observations are real measurements; missing records are absent."
+  },
+  {
+    "id": "02_positive_distribution",
+    "caption": "Positive observations only; logarithmic bin widths. Large recorded values are retained, not automatically validated or rejected."
+  },
+  {
+    "id": "03_coverage",
+    "caption": "All 96 calendar combinations. In (a), inactive stations are excluded from the median; in (b), grey means no qualified stations."
+  },
+  {
+    "id": "04_source_gap",
+    "caption": "Raw and cleaned daily counts distinguish a source gap from cleaning losses. Calendar days with zero records remain visible."
+  },
+  {
+    "id": "05_monthly_amount",
+    "caption": "Observed monthly station totals averaged across qualified stations. Composition varies; grey is insufficient data, never zero rainfall."
+  },
+  {
+    "id": "06_seasonality",
+    "caption": "Equal eligible-year means; shading is the observed range, not a confidence interval. Month lengths, stations and available years differ."
+  },
+  {
+    "id": "07_monthly_trends",
+    "caption": "Each month is compared across all eight years; gaps break lines. Each small panel has its own vertical range; use the heatmap for magnitude comparisons."
+  },
+  {
+    "id": "08_annual_totals",
+    "caption": "Dots are eligible station-year totals; diamonds are station means. Annual \u226595% and every month \u226590% coverage are required. No line bridges unsupported years."
+  },
+  {
+    "id": "09_paired_changes",
+    "caption": "Adjacent-year comparison at the same calendar month using common stable-location stations. Changes with fewer than five common stations are not displayed; each pair has a different panel."
+  },
+  {
+    "id": "09b_paired_support",
+    "caption": "Adjacent-year comparison at the same calendar month using common stable-location stations. Changes with fewer than five common stations are not displayed; each pair has a different panel."
+  },
+  {
+    "id": "10_diurnal",
+    "caption": "Observed-interval-weighted wet frequencies using all eligible station-months. Available months and station composition differ between years."
+  },
+  {
+    "id": "11_daily_tails",
+    "caption": "Eligible station-months and \u226595% complete station-days. Approximate quantiles include dry days; a wet day has an observed total >0."
+  },
+  {
+    "id": "12_sensitivity",
+    "caption": "Seasonal results rerun at 80%, 90% and 95% monthly coverage. The sample changes with the threshold; this is robustness evidence, not missing-data recovery."
+  },
+  {
+    "id": "13_spatial_month_01",
+    "caption": "January across eight years. Qualified station observations; all monthly maps share the same linear colour scale. No interpolated values."
+  },
+  {
+    "id": "13_spatial_month_02",
+    "caption": "February across eight years. Qualified station observations; all monthly maps share the same linear colour scale. No interpolated values."
+  },
+  {
+    "id": "13_spatial_month_03",
+    "caption": "March across eight years. Qualified station observations; all monthly maps share the same linear colour scale. No interpolated values."
+  },
+  {
+    "id": "13_spatial_month_04",
+    "caption": "April across eight years. Qualified station observations; all monthly maps share the same linear colour scale. No interpolated values."
+  },
+  {
+    "id": "13_spatial_month_05",
+    "caption": "May across eight years. Qualified station observations; all monthly maps share the same linear colour scale. No interpolated values."
+  },
+  {
+    "id": "13_spatial_month_06",
+    "caption": "June across eight years. Qualified station observations; all monthly maps share the same linear colour scale. No interpolated values."
+  },
+  {
+    "id": "13_spatial_month_07",
+    "caption": "July across eight years. Qualified station observations; all monthly maps share the same linear colour scale. No interpolated values."
+  },
+  {
+    "id": "13_spatial_month_08",
+    "caption": "August across eight years. Qualified station observations; all monthly maps share the same linear colour scale. No interpolated values."
+  },
+  {
+    "id": "13_spatial_month_09",
+    "caption": "September across eight years. Qualified station observations; all monthly maps share the same linear colour scale. No interpolated values."
+  },
+  {
+    "id": "13_spatial_month_10",
+    "caption": "October across eight years. Qualified station observations; all monthly maps share the same linear colour scale. No interpolated values."
+  },
+  {
+    "id": "13_spatial_month_11",
+    "caption": "November across eight years. Qualified station observations; all monthly maps share the same linear colour scale. No interpolated values."
+  },
+  {
+    "id": "13_spatial_month_12",
+    "caption": "December across eight years. Qualified station observations; all monthly maps share the same linear colour scale. No interpolated values."
+  },
+  {
+    "id": "14_spatial_year_2017",
+    "caption": "All twelve months of 2017; same colour scale across all 96 periods. Grey/empty panels mean insufficient coverage, not dry weather."
+  },
+  {
+    "id": "14_spatial_year_2018",
+    "caption": "All twelve months of 2018; same colour scale across all 96 periods. Grey/empty panels mean insufficient coverage, not dry weather."
+  },
+  {
+    "id": "14_spatial_year_2019",
+    "caption": "All twelve months of 2019; same colour scale across all 96 periods. Grey/empty panels mean insufficient coverage, not dry weather."
+  },
+  {
+    "id": "14_spatial_year_2020",
+    "caption": "All twelve months of 2020; same colour scale across all 96 periods. Grey/empty panels mean insufficient coverage, not dry weather."
+  },
+  {
+    "id": "14_spatial_year_2021",
+    "caption": "All twelve months of 2021; same colour scale across all 96 periods. Grey/empty panels mean insufficient coverage, not dry weather."
+  },
+  {
+    "id": "14_spatial_year_2022",
+    "caption": "All twelve months of 2022; same colour scale across all 96 periods. Grey/empty panels mean insufficient coverage, not dry weather."
+  },
+  {
+    "id": "14_spatial_year_2023",
+    "caption": "All twelve months of 2023; same colour scale across all 96 periods. Grey/empty panels mean insufficient coverage, not dry weather."
+  },
+  {
+    "id": "14_spatial_year_2024",
+    "caption": "All twelve months of 2024; same colour scale across all 96 periods. Grey/empty panels mean insufficient coverage, not dry weather."
+  },
+  {
+    "id": "15_regions_month_01",
+    "caption": "January planning-area station means, not area-weighted rainfall. Grey: no assigned eligible station; dots: contributing locations. Counts and assignments are in the accompanying CSVs."
+  },
+  {
+    "id": "15_regions_month_02",
+    "caption": "February planning-area station means, not area-weighted rainfall. Grey: no assigned eligible station; dots: contributing locations. Counts and assignments are in the accompanying CSVs."
+  },
+  {
+    "id": "15_regions_month_03",
+    "caption": "March planning-area station means, not area-weighted rainfall. Grey: no assigned eligible station; dots: contributing locations. Counts and assignments are in the accompanying CSVs."
+  },
+  {
+    "id": "15_regions_month_04",
+    "caption": "April planning-area station means, not area-weighted rainfall. Grey: no assigned eligible station; dots: contributing locations. Counts and assignments are in the accompanying CSVs."
+  },
+  {
+    "id": "15_regions_month_05",
+    "caption": "May planning-area station means, not area-weighted rainfall. Grey: no assigned eligible station; dots: contributing locations. Counts and assignments are in the accompanying CSVs."
+  },
+  {
+    "id": "15_regions_month_06",
+    "caption": "June planning-area station means, not area-weighted rainfall. Grey: no assigned eligible station; dots: contributing locations. Counts and assignments are in the accompanying CSVs."
+  },
+  {
+    "id": "15_regions_month_07",
+    "caption": "July planning-area station means, not area-weighted rainfall. Grey: no assigned eligible station; dots: contributing locations. Counts and assignments are in the accompanying CSVs."
+  },
+  {
+    "id": "15_regions_month_08",
+    "caption": "August planning-area station means, not area-weighted rainfall. Grey: no assigned eligible station; dots: contributing locations. Counts and assignments are in the accompanying CSVs."
+  },
+  {
+    "id": "15_regions_month_09",
+    "caption": "September planning-area station means, not area-weighted rainfall. Grey: no assigned eligible station; dots: contributing locations. Counts and assignments are in the accompanying CSVs."
+  },
+  {
+    "id": "15_regions_month_10",
+    "caption": "October planning-area station means, not area-weighted rainfall. Grey: no assigned eligible station; dots: contributing locations. Counts and assignments are in the accompanying CSVs."
+  },
+  {
+    "id": "15_regions_month_11",
+    "caption": "November planning-area station means, not area-weighted rainfall. Grey: no assigned eligible station; dots: contributing locations. Counts and assignments are in the accompanying CSVs."
+  },
+  {
+    "id": "15_regions_month_12",
+    "caption": "December planning-area station means, not area-weighted rainfall. Grey: no assigned eligible station; dots: contributing locations. Counts and assignments are in the accompanying CSVs."
+  },
+  {
+    "id": "16_annual_spatial",
+    "caption": "Annual \u226595% and every month \u226590% coverage. Unsupported years are displayed explicitly rather than estimated from incomplete totals."
+  }
+]

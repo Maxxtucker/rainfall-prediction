@@ -1,0 +1,40 @@
+{
+  "created_utc": "2026-10-09T09:29:32.620063+00:00",
+  "features_root": "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/task2-dual-v1/data",
+  "models_root": "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/task2-dual-v2/models",
+  "previous_attempt": "task2-dual-v1 B training stopped to optimize equivalent probability expressions; no completed model or metrics from that attempt used",
+  "train_fraction": 0.15,
+  "eval_fraction": 1,
+  "state": "complete",
+  "completed_utc": "2026-10-09T10:59:45.229547+00:00",
+  "jobs": {
+    "calendar": "96255c49674c43be919384d586f2c79d",
+    "short_term": "f8c99d157a674a2fa3389359ee89143c",
+    "comparison": "c37857a1de864edfada7af59c571d4b2"
+  },
+  "local_verification": {
+    "calendar": {
+      "matched_rf_predictions": 140,
+      "max_absolute_error": 0.0,
+      "binary_pipeline_reloaded": true
+    },
+    "short_term": {
+      "matched_rf_predictions": 140,
+      "max_absolute_error": 0.0,
+      "binary_pipeline_reloaded": true
+    },
+    "passed": true
+  },
+  "cluster_cleanup": "deleted",
+  "common_test_macro_brier": {
+    "calendar": 0.022834453734197097,
+    "short_term": 0.016130507432997536
+  },
+  "relative_brier_reduction_A_vs_B": 0.2935890816236022,
+  "source_sha256": {
+    "source/executed/rainfall.zip": "4292e9c56c3fc8d5b31e0f304ba32ec607b43161c93c94187d36f95c1ad022bd",
+    "source/executed/train.py": "fe1d0d3adf48546755535c78a6253532cdde008c4027aeeadf97c8975f268eeb",
+    "source/executed/compare.py": "62f01740a9fc327860dd2870a689054db18fb0b925d30b3dec3f70eb7f8f38d0"
+  },
+  "cluster_deleted_utc": "2026-10-09T11:01:28.853001+00:00"
+}

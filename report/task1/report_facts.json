@@ -1,0 +1,23 @@
+{
+  "OBS": "48,538,625",
+  "STATIONS": "91",
+  "ZERO": "97.08",
+  "ELIGIBLE": "85",
+  "MAX": "37.2",
+  "EMPTY": "63",
+  "AUGRAW": "36,410",
+  "RAW": "48,538,713",
+  "REMOVED": "88",
+  "PARSE": "0",
+  "WETMONTH": "November",
+  "DRYMONTH": "February",
+  "WETMM": "320.8",
+  "DRYMM": "146.1",
+  "PAIRTEXT": "For example, December 2024 is 43.7\\% lower than the same month in 2023 among their 53 common stations (means 213.9 versus 379.8 mm).",
+  "ANNUALROWS": "2017 & 9 & 2,396.6 & 98.03 \\\\\n2018 & 0 & --- & --- \\\\\n2019 & 0 & --- & --- \\\\\n2020 & 0 & --- & --- \\\\\n2021 & 0 & --- & --- \\\\\n2022 & 54 & 2,920.9 & 99.65 \\\\\n2023 & 0 & --- & --- \\\\\n2024 & 29 & 2,682.3 & 99.34 \\\\",
+  "ANNUALTEXT": "Only 2017, 2022, 2024 support this full-year summary under the stated thresholds. In 2017, 9 eligible stations have a mean observed total of 2,396.6 mm. In 2022, 54 eligible stations have a mean observed total of 2,920.9 mm. In 2024, 29 eligible stations have a mean observed total of 2,682.3 mm. These values use different station sets and therefore do not by themselves establish a like-for-like ordering of national annual rainfall.",
+  "ANNUALPAIR": "2017--2022 has 4 common stations and a mean within-station change of +299.8 mm (+12.7\\%). 2017--2024 has 3 common stations and a mean within-station change of +161.5 mm (+6.6\\%). 2022--2024 has 26 common stations and a mean within-station change of -284.8 mm (-9.6\\%).",
+  "HOURTEXT": "Pooling valid intervals across the qualified month sample, wet frequency peaks at 15:00--15:59 (5.80\\%) and is lowest at 23:00--23:59 (1.10\\%).",
+  "SPATIALTEXT": "December maps retain between 41 and 69 qualified stations per year, providing geographical support throughout the study period. In December 2024, qualified station totals range from 29.5 mm at S224 to 326.8 mm at S117. This spread shows spatial heterogeneity within the observed network, not an area-weighted regional contrast.",
+  "SENSTEXT": "Comparing 80\\% with 90\\% on 85 shared year-months gives a median absolute change in monthly mean amount of 0.61\\% and a maximum of 5.78\\%. Comparing 95\\% with 90\\% on 84 shared year-months gives a median absolute change in monthly mean amount of 0.40\\% and a maximum of 2.97\\%."
+}

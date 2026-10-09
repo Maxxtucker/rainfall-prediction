@@ -1,0 +1,10 @@
+{
+  "observations": 48538625,
+  "stations": 91,
+  "zero_fraction": 0.9708071664576406,
+  "qualified_year_months": 85,
+  "raw_records": 48538713,
+  "unparsed_raw_timestamps": 0,
+  "network_empty_raw_days": 63,
+  "qualified_station_months": 4759
+}

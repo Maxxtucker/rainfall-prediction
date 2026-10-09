@@ -1,0 +1,180 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=20mm,headheight=16pt]{geometry}
+\usepackage{lmodern,graphicx,booktabs,array,amsmath,xcolor,hyperref,fancyhdr,float,caption,titlesec,microtype,tabularx}
+\renewcommand{\familydefault}{\sfdefault}
+\definecolor{ink}{HTML}{233E4A}\definecolor{teal}{HTML}{087F8C}\definecolor{muted}{HTML}{647780}
+\color{ink}\hypersetup{colorlinks=true,linkcolor=teal,urlcolor=teal,citecolor=teal}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}\setlength{\textfloatsep}{12pt}
+\setlength{\emergencystretch}{2em}\raggedbottom
+\titlespacing*{\section}{0pt}{12pt}{7pt}\titlespacing*{\subsection}{0pt}{9pt}{5pt}
+\captionsetup{font=small,labelfont={bf,color=teal},labelsep=period,justification=raggedright,singlelinecheck=false,skip=5pt}
+\titleformat{\section}{\Large\bfseries\color{teal}}{\thesection}{.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{.5em}{}
+\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small SINGAPORE RAINFALL}\fancyhead[R]{\small Tasks 1 and 2 | 2017--2024}\fancyfoot[L]{\scriptsize Historical exploration and predictive evaluation}\fancyfoot[R]{\small\thepage}
+\renewcommand{\headrulewidth}{.3pt}\graphicspath{{../figures/task1-v5-report/}{../figures/task2-report/}}
+\newcommand{\plot}[3]{\begin{figure}[H]\centering\includegraphics[width=\linewidth]{#1.pdf}\caption{#2}\label{#3}\end{figure}}
+\newcommand{\finding}[1]{\par\smallskip{\color{teal}\bfseries Key observation.} #1\par\smallskip}
+\begin{document}
+{\color{teal}\small DSA5208 GROUP PROJECT / TASKS 1 AND 2}\par
+\vspace{4mm}{\Huge\bfseries Rainfall across Singapore}\par
+\vspace{2mm}{\Large Weather patterns and next-30-minute rainfall risk}\par
+\vspace{4mm}\textbf{Group members:} \underline{\hspace{55mm}} \quad \textbf{Student IDs:} \underline{\hspace{38mm}}
+
+\textbf{Prepared:} 9 October 2026. \textbf{Submission deadline:} 18 October 2026.
+
+\subsection*{Abstract}
+We explore rainfall patterns and estimate next-30-minute exceedance probabilities using Singapore's 2017--2024 five-minute station records. Spark processing produces 48.54 million cleaned observations while retaining explicit evidence of source gaps. Coverage-screened summaries show a November maximum in mean monthly rainfall and an afternoon peak in wet-interval frequency; changing station coverage limits annual and spatial comparisons. For prediction, we compare a recent-rainfall random forest (A) with a station-and-calendar forest (B), alongside logistic-regression and historical-frequency baselines. On 5.73 million shared 2024 anchors, A reduces mean Brier error by 29.4\% relative to B. B does not overall outperform historical frequency. These results support short-term prediction with recent observations, while restricting calendar-only outputs to historical risk estimates.
+
+\section{Research questions and scope}
+This study addresses two connected tasks: describe when and where rainfall occurs, and estimate the probability that a station will exceed a requested rainfall amount in the next 30 minutes. We use the National Environment Agency's 2017--2024 five-minute records, Apache Spark for observation-level processing and model fitting, and local Python for figures from saved summaries.
+
+All eight years and all twelve calendar months are retained in the analytical framework. A year-month without sufficiently complete observations is shown explicitly as unsupported. We do not manufacture missing observations, fill gaps with zero, or label a partial-year total as a complete year. Pair-specific common-station comparisons supplement the descriptive monthly results instead of restricting all analyses to one eight-year station intersection.
+
+\finding{The dataset contains 48,538,625 cleaned observations from 91 distinct station IDs. 97.08\% of recorded observations have zero rain. Data support varies considerably: 85 of the 96 year-months contain at least one station meeting the 90\% monthly coverage rule. Missingness is therefore part of the interpretation, not just a preprocessing detail.}
+
+\subsection{What each analysis estimates}
+\begin{table}[H]\small\centering
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{.20\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\toprule Question & Sample and quantity & Interpretation limit\\\midrule
+Seasonal variation & Qualified station-months; mean monthly station totals, wet frequency and intensity & Stations and available years vary\\
+Calendar-year totals & Annual coverage $\geq95\%$ and each month $\geq90\%$; station totals and their mean & Unsupported years stay blank; no national area weighting\\
+Cross-year differences & Common stations for a particular year pair and calendar month & Different pairs need not contain the same stations\\
+Spatial variation & Qualified stations in each of 96 year-months; point maps and planning-area station means & Unsupported locations are not interpolated or assigned zero\\\bottomrule
+\end{tabularx}\caption{Analysis questions are separated so that an available-sample summary is not mistaken for a fully balanced comparison.}\end{table}
+
+The predictive study tests whether recent station rainfall improves on station-and-calendar information, with 2024 reserved for evaluation. Both settings return exceedance probabilities for a user-specified station, time and rainfall threshold; only A requires recent observations at prediction time.
+
+\clearpage
+\section{Data exploration}
+\subsection{Scale, measurement and rainfall distribution}
+Each record identifies a station, observation time, coordinates and rainfall amount in millimetres, together with update metadata. Times are interpreted in Asia/Singapore time. A recorded zero indicates no measured rain during that observation interval; absence of a record does not imply dry weather. The publisher notes that records can be missing and have not received the quality control used for official climate records \cite{data}.
+\plot{01_data_profile}{Observation counts, the proportion of recorded zeros, and quantiles of positive five-minute rainfall. Each panel answers a different question about the sample; the right panel excludes zero observations.}{fig:profile}
+\finding{Rainfall is strongly concentrated at zero, while the positive measurements have a long upper tail. This motivates examining occurrence frequency separately from the amount conditional on rain, rather than relying on one mean alone.}
+\plot{02_positive_distribution}{Distribution of positive five-minute amounts over all eight years. The horizontal axis is logarithmic and bars show the fraction of positive observations in each log-spaced bin. Zero rainfall is summarised separately in Figure~\ref{fig:profile}.}{fig:hist}
+The largest retained reading is 37.2 mm in five minutes. High values are flagged for inspection, not automatically removed by an arbitrary cutoff. Neither an empirical percentile nor a neighbouring positive observation independently verifies a meteorological extreme. Five-minute amounts must not be confused with hourly rates or daily accumulations.
+
+\clearpage
+\subsection{Coverage and the observation calendar}
+For station $s$ in year $y$ and month $m$, coverage is
+\[
+ C_{sym}=\frac{N_{sym}}{288\times D_{ym}},\qquad 288=\frac{24\times60}{5}.
+\]
+$N_{sym}$ counts valid unique observations and $D_{ym}$ is the number of calendar days. A calendar skeleton includes absent station-months, with zero observed counts but undefined rainfall totals. This also means partial station lifetimes can lower calendar coverage without implying equipment failure throughout every absent period.
+\plot{03_coverage}{Monthly coverage and analysis support. The upper panel is the median among stations with any records. The lower panel counts stations reaching 90\% coverage; grey indicates none qualify. Station counts and completeness must be read together.}{fig:coverage}
+\plot{04_source_gap}{Daily raw-versus-clean counts for August 2018. Absence after 3 August already occurs in the source files; the cleaning pipeline did not create this gap.}{fig:gap}
+The audit finds 63 calendar dates with no parsed raw observations anywhere in the network. This identifies source-file gaps but not their operational cause. For August 2018, 36,410 raw records occur on only the first three days. Such a month cannot support an observed full-month total comparable with well-covered months.
+
+\clearpage
+\section{Cleaning and analytical methods}
+\subsection{Auditable cleaning}
+The raw annual files are preserved. PySpark standardises station identifiers, parses timestamps, checks measurement type and units, and casts rainfall and coordinates to numeric values. Malformed records, invalid timestamps, non-finite or negative rainfall and invalid coordinates are handled explicitly. Timestamps within two seconds of a five-minute boundary are snapped to that boundary; off-grid records outside that tolerance are excluded.
+
+Exact duplicates are removed. Conflicting rainfall or coordinate measurements at the same station-time key are quarantined rather than arbitrarily selected. Consistent measurements with repeated update metadata are consolidated; conservative publication timestamps are retained. Large non-negative rainfall is retained for review. Clean data are saved as Parquet partitioned by year and month, accompanied by quality and inspection outputs.
+
+The source-to-clean audit reconciles 48,538,713 source rows with 48,538,625 cleaned observations, a difference of 88 rows; this difference includes consolidation and must not all be described as invalid measurements. All raw timestamps were parseable in this audit.
+
+Daily audits distinguish removed rows from changes in date assignment. Raw daily counts use source timestamps; cleaning can move a few near-midnight observations into an adjacent date when snapping to the five-minute grid, so daily differences are not all deletions. Independent checks reconcile daily, monthly and yearly counts and reproduce aggregate and pairwise statistics from the saved tables.
+
+\subsection{Exposure, frequency and intensity}
+Monthly summaries use station-months with coverage $\geq90\%$. This is a predeclared completeness rule, not a guarantee of random missingness. Observed monthly station totals are averaged equally across eligible stations. Wet frequency and conditional intensity use valid observation counts:
+\[
+ f=\frac{N_{\rm wet}}{N_{\rm observed}},\qquad
+ I=\frac{\sum_i r_i}{N_{\rm wet}},\qquad \bar r=fI.
+\]
+A wet observation has $r_i>0$. Equal-year means are used for the seasonal monthly curves; diurnal summaries pool observed intervals. These weighting schemes are stated because they estimate different summaries. No total is scaled by inverse coverage to manufacture unobserved rainfall.
+
+For cross-year comparisons, eligible observations are matched by station and calendar month within each year pair. Station-month coordinate spans and between-period mean coordinates are screened at 0.005 degrees. The paired change is the average of within-station changes, with percentage change measured relative to the earlier pair mean. Plots suppress changes supported by fewer than five stations; this is a display rule, not a statistical significance threshold. All pair counts remain in the output. Annual comparisons require the full-year eligibility rule in both years.
+
+\subsection{Computing environment and reproducibility}
+\begin{table}[H]\small\centering\begin{tabular}{p{.29\linewidth}p{.62\linewidth}}\toprule Component & Recorded configuration\\\midrule
+Compute & Google Cloud Dataproc, asia-southeast1-c; one master and two workers\\
+VMs and disks & Each e2-standard-4: 4 vCPUs, 16 GB RAM, 80 GB pd-balanced boot disk\\
+Worker capacity & 8 vCPUs and 32 GB RAM; master resources are separate\\
+Runtime & Spark 3.5.3, Dataproc 2.2.87 Debian 12, PySpark on YARN\\
+Spark settings & 6 GB driver memory, 1 GB maximum driver result, 128 shuffle partitions, adaptive SQL, Asia/Singapore timezone\\
+Storage and graphics & Cloud Storage raw/Parquet/result tables; local Apple M2, 16 GB RAM; pandas, Matplotlib and Plotly\\\bottomrule\end{tabular}
+\caption{The Spark job performs record-level work. Only aggregated tables are downloaded for plotting.}\end{table}
+Run-specific source snapshots, metadata and validation outputs accompany \texttt{task1-v5}. Figures are generated as vector PDF/SVG and PNG previews. Report captions and references are typeset in LaTeX rather than embedded as miniature text in chart images.
+
+\clearpage
+\section{Monthly and seasonal rainfall patterns}
+\plot{05_monthly_amount}{Monthly mean observed station totals for all 2017--2024 year-months. A common linear colour scale supports magnitude comparisons. Grey cells lack qualified station-months and must not be read as dry weather.}{fig:monthly}
+\finding{Among eligible-year monthly averages, November has the largest mean amount (320.8 mm) and February the smallest (146.1 mm). Each year-month first averages its qualified stations; the seasonal average then weights available years equally.}
+\plot{06_seasonality}{Monthly amount, wet-interval frequency and conditional wet intensity. The shaded region is the observed minimum--maximum across eligible years, not a confidence interval.}{fig:seasonal}
+The seasonal distinction is not solely about intensity: a month can be wet because rain occurs more frequently, because individual wet intervals contain more rain, or both. MSS describes generally wetter conditions in November--January and a relatively dry February \cite{climate}. The present sample is a short, incomplete observational period, not an official climate normal. Calendar months also differ in length.
+
+\clearpage
+\subsection{The same month across eight years}
+\plot{07_monthly_trends}{Separate trajectories for every calendar month. Missing year-months break the lines. Vertical ranges differ between panels to reveal within-month variation; use Figure~\ref{fig:monthly} for comparisons of absolute magnitude between months.}{fig:trajectories}
+This view preserves usable observations separately for each calendar month. For example, an unsupported August 2018 does not remove the other seven Augusts, nor does it remove well-covered months in 2018. However, individual points can involve different station compositions, so changes in these descriptive curves are not automatically changes at fixed locations.
+\plot{09_paired_changes}{Adjacent-year monthly changes using common stable-location stations. Values are percentage changes in the pair's mean observed station amount. Grey denotes missing support or fewer than five common stations; the colour scale is centred on zero.}{fig:paired}
+For example, December 2024 is 43.7\% lower than the same month in 2023 among their 53 common stations (means 213.9 versus 379.8 mm). The pairing controls station identity for each comparison. It does not control unobserved rainfall within remaining gaps, and pair-specific panels differ. Consequently, these percentages are not chained to construct a national trend, and no significance claim is attached to them.
+
+\clearpage
+\section{Calendar-year rainfall totals}
+\plot{08_annual_totals}{Observed full-calendar-year amounts at eligible stations. Dots show individual stations and coral diamonds their mean; $n$ is the number of stations. Shaded columns mark years with no station meeting the annual and every-month completeness rules.}{fig:annual}
+\begin{table}[H]\centering\small\begin{tabular}{rrrr}\toprule Year & Qualified stations & Mean total (mm) & Mean coverage (\%)\\\midrule
+2017 & 9 & 2,396.6 & 98.03 \\
+2018 & 0 & --- & --- \\
+2019 & 0 & --- & --- \\
+2020 & 0 & --- & --- \\
+2021 & 0 & --- & --- \\
+2022 & 54 & 2,920.9 & 99.65 \\
+2023 & 0 & --- & --- \\
+2024 & 29 & 2,682.3 & 99.34 \\
+\bottomrule\end{tabular}\caption{Annual summaries describe the eligible network, not a sum over all stations or an area-weighted national measurement. Unsupported years remain in the calendar but have no qualifying mean.}\end{table}
+Only 2017, 2022, 2024 support this full-year summary under the stated thresholds. In 2017, 9 eligible stations have a mean observed total of 2,396.6 mm. In 2022, 54 eligible stations have a mean observed total of 2,920.9 mm. In 2024, 29 eligible stations have a mean observed total of 2,682.3 mm. These values use different station sets and therefore do not by themselves establish a like-for-like ordering of national annual rainfall.
+
+A calendar-year total is the sum of a station's valid five-minute amounts over January--December. Even eligible totals are observed amounts and retain residual gaps. Combining station totals by addition would make the result depend strongly on the number of gauges; the plotted network statistic is therefore a station mean. Spatially changing station sets are another reason not to infer a national wettest-year ranking from these values.
+
+The pairwise annual output also compares common eligible stations between supported years. 2017--2022 has 4 common stations and a mean within-station change of +299.8 mm (+12.7\%). 2017--2024 has 3 common stations and a mean within-station change of +161.5 mm (+6.6\%). 2022--2024 has 26 common stations and a mean within-station change of -284.8 mm (-9.6\%). This is a restricted geographical comparison and does not recover the missing annual totals in other years. Annual coverage alone is insufficient: a station can appear well covered overall while missing a concentrated part of a season, which motivates the additional monthly requirement.
+
+\clearpage
+\section{Diurnal behaviour and heavier daily rainfall}
+\plot{10_diurnal}{Wet-observation frequency by month and hour (left) and year and hour (right), in Singapore time. All eligible station-months contribute; values are weighted by observed intervals. The year curves can include different month mixes.}{fig:diurnal}
+Pooling valid intervals across the qualified month sample, wet frequency peaks at 15:00--15:59 (5.80\%) and is lowest at 23:00--23:59 (1.10\%). This is descriptive occurrence frequency, not a probability forecast for a future event. The source's incomplete time coverage and changing station mix remain relevant even after screening. The general afternoon enhancement is consistent with MSS's description of Singapore's daily rainfall pattern \cite{climate}; it does not establish the cause of a particular storm.
+\plot{11_daily_tails}{Monthly daily-rainfall P99 (upper) and wet station-day percentage (lower). Only days with at least 95\% coverage inside eligible station-months are included. Quantiles include dry days; wet means an observed daily amount above zero.}{fig:tails}
+High quantiles provide a data-derived description of the upper tail without declaring an arbitrary amount to be an official extreme threshold. They are approximate Spark quantiles of station-days, not independent storms or return levels. A high wet-day proportion and a high upper-tail amount need not coincide.
+
+\clearpage
+\section{Spatial patterns across the eight years}
+All 96 year-month combinations have station-map views. Figures~\ref{fig:spatialdec} and \ref{fig:regions} use December as a like-for-like calendar illustration; the gallery provides corresponding comparisons for every other month. All monthly maps use one linear scale over the full 96-period set, preserving comparability and retaining high values even when this reduces contrast among moderate observations.
+\plot{13_spatial_month_12}{December station observations across all eight years. Labels show qualified station counts. Colours represent observed monthly totals; the maps contain no interpolated rainfall.}{fig:spatialdec}
+\plot{15_regions_month_12}{December planning-area heatmaps across eight years. Each coloured polygon displays the arithmetic mean of assigned eligible stations; small dots show contributing locations. Grey means no supporting station, not zero rainfall.}{fig:regions}
+December maps retain between 41 and 69 qualified stations per year, providing geographical support throughout the study period. In December 2024, qualified station totals range from 29.5 mm at S224 to 326.8 mm at S117. This spread shows spatial heterogeneity within the observed network, not an area-weighted regional contrast. Uneven station placement and different month-specific networks preclude treating every coloured polygon as an equally reliable area-average measurement. Per-area station counts and assignments are retained in the supplementary CSVs; boundary or ambiguous points are excluded from polygon means rather than forced into a region.
+
+\clearpage
+\subsection{Spatial seasonality and annual support}
+\plot{14_spatial_year_2024}{All twelve months of 2024, the final study year. The same global monthly colour scale is used as in the eight-year comparisons. Other years have equivalent twelve-panel figures in the gallery.}{fig:spatialseason}
+Month-specific eligibility makes the twelve-month view possible without requiring every station to survive an eight-year intersection. Within a year, the qualified station set can still change between months; the displayed counts expose this. The complete interactive station map allows inspection of rainfall and coverage at individual sites for every supported period.
+\plot{16_annual_spatial}{Annual observations using the stricter full-year completeness rule. Unlike the monthly maps, several annual panels have no qualifying stations. Blank panels communicate the limit of annual evidence rather than restricting all spatial exploration to one selected year.}{fig:annualmaps}
+Boundary geometries are derived from the retained geoBoundaries/URA assets. Their vintage is older than parts of the observation period; coastal alignment and historical administrative definitions can affect assignments. We prioritise station observations and explicitly supported regional summaries over smooth interpolation that could imply more spatial information than was measured.
+
+\clearpage
+\section{Sensitivity, limitations and additional observations}
+\plot{12_sensitivity}{Seasonal amount and wet-frequency summaries repeated at three monthly coverage cutoffs. These compare rainfall results, not only the number of surviving samples. Each curve still uses its own eligible stations and years.}{fig:sensitivity}
+Comparing 80\% with 90\% on 85 shared year-months gives a median absolute change in monthly mean amount of 0.61\% and a maximum of 5.78\%. Comparing 95\% with 90\% on 84 shared year-months gives a median absolute change in monthly mean amount of 0.40\% and a maximum of 2.97\%. Comparing matched year-months isolates changes from the availability of whole months, but the contributing stations within them still change. Similar curves are evidence of stability for these particular descriptive summaries, not proof that missingness is ignorable or that all spatial and paired conclusions are robust.
+
+The principal limitations are: (i) source gaps may coincide with particular weather and are not known to be random; (ii) eight years are too short and incomplete here to establish a climate-change trend; (iii) station means are not area-weighted national rainfall; (iv) empirical tails can contain measurement or export errors; and (v) pairs and regional summaries have varying geographical support. High observations require review against independent sources before being presented as verified extreme events. Future work could compare an explicitly justified missing-data model against complete-period evidence, with uncertainty reported rather than concealed.
+
+These descriptive results motivate evaluating occurrence probabilities beyond accuracy and comparing station history with calendar features. The following predictive study uses complete local target windows rather than the strict eight-year station intersection.
+
+@@TASK2@@
+\clearpage
+\section{Conclusion}
+Rainfall in the observed network varies across months, hours and locations, but incomplete source coverage limits what can be compared. November has the largest eligible-year mean monthly amount, and wet-interval frequency peaks in the afternoon. Full-year totals are supported only for 2017, 2022 and 2024 under the stated completeness rules. Monthly maps preserve broader evidence across all eight years without treating missing observations as dry weather or claiming national area-average rainfall.
+
+Recent station history provides the strongest predictive results in the 2024 holdout. A's mean Brier error is 0.01613 versus 0.02283 for B on identical anchors, a 29.4\% reduction, with a conditional seven-day block-bootstrap interval of 25.4--32.9\%. A also improves on the historical-frequency and logistic-regression baselines in mean Brier. Its advantage narrows for rare, high-amount events, and its probabilities are imperfectly calibrated. B supports future-date historical risk queries, but its forest does not overall improve on historical frequency.
+
+The practical distinction is the information available at issue time. Use A when recent published rainfall can be supplied and regard B as a calendar-risk estimate when it cannot. Neither model has been validated for unseen stations or future-year distribution shifts. Rolling-year evaluation, a controlled feature ablation and an operational as-of data feed are the main next steps; they are proposed extensions rather than completed experiments.
+
+\section{AI usage declaration}
+OpenAI Codex assisted with code development, cleaning diagnostics, Cloud execution, feature and model implementation, tests, figure design, evaluation analysis and drafting this report. Numerical claims were derived from saved real-data outputs and reconciled with audit tables; synthetic data were used only as software-test fixtures. AI-generated interpretation does not independently validate meteorological measurements or guarantee future prediction performance. The authors remain responsible for reviewing the implementation, numerical claims, interpretation and references in the submitted work.
+\begin{thebibliography}{9}
+\bibitem{data} National Environment Agency. \emph{Historical Rainfall across Singapore}, annual datasets 2017--2024. Data.gov.sg. \url{https://data.gov.sg/collections/2279/view}. Accessed 9 October 2026.
+\bibitem{climate} Meteorological Service Singapore. \emph{Climate of Singapore}. \url{https://www.weather.gov.sg/climate-climate-of-singapore/}. Accessed 9 October 2026.
+\bibitem{geo} geoBoundaries / Urban Redevelopment Authority. Singapore outline and 55 planning-area geometries. Provenance and licences retained in \texttt{assets/singapore.source.json} and \texttt{assets/planning\_areas.source.json}; planning-area source is based on URA Master Plan 2014 geometry.
+
+\bibitem{sparkml} Apache Spark. \emph{Classification and regression}, Spark 3.5.3 documentation. \url{https://dlcdn.apache.org/spark/docs/3.5.3/ml-classification-regression.html}. Accessed 9 October 2026.
+\bibitem{sparkeval} Apache Spark. \emph{BinaryClassificationMetrics}, Spark 3.5.3 Java API. \url{https://spark.apache.org/docs/3.5.3/api/java/org/apache/spark/mllib/evaluation/BinaryClassificationMetrics.html}. Accessed 9 October 2026.
+\end{thebibliography}
+\end{document}

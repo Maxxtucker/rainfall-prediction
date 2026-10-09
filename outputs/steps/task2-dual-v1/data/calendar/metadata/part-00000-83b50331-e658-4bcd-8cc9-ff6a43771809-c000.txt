@@ -1,0 +1,1 @@
+{"feature_mode": "calendar_risk_v2", "numeric_features": ["latitude", "longitude", "hour_sin", "hour_cos", "doy_sin", "doy_cos"], "clean_path": "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/clean-all-v1/clean", "target_offsets_minutes": [5, 10, 15, 20, 25, 30], "latency_minutes": null, "requires_recent_rainfall": false, "spark_version": "3.5.3"}

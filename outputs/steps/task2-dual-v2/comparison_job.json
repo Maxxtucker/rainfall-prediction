@@ -1,0 +1,64 @@
+{
+  "done": true,
+  "driverControlFilesUri": "gs://rainfall-project-511007-rainfall-maxiaoxiao/google-cloud-dataproc-metainfo/52a2b0d8-c1d4-4f26-9380-041fe2e5f0dc/jobs/c37857a1de864edfada7af59c571d4b2/",
+  "driverOutputResourceUri": "gs://rainfall-project-511007-rainfall-maxiaoxiao/google-cloud-dataproc-metainfo/52a2b0d8-c1d4-4f26-9380-041fe2e5f0dc/jobs/c37857a1de864edfada7af59c571d4b2/driveroutput",
+  "jobUuid": "cff2afa1-0bd8-3a6c-a046-f2964f55875d",
+  "placement": {
+    "clusterName": "rainfall-spark",
+    "clusterUuid": "52a2b0d8-c1d4-4f26-9380-041fe2e5f0dc"
+  },
+  "pysparkJob": {
+    "args": [
+      "--data",
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/task2-dual-v2/data",
+      "--models",
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/task2-dual-v2/models",
+      "--output",
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/task2-dual-v2/comparison",
+      "--data",
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/task2-dual-v1/data"
+    ],
+    "mainPythonFileUri": "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/task2-dual-v2/source/compare.py",
+    "properties": {
+      "spark.driver.maxResultSize": "1g",
+      "spark.driver.memory": "6g",
+      "spark.sql.session.timeZone": "Asia/Singapore"
+    },
+    "pythonFileUris": [
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/task2-dual-v2/source/rainfall.zip"
+    ]
+  },
+  "reference": {
+    "jobId": "c37857a1de864edfada7af59c571d4b2",
+    "projectId": "rainfall-project-511007"
+  },
+  "status": {
+    "state": "DONE",
+    "stateStartTime": "2026-10-09T10:58:32.835196Z"
+  },
+  "statusHistory": [
+    {
+      "state": "PENDING",
+      "stateStartTime": "2026-10-09T10:49:55.633103Z"
+    },
+    {
+      "state": "SETUP_DONE",
+      "stateStartTime": "2026-10-09T10:49:55.717206Z"
+    },
+    {
+      "details": "Agent reported job success",
+      "state": "RUNNING",
+      "stateStartTime": "2026-10-09T10:49:56.113620Z"
+    }
+  ],
+  "yarnApplications": [
+    {
+      "memoryMbSeconds": "13269157",
+      "name": "rainfall-dual-comparison",
+      "progress": 1.0,
+      "state": "FINISHED",
+      "trackingUrl": "http://rainfall-spark-m.asia-southeast1-c.c.rainfall-project-511007.internal.:8088/proxy/application_1791535620421_0005/",
+      "vcoreSeconds": "3917"
+    }
+  ]
+}

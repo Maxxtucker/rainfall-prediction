@@ -1,0 +1,548 @@
+{
+  "removed": [
+    {
+      "path": "outputs/steps/task1-v4",
+      "bytes": 8976937,
+      "reason": "Superseded report/output, duplicate partial model download, or temporary artifact; final report and final models retained"
+    },
+    {
+      "path": "figures/task1-v4-final",
+      "bytes": 25118149,
+      "reason": "Superseded report/output, duplicate partial model download, or temporary artifact; final report and final models retained"
+    },
+    {
+      "path": "report/task1/archive",
+      "bytes": 3713137,
+      "reason": "Superseded report/output, duplicate partial model download, or temporary artifact; final report and final models retained"
+    },
+    {
+      "path": "outputs/steps/task2-dual-v2/models-pre-final-sync",
+      "bytes": 4742623,
+      "reason": "Superseded report/output, duplicate partial model download, or temporary artifact; final report and final models retained"
+    },
+    {
+      "path": "tmp",
+      "bytes": 8829966,
+      "reason": "Superseded report/output, duplicate partial model download, or temporary artifact; final report and final models retained"
+    },
+    {
+      "path": "task1-code-update.zip",
+      "bytes": 51306,
+      "reason": "Superseded report/output, duplicate partial model download, or temporary artifact; final report and final models retained"
+    },
+    {
+      "path": "report/task1/task1_report.pdf",
+      "bytes": 5543668,
+      "reason": "Superseded report/output, duplicate partial model download, or temporary artifact; final report and final models retained"
+    },
+    {
+      "path": "report/task1/task1_report.tex",
+      "bytes": 23742,
+      "reason": "Superseded report/output, duplicate partial model download, or temporary artifact; final report and final models retained"
+    },
+    {
+      "path": "outputs/steps/task2-dual-v1/data/calendar/features",
+      "bytes": 378903402,
+      "reason": "Regenerable feature cache; original GCS URI, metadata and audits retained; not needed for saved-model inference or report"
+    },
+    {
+      "path": "outputs/steps/task2-dual-v1/data/short_term/features",
+      "bytes": 449082293,
+      "reason": "Regenerable feature cache; original GCS URI, metadata and audits retained; not needed for saved-model inference or report"
+    },
+    {
+      "path": "figures/task1-v5-report/13_spatial_month_04.svg",
+      "bytes": 1645178,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/13_spatial_month_10.svg",
+      "bytes": 1663446,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/13_spatial_month_11.svg",
+      "bytes": 1652061,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/13_spatial_month_05.svg",
+      "bytes": 1653580,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/13_spatial_month_07.svg",
+      "bytes": 1640124,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/13_spatial_month_06.svg",
+      "bytes": 1646230,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/13_spatial_month_12.svg",
+      "bytes": 1659745,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/07_monthly_trends.svg",
+      "bytes": 67910,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/13_spatial_month_02.svg",
+      "bytes": 1651169,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/13_spatial_month_03.svg",
+      "bytes": 1650282,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/13_spatial_month_01.svg",
+      "bytes": 1632281,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/02_positive_distribution.svg",
+      "bytes": 17541,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/09_paired_changes.svg",
+      "bytes": 34527,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/09b_paired_support.svg",
+      "bytes": 35724,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/14_spatial_year_2017.svg",
+      "bytes": 2474952,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/15_regions_month_09.svg",
+      "bytes": 8703093,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/15_regions_month_08.svg",
+      "bytes": 8688575,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/15_regions_month_11.svg",
+      "bytes": 8696480,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/15_regions_month_05.svg",
+      "bytes": 8697293,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/15_regions_month_04.svg",
+      "bytes": 8692366,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/15_regions_month_10.svg",
+      "bytes": 8702974,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/11_daily_tails.svg",
+      "bytes": 69724,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/14_spatial_year_2018.svg",
+      "bytes": 2445990,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/14_spatial_year_2024.svg",
+      "bytes": 2504730,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/16_annual_spatial.svg",
+      "bytes": 1595505,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/15_regions_month_06.svg",
+      "bytes": 8693098,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/15_regions_month_12.svg",
+      "bytes": 8700764,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/15_regions_month_07.svg",
+      "bytes": 8689439,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/14_spatial_year_2019.svg",
+      "bytes": 2459688,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/01_data_profile.svg",
+      "bytes": 32958,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/08_annual_totals.svg",
+      "bytes": 29540,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/10_diurnal.svg",
+      "bytes": 30231,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/14_spatial_year_2021.svg",
+      "bytes": 2509740,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/15_regions_month_03.svg",
+      "bytes": 8695306,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/15_regions_month_02.svg",
+      "bytes": 8695945,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/12_sensitivity.svg",
+      "bytes": 34455,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/14_spatial_year_2020.svg",
+      "bytes": 2471829,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/05_monthly_amount.svg",
+      "bytes": 39944,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/14_spatial_year_2022.svg",
+      "bytes": 2522652,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/15_regions_month_01.svg",
+      "bytes": 8684719,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/03_coverage.svg",
+      "bytes": 72360,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/14_spatial_year_2023.svg",
+      "bytes": 2507925,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/04_source_gap.svg",
+      "bytes": 20558,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/06_seasonality.svg",
+      "bytes": 35432,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/13_spatial_month_08.svg",
+      "bytes": 1638692,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task1-v5-report/13_spatial_month_09.svg",
+      "bytes": 1663636,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task2-report/18_common_comparison.svg",
+      "bytes": 28606,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task2-report/17_prediction_timeline.svg",
+      "bytes": 8908,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task2-report/20_reliability.svg",
+      "bytes": 31165,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task2-report/21_diagnostics.svg",
+      "bytes": 18696,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/task2-report/19_baseline_skill.svg",
+      "bytes": 22242,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/05_diurnal_by_year.svg",
+      "bytes": 51868,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/13_planning_area_station_heatmap.svg",
+      "bytes": 931623,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/11_spatial_change_by_year.svg",
+      "bytes": 2197458,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/02_year_month_rainfall.svg",
+      "bytes": 52478,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/01_annual_amount_frequency_intensity.svg",
+      "bytes": 37208,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/09_monthly_analysis_support.svg",
+      "bytes": 52622,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/08_station_coverage.svg",
+      "bytes": 102449,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/06_month_hour_frequency_intensity.svg",
+      "bytes": 64579,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/16_monthly_spatial_snapshot_2022.svg",
+      "bytes": 3531150,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/04_seasonal_amount_frequency_intensity.svg",
+      "bytes": 47161,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/15_planning_area_snapshot_2022.svg",
+      "bytes": 943841,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/08b_monthly_coverage.svg",
+      "bytes": 102126,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/12_spatial_seasonality.svg",
+      "bytes": 3343807,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/07_daily_tails_and_wet_days.svg",
+      "bytes": 27147,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/10_singapore_spatial_heatmap.svg",
+      "bytes": 313737,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/14_station_snapshot_2022.svg",
+      "bytes": 332238,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4-reviewed/03_monthly_relative_anomalies.svg",
+      "bytes": 51163,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/05_diurnal_by_year.svg",
+      "bytes": 53127,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/13_planning_area_station_heatmap.svg",
+      "bytes": 931627,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/11_spatial_change_by_year.svg",
+      "bytes": 2197458,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/02_year_month_rainfall.svg",
+      "bytes": 53904,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/01_annual_amount_frequency_intensity.svg",
+      "bytes": 37236,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/09_monthly_analysis_support.svg",
+      "bytes": 54052,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/08_station_coverage.svg",
+      "bytes": 102449,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/06_month_hour_frequency_intensity.svg",
+      "bytes": 66152,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/04_seasonal_amount_frequency_intensity.svg",
+      "bytes": 47162,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/15_planning_area_snapshot_2022.svg",
+      "bytes": 943837,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/08b_monthly_coverage.svg",
+      "bytes": 102126,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/12_spatial_seasonality.svg",
+      "bytes": 3343807,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/07_daily_tails_and_wet_days.svg",
+      "bytes": 27160,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/10_singapore_spatial_heatmap.svg",
+      "bytes": 603954,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/14_station_snapshot_2022.svg",
+      "bytes": 333780,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "figures/.qa/task1-v4/03_monthly_relative_anomalies.svg",
+      "bytes": 52589,
+      "reason": "Duplicate vector export; PDF vectors and gallery PNG previews retained"
+    },
+    {
+      "path": "tests/__pycache__",
+      "bytes": 60488,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "scripts/__pycache__",
+      "bytes": 239577,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "jobs/__pycache__",
+      "bytes": 64996,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "src/rainfall/__pycache__",
+      "bytes": 128617,
+      "reason": "Python bytecode cache"
+    },
+    {
+      "path": "outputs/.DS_Store",
+      "bytes": 6148,
+      "reason": "macOS folder metadata"
+    },
+    {
+      "path": "outputs/steps/.DS_Store",
+      "bytes": 6148,
+      "reason": "macOS folder metadata"
+    },
+    {
+      "path": "outputs/environment/task1-v4-analyze.log",
+      "bytes": 4609,
+      "reason": "Superseded run log"
+    },
+    {
+      "path": "outputs/environment/task1-v4-code-sha256.json",
+      "bytes": 670,
+      "reason": "Superseded run log"
+    },
+    {
+      "path": "outputs/environment/task1-v4-local-run.json",
+      "bytes": 1655,
+      "reason": "Superseded run log"
+    },
+    {
+      "path": "cloud/03_run.sh",
+      "bytes": 1873,
+      "reason": "Obsolete all-in-one workflow replaced by independent clean/analyse/features/train/predict stages; historical executed source snapshots retained"
+    },
+    {
+      "path": "cloud/04_collect.sh",
+      "bytes": 765,
+      "reason": "Obsolete all-in-one workflow replaced by independent clean/analyse/features/train/predict stages; historical executed source snapshots retained"
+    },
+    {
+      "path": "jobs/prepare.py",
+      "bytes": 6655,
+      "reason": "Obsolete all-in-one workflow replaced by independent clean/analyse/features/train/predict stages; historical executed source snapshots retained"
+    },
+    {
+      "path": "scripts/make_synthetic_data.py",
+      "bytes": 6840,
+      "reason": "Obsolete all-in-one workflow replaced by independent clean/analyse/features/train/predict stages; historical executed source snapshots retained"
+    }
+  ],
+  "removed_bytes": 1052907347,
+  "preserved": [
+    "src and active jobs/cloud/scripts/tests",
+    "final trained model directories and baselines",
+    "final report and vector figures",
+    "all 96 monthly gallery views",
+    "aggregate tables, feature audits and executed source snapshots"
+  ],
+  "cloud_resources_modified": false
+}

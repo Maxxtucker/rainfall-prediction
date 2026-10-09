@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "checks": [
+    "96 unique year-month coverage rows",
+    "calendar skeleton preserves missing rainfall as null",
+    "raw, daily, monthly and annual profile count reconciliation",
+    "monthly means reproduced independently",
+    "annual inclusion requires annual and every-month coverage",
+    "hourly analysis uses all qualified month observations",
+    "all paired year-month differences independently matched and reproduced",
+    "rainfall results at all three coverage cutoffs reproduced"
+  ],
+  "rows": 48538625
+}

@@ -1,0 +1,13 @@
+{
+  "calendar": {
+    "matched_rf_predictions": 140,
+    "max_absolute_error": 0.0,
+    "binary_pipeline_reloaded": true
+  },
+  "short_term": {
+    "matched_rf_predictions": 140,
+    "max_absolute_error": 0.0,
+    "binary_pipeline_reloaded": true
+  },
+  "passed": true
+}

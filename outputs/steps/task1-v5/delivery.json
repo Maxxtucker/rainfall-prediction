@@ -1,0 +1,16 @@
+{
+  "job_id": "b3cffaef6c1943fba53c0f4d9af7d2f5",
+  "results": "outputs/steps/task1-v5",
+  "figures": "figures/task1-v5-report",
+  "report": "report/project_report.pdf",
+  "source_archive_sha256": "d0f5110166032837a15a4cdbfa88dfb750a4f368ed4b1a1f2e7fc0fd40e17fab",
+  "report_sha256": "a0220d389e5caafab38f145b7ce84fbad7114e2f26bab316607f8022087771ee",
+  "numeric_validation": "passed; see validation.json",
+  "visual_review": "Combined 18-page report rendered and reviewed after editorial revision",
+  "figure_count": 46,
+  "original_task1_report": {
+    "path_at_time_of_run": "report/task1/task1_report.pdf",
+    "sha256_at_time_of_run": "701377acd7cb59a132108285249e4cc32e326d2dd1350837e86f97bb2ced3ff5",
+    "status": "superseded by combined report; standalone PDF removed"
+  }
+}

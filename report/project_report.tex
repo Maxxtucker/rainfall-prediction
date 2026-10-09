@@ -1,0 +1,302 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=20mm,headheight=16pt]{geometry}
+\usepackage{lmodern,graphicx,booktabs,array,amsmath,xcolor,hyperref,fancyhdr,float,caption,titlesec,microtype,tabularx}
+\renewcommand{\familydefault}{\sfdefault}
+\definecolor{ink}{HTML}{233E4A}\definecolor{teal}{HTML}{087F8C}\definecolor{muted}{HTML}{647780}
+\color{ink}\hypersetup{colorlinks=true,linkcolor=teal,urlcolor=teal,citecolor=teal}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}\setlength{\textfloatsep}{12pt}
+\setlength{\emergencystretch}{2em}\raggedbottom
+\titlespacing*{\section}{0pt}{12pt}{7pt}\titlespacing*{\subsection}{0pt}{9pt}{5pt}
+\captionsetup{font=small,labelfont={bf,color=teal},labelsep=period,justification=raggedright,singlelinecheck=false,skip=5pt}
+\titleformat{\section}{\Large\bfseries\color{teal}}{\thesection}{.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{.5em}{}
+\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small SINGAPORE RAINFALL}\fancyhead[R]{\small Tasks 1 and 2 | 2017--2024}\fancyfoot[L]{\scriptsize Historical exploration and predictive evaluation}\fancyfoot[R]{\small\thepage}
+\renewcommand{\headrulewidth}{.3pt}\graphicspath{{../figures/task1-v5-report/}{../figures/task2-report/}}
+\newcommand{\plot}[3]{\begin{figure}[H]\centering\includegraphics[width=\linewidth]{#1.pdf}\caption{#2}\label{#3}\end{figure}}
+\newcommand{\finding}[1]{\par\smallskip{\color{teal}\bfseries Key observation.} #1\par\smallskip}
+\begin{document}
+{\color{teal}\small DSA5208 GROUP PROJECT / TASKS 1 AND 2}\par
+\vspace{4mm}{\Huge\bfseries Rainfall across Singapore}\par
+\vspace{2mm}{\Large Weather patterns and next-30-minute rainfall risk}\par
+\vspace{4mm}\textbf{Group members:} \underline{\hspace{55mm}} \quad \textbf{Student IDs:} \underline{\hspace{38mm}}
+
+\textbf{Prepared:} 9 October 2026. \textbf{Submission deadline:} 18 October 2026.
+
+\subsection*{Abstract}
+We explore rainfall patterns and estimate next-30-minute exceedance probabilities using Singapore's 2017--2024 five-minute station records. Spark processing produces 48.54 million cleaned observations while retaining explicit evidence of source gaps. Coverage-screened summaries show a November maximum in mean monthly rainfall and an afternoon peak in wet-interval frequency; changing station coverage limits annual and spatial comparisons. For prediction, we compare a recent-rainfall random forest (A) with a station-and-calendar forest (B), alongside logistic-regression and historical-frequency baselines. On 5.73 million shared 2024 anchors, A reduces mean Brier error by 29.4\% relative to B. B does not overall outperform historical frequency. These results support short-term prediction with recent observations, while restricting calendar-only outputs to historical risk estimates.
+
+\section{Research questions and scope}
+This study addresses two connected tasks: describe when and where rainfall occurs, and estimate the probability that a station will exceed a requested rainfall amount in the next 30 minutes. We use the National Environment Agency's 2017--2024 five-minute records, Apache Spark for observation-level processing and model fitting, and local Python for figures from saved summaries.
+
+All eight years and all twelve calendar months are retained in the analytical framework. A year-month without sufficiently complete observations is shown explicitly as unsupported. We do not manufacture missing observations, fill gaps with zero, or label a partial-year total as a complete year. Pair-specific common-station comparisons supplement the descriptive monthly results instead of restricting all analyses to one eight-year station intersection.
+
+\finding{The dataset contains 48,538,625 cleaned observations from 91 distinct station IDs. 97.08\% of recorded observations have zero rain. Data support varies considerably: 85 of the 96 year-months contain at least one station meeting the 90\% monthly coverage rule. Missingness is therefore part of the interpretation, not just a preprocessing detail.}
+
+\subsection{What each analysis estimates}
+\begin{table}[H]\small\centering
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{.20\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}\toprule Question & Sample and quantity & Interpretation limit\\\midrule
+Seasonal variation & Qualified station-months; mean monthly station totals, wet frequency and intensity & Stations and available years vary\\
+Calendar-year totals & Annual coverage $\geq95\%$ and each month $\geq90\%$; station totals and their mean & Unsupported years stay blank; no national area weighting\\
+Cross-year differences & Common stations for a particular year pair and calendar month & Different pairs need not contain the same stations\\
+Spatial variation & Qualified stations in each of 96 year-months; point maps and planning-area station means & Unsupported locations are not interpolated or assigned zero\\\bottomrule
+\end{tabularx}\caption{Analysis questions are separated so that an available-sample summary is not mistaken for a fully balanced comparison.}\end{table}
+
+The predictive study tests whether recent station rainfall improves on station-and-calendar information, with 2024 reserved for evaluation. Both settings return exceedance probabilities for a user-specified station, time and rainfall threshold; only A requires recent observations at prediction time.
+
+\clearpage
+\section{Data exploration}
+\subsection{Scale, measurement and rainfall distribution}
+Each record identifies a station, observation time, coordinates and rainfall amount in millimetres, together with update metadata. Times are interpreted in Asia/Singapore time. A recorded zero indicates no measured rain during that observation interval; absence of a record does not imply dry weather. The publisher notes that records can be missing and have not received the quality control used for official climate records \cite{data}.
+\plot{01_data_profile}{Observation counts, the proportion of recorded zeros, and quantiles of positive five-minute rainfall. Each panel answers a different question about the sample; the right panel excludes zero observations.}{fig:profile}
+\finding{Rainfall is strongly concentrated at zero, while the positive measurements have a long upper tail. This motivates examining occurrence frequency separately from the amount conditional on rain, rather than relying on one mean alone.}
+\plot{02_positive_distribution}{Distribution of positive five-minute amounts over all eight years. The horizontal axis is logarithmic and bars show the fraction of positive observations in each log-spaced bin. Zero rainfall is summarised separately in Figure~\ref{fig:profile}.}{fig:hist}
+The largest retained reading is 37.2 mm in five minutes. High values are flagged for inspection, not automatically removed by an arbitrary cutoff. Neither an empirical percentile nor a neighbouring positive observation independently verifies a meteorological extreme. Five-minute amounts must not be confused with hourly rates or daily accumulations.
+
+\clearpage
+\subsection{Coverage and the observation calendar}
+For station $s$ in year $y$ and month $m$, coverage is
+\[
+ C_{sym}=\frac{N_{sym}}{288\times D_{ym}},\qquad 288=\frac{24\times60}{5}.
+\]
+$N_{sym}$ counts valid unique observations and $D_{ym}$ is the number of calendar days. A calendar skeleton includes absent station-months, with zero observed counts but undefined rainfall totals. This also means partial station lifetimes can lower calendar coverage without implying equipment failure throughout every absent period.
+\plot{03_coverage}{Monthly coverage and analysis support. The upper panel is the median among stations with any records. The lower panel counts stations reaching 90\% coverage; grey indicates none qualify. Station counts and completeness must be read together.}{fig:coverage}
+\plot{04_source_gap}{Daily raw-versus-clean counts for August 2018. Absence after 3 August already occurs in the source files; the cleaning pipeline did not create this gap.}{fig:gap}
+The audit finds 63 calendar dates with no parsed raw observations anywhere in the network. This identifies source-file gaps but not their operational cause. For August 2018, 36,410 raw records occur on only the first three days. Such a month cannot support an observed full-month total comparable with well-covered months.
+
+\clearpage
+\section{Cleaning and analytical methods}
+\subsection{Auditable cleaning}
+The raw annual files are preserved. PySpark standardises station identifiers, parses timestamps, checks measurement type and units, and casts rainfall and coordinates to numeric values. Malformed records, invalid timestamps, non-finite or negative rainfall and invalid coordinates are handled explicitly. Timestamps within two seconds of a five-minute boundary are snapped to that boundary; off-grid records outside that tolerance are excluded.
+
+Exact duplicates are removed. Conflicting rainfall or coordinate measurements at the same station-time key are quarantined rather than arbitrarily selected. Consistent measurements with repeated update metadata are consolidated; conservative publication timestamps are retained. Large non-negative rainfall is retained for review. Clean data are saved as Parquet partitioned by year and month, accompanied by quality and inspection outputs.
+
+The source-to-clean audit reconciles 48,538,713 source rows with 48,538,625 cleaned observations, a difference of 88 rows; this difference includes consolidation and must not all be described as invalid measurements. All raw timestamps were parseable in this audit.
+
+Daily audits distinguish removed rows from changes in date assignment. Raw daily counts use source timestamps; cleaning can move a few near-midnight observations into an adjacent date when snapping to the five-minute grid, so daily differences are not all deletions. Independent checks reconcile daily, monthly and yearly counts and reproduce aggregate and pairwise statistics from the saved tables.
+
+\subsection{Exposure, frequency and intensity}
+Monthly summaries use station-months with coverage $\geq90\%$. This is a predeclared completeness rule, not a guarantee of random missingness. Observed monthly station totals are averaged equally across eligible stations. Wet frequency and conditional intensity use valid observation counts:
+\[
+ f=\frac{N_{\rm wet}}{N_{\rm observed}},\qquad
+ I=\frac{\sum_i r_i}{N_{\rm wet}},\qquad \bar r=fI.
+\]
+A wet observation has $r_i>0$. Equal-year means are used for the seasonal monthly curves; diurnal summaries pool observed intervals. These weighting schemes are stated because they estimate different summaries. No total is scaled by inverse coverage to manufacture unobserved rainfall.
+
+For cross-year comparisons, eligible observations are matched by station and calendar month within each year pair. Station-month coordinate spans and between-period mean coordinates are screened at 0.005 degrees. The paired change is the average of within-station changes, with percentage change measured relative to the earlier pair mean. Plots suppress changes supported by fewer than five stations; this is a display rule, not a statistical significance threshold. All pair counts remain in the output. Annual comparisons require the full-year eligibility rule in both years.
+
+\subsection{Computing environment and reproducibility}
+\begin{table}[H]\small\centering\begin{tabular}{p{.29\linewidth}p{.62\linewidth}}\toprule Component & Recorded configuration\\\midrule
+Compute & Google Cloud Dataproc, asia-southeast1-c; one master and two workers\\
+VMs and disks & Each e2-standard-4: 4 vCPUs, 16 GB RAM, 80 GB pd-balanced boot disk\\
+Worker capacity & 8 vCPUs and 32 GB RAM; master resources are separate\\
+Runtime & Spark 3.5.3, Dataproc 2.2.87 Debian 12, PySpark on YARN\\
+Spark settings & 6 GB driver memory, 1 GB maximum driver result, 128 shuffle partitions, adaptive SQL, Asia/Singapore timezone\\
+Storage and graphics & Cloud Storage raw/Parquet/result tables; local Apple M2, 16 GB RAM; pandas, Matplotlib and Plotly\\\bottomrule\end{tabular}
+\caption{The Spark job performs record-level work. Only aggregated tables are downloaded for plotting.}\end{table}
+Run-specific source snapshots, metadata and validation outputs accompany \texttt{task1-v5}. Figures are generated as vector PDF/SVG and PNG previews. Report captions and references are typeset in LaTeX rather than embedded as miniature text in chart images.
+
+\clearpage
+\section{Monthly and seasonal rainfall patterns}
+\plot{05_monthly_amount}{Monthly mean observed station totals for all 2017--2024 year-months. A common linear colour scale supports magnitude comparisons. Grey cells lack qualified station-months and must not be read as dry weather.}{fig:monthly}
+\finding{Among eligible-year monthly averages, November has the largest mean amount (320.8 mm) and February the smallest (146.1 mm). Each year-month first averages its qualified stations; the seasonal average then weights available years equally.}
+\plot{06_seasonality}{Monthly amount, wet-interval frequency and conditional wet intensity. The shaded region is the observed minimum--maximum across eligible years, not a confidence interval.}{fig:seasonal}
+The seasonal distinction is not solely about intensity: a month can be wet because rain occurs more frequently, because individual wet intervals contain more rain, or both. MSS describes generally wetter conditions in November--January and a relatively dry February \cite{climate}. The present sample is a short, incomplete observational period, not an official climate normal. Calendar months also differ in length.
+
+\clearpage
+\subsection{The same month across eight years}
+\plot{07_monthly_trends}{Separate trajectories for every calendar month. Missing year-months break the lines. Vertical ranges differ between panels to reveal within-month variation; use Figure~\ref{fig:monthly} for comparisons of absolute magnitude between months.}{fig:trajectories}
+This view preserves usable observations separately for each calendar month. For example, an unsupported August 2018 does not remove the other seven Augusts, nor does it remove well-covered months in 2018. However, individual points can involve different station compositions, so changes in these descriptive curves are not automatically changes at fixed locations.
+\plot{09_paired_changes}{Adjacent-year monthly changes using common stable-location stations. Values are percentage changes in the pair's mean observed station amount. Grey denotes missing support or fewer than five common stations; the colour scale is centred on zero.}{fig:paired}
+For example, December 2024 is 43.7\% lower than the same month in 2023 among their 53 common stations (means 213.9 versus 379.8 mm). The pairing controls station identity for each comparison. It does not control unobserved rainfall within remaining gaps, and pair-specific panels differ. Consequently, these percentages are not chained to construct a national trend, and no significance claim is attached to them.
+
+\clearpage
+\section{Calendar-year rainfall totals}
+\plot{08_annual_totals}{Observed full-calendar-year amounts at eligible stations. Dots show individual stations and coral diamonds their mean; $n$ is the number of stations. Shaded columns mark years with no station meeting the annual and every-month completeness rules.}{fig:annual}
+\begin{table}[H]\centering\small\begin{tabular}{rrrr}\toprule Year & Qualified stations & Mean total (mm) & Mean coverage (\%)\\\midrule
+2017 & 9 & 2,396.6 & 98.03 \\
+2018 & 0 & --- & --- \\
+2019 & 0 & --- & --- \\
+2020 & 0 & --- & --- \\
+2021 & 0 & --- & --- \\
+2022 & 54 & 2,920.9 & 99.65 \\
+2023 & 0 & --- & --- \\
+2024 & 29 & 2,682.3 & 99.34 \\
+\bottomrule\end{tabular}\caption{Annual summaries describe the eligible network, not a sum over all stations or an area-weighted national measurement. Unsupported years remain in the calendar but have no qualifying mean.}\end{table}
+Only 2017, 2022, 2024 support this full-year summary under the stated thresholds. In 2017, 9 eligible stations have a mean observed total of 2,396.6 mm. In 2022, 54 eligible stations have a mean observed total of 2,920.9 mm. In 2024, 29 eligible stations have a mean observed total of 2,682.3 mm. These values use different station sets and therefore do not by themselves establish a like-for-like ordering of national annual rainfall.
+
+A calendar-year total is the sum of a station's valid five-minute amounts over January--December. Even eligible totals are observed amounts and retain residual gaps. Combining station totals by addition would make the result depend strongly on the number of gauges; the plotted network statistic is therefore a station mean. Spatially changing station sets are another reason not to infer a national wettest-year ranking from these values.
+
+The pairwise annual output also compares common eligible stations between supported years. 2017--2022 has 4 common stations and a mean within-station change of +299.8 mm (+12.7\%). 2017--2024 has 3 common stations and a mean within-station change of +161.5 mm (+6.6\%). 2022--2024 has 26 common stations and a mean within-station change of -284.8 mm (-9.6\%). This is a restricted geographical comparison and does not recover the missing annual totals in other years. Annual coverage alone is insufficient: a station can appear well covered overall while missing a concentrated part of a season, which motivates the additional monthly requirement.
+
+\clearpage
+\section{Diurnal behaviour and heavier daily rainfall}
+\plot{10_diurnal}{Wet-observation frequency by month and hour (left) and year and hour (right), in Singapore time. All eligible station-months contribute; values are weighted by observed intervals. The year curves can include different month mixes.}{fig:diurnal}
+Pooling valid intervals across the qualified month sample, wet frequency peaks at 15:00--15:59 (5.80\%) and is lowest at 23:00--23:59 (1.10\%). This is descriptive occurrence frequency, not a probability forecast for a future event. The source's incomplete time coverage and changing station mix remain relevant even after screening. The general afternoon enhancement is consistent with MSS's description of Singapore's daily rainfall pattern \cite{climate}; it does not establish the cause of a particular storm.
+\plot{11_daily_tails}{Monthly daily-rainfall P99 (upper) and wet station-day percentage (lower). Only days with at least 95\% coverage inside eligible station-months are included. Quantiles include dry days; wet means an observed daily amount above zero.}{fig:tails}
+High quantiles provide a data-derived description of the upper tail without declaring an arbitrary amount to be an official extreme threshold. They are approximate Spark quantiles of station-days, not independent storms or return levels. A high wet-day proportion and a high upper-tail amount need not coincide.
+
+\clearpage
+\section{Spatial patterns across the eight years}
+All 96 year-month combinations have station-map views. Figures~\ref{fig:spatialdec} and \ref{fig:regions} use December as a like-for-like calendar illustration; the gallery provides corresponding comparisons for every other month. All monthly maps use one linear scale over the full 96-period set, preserving comparability and retaining high values even when this reduces contrast among moderate observations.
+\plot{13_spatial_month_12}{December station observations across all eight years. Labels show qualified station counts. Colours represent observed monthly totals; the maps contain no interpolated rainfall.}{fig:spatialdec}
+\plot{15_regions_month_12}{December planning-area heatmaps across eight years. Each coloured polygon displays the arithmetic mean of assigned eligible stations; small dots show contributing locations. Grey means no supporting station, not zero rainfall.}{fig:regions}
+December maps retain between 41 and 69 qualified stations per year, providing geographical support throughout the study period. In December 2024, qualified station totals range from 29.5 mm at S224 to 326.8 mm at S117. This spread shows spatial heterogeneity within the observed network, not an area-weighted regional contrast. Uneven station placement and different month-specific networks preclude treating every coloured polygon as an equally reliable area-average measurement. Per-area station counts and assignments are retained in the supplementary CSVs; boundary or ambiguous points are excluded from polygon means rather than forced into a region.
+
+\clearpage
+\subsection{Spatial seasonality and annual support}
+\plot{14_spatial_year_2024}{All twelve months of 2024, the final study year. The same global monthly colour scale is used as in the eight-year comparisons. Other years have equivalent twelve-panel figures in the gallery.}{fig:spatialseason}
+Month-specific eligibility makes the twelve-month view possible without requiring every station to survive an eight-year intersection. Within a year, the qualified station set can still change between months; the displayed counts expose this. The complete interactive station map allows inspection of rainfall and coverage at individual sites for every supported period.
+\plot{16_annual_spatial}{Annual observations using the stricter full-year completeness rule. Unlike the monthly maps, several annual panels have no qualifying stations. Blank panels communicate the limit of annual evidence rather than restricting all spatial exploration to one selected year.}{fig:annualmaps}
+Boundary geometries are derived from the retained geoBoundaries/URA assets. Their vintage is older than parts of the observation period; coastal alignment and historical administrative definitions can affect assignments. We prioritise station observations and explicitly supported regional summaries over smooth interpolation that could imply more spatial information than was measured.
+
+\clearpage
+\section{Sensitivity, limitations and additional observations}
+\plot{12_sensitivity}{Seasonal amount and wet-frequency summaries repeated at three monthly coverage cutoffs. These compare rainfall results, not only the number of surviving samples. Each curve still uses its own eligible stations and years.}{fig:sensitivity}
+Comparing 80\% with 90\% on 85 shared year-months gives a median absolute change in monthly mean amount of 0.61\% and a maximum of 5.78\%. Comparing 95\% with 90\% on 84 shared year-months gives a median absolute change in monthly mean amount of 0.40\% and a maximum of 2.97\%. Comparing matched year-months isolates changes from the availability of whole months, but the contributing stations within them still change. Similar curves are evidence of stability for these particular descriptive summaries, not proof that missingness is ignorable or that all spatial and paired conclusions are robust.
+
+The principal limitations are: (i) source gaps may coincide with particular weather and are not known to be random; (ii) eight years are too short and incomplete here to establish a climate-change trend; (iii) station means are not area-weighted national rainfall; (iv) empirical tails can contain measurement or export errors; and (v) pairs and regional summaries have varying geographical support. High observations require review against independent sources before being presented as verified extreme events. Future work could compare an explicitly justified missing-data model against complete-period evidence, with uncertainty reported rather than concealed.
+
+These descriptive results motivate evaluating occurrence probabilities beyond accuracy and comparing station history with calendar features. The following predictive study uses complete local target windows rather than the strict eight-year station intersection.
+
+\clearpage
+\section{Task 2: predicting the next 30 minutes}
+\subsection{Prediction target and two information settings}
+The required query consists of a station $s$, prediction time $t$ and rainfall threshold $q$ in millimetres. We estimate a probability, not a single rainfall amount:
+\[
+Y_{s,t}=\sum_{j=1}^{6}r_{s,t+5j\,\mathrm{min}},\qquad
+p_{s,t}(q)=P(Y_{s,t}>q\mid X_{s,t}).
+\]
+We operationally treat each observation timestamp as its five-minute interval endpoint. This is an alignment assumption, not an independently verified instrument convention. Labels require all six exact future five-minute records; the next six available rows are not substituted across a gap. Amounts are rounded to 0.001 mm and exceedance is strictly greater than $q$. Every five-minute anchor can contribute, so adjacent labels overlap. Task 2 uses local window completeness, not Task 1's monthly coverage filter or an eight-year common-station intersection.
+
+\textbf{A: short-term risk.} The three query inputs are supplemented internally with available recent rainfall from that station. At issue time $t$, the fixed 10-minute latency policy uses interval endpoints $t-10,t-15,\ldots,t-65$ minutes. All 12 observations and both publication timestamps must be present and available by $t$. Missing history is rejected, not imputed as zero. This models a short-term forecast issued near $t$; no neighbour rain, radar or numerical weather forecasts are used.
+\plot{17_prediction_timeline}{Information available to A at issue time $t$. Points mark interval endpoints. The 60-minute history ends ten minutes before $t$; the six future intervals form the training label and are never predictors.}{fig:t2timeline}
+\textbf{B: calendar risk.} Only station/location and cyclic time features are used. The requested future date need not have recent observations. The result describes historical seasonal and diurnal risk, rather than the evolving weather of a particular future storm. This distinction allows an advance query, such as tonight at 21:00, without pretending that tonight's preceding rain is already observed.
+
+\begin{table}[H]\centering\small
+\begin{tabular}{p{.19\linewidth}p{.52\linewidth}p{.20\linewidth}}\toprule Feature group & Construction & Used by\\\midrule
+Station and place & Categorical station ID; latitude and longitude & A and B\\
+Time cycles & Sine/cosine of fractional hour and annual phase, accounting for leap years & A and B\\
+Recent amounts & Last three available five-minute amounts; 15/30/60-minute totals; 30-minute maximum & A only\\
+Persistence and trend & Wet count and dry fraction over 12 intervals; latest 15-minute total minus previous 15-minute total & A only\\\bottomrule\end{tabular}
+\caption{The input feature sets contain 16 numeric predictors for A and six for B, plus station ID. Numeric year is not a predictor of a climate trend. All A windows end at $t-10$ minutes.}\label{tab:t2features}\end{table}
+
+\clearpage
+\subsection{Chronological experiments and Spark MLlib models}
+Random row splitting would place highly overlapping windows on both sides of the split. We instead separate calendar years and purge any label whose target end reaches the next split boundary. Feature construction, fitting, calibration and full evaluation run in PySpark on the Dataproc environment described earlier: one e2-standard-4 master and two e2-standard-4 workers, Spark 3.5.3 on YARN. Training jobs use 128 SQL shuffle partitions, adaptive SQL and 6 GB driver memory. Local Python only analyses the downloaded sufficient statistics and draws figures.
+\begin{table}[H]\centering\small
+\begin{tabular}{lrrp{.32\linewidth}}\toprule Period & A anchors & B anchors & Role\\\midrule
+2017--2021 (full) & 18,688,263 & 27,434,001 & Empirical supports and baseline \\
+2017--2021 (15\%) & 2,802,737 & 4,115,222 & RF and binary fitting \\
+2022 & 6,133,684 & 7,107,898 & Model and cutoff selection \\
+2023 & 5,465,591 & 6,719,274 & RF temperature selection \\
+2024 & 5,729,508 & 6,374,476 & Final held-out evaluation \\
+\bottomrule\end{tabular}\caption{Usable anchors after local completeness and boundary purging. The forest and binary classifier fit a deterministic, label-independent 15\% training sample (seed 2026). Validation, calibration and test use every eligible anchor. Full training data supply empirical within-bin distributions and the historical-frequency baseline.}\label{tab:t2splits}\end{table}
+
+\textbf{Distributional random forest.} Spark MLlib classifies the next-30-minute amount into seven bins: $\{0\}$, $(0,1]$, $(1,2]$, $(2,5]$, $(5,10]$, $(10,20]$ and $(20,\infty)$ \cite{sparkml}. Station IDs are indexed as categorical features; numeric preprocessing is fitted within the training pipeline. A median imputer for numeric features does not override the complete-history admission rule. Forest probabilities $\pi_k(X)$ are converted to strict exceedance probabilities using the training-only empirical survival $\widehat S_k(q)$ within each bin:
+\[
+\widehat p(q\mid X)=\sum_{k=0}^{6}\widetilde\pi_k(X)\widehat S_k(q),\qquad
+\widetilde\pi_k=\frac{\pi_k^{1/T}}{\sum_\ell\pi_\ell^{1/T}}.
+\]
+This supports numeric query thresholds and makes the forest's output non-increasing in $q$. Within-bin rainfall shape is global, not conditional on the current weather. The supported tail stops at the largest training total, 71.8 mm; a zero beyond that support is a model limitation, not proof of impossibility.
+
+Both modes compare depths 5 and 8 with 40 trees, minimum 25 instances per node, square-root feature subsets and 0.8 subsampling. Selection minimises the mean validation Brier over seven thresholds $q=0,0.2,1,2,5,10,20$. Both choose depth 8. Temperature is selected on 2023 from $\{0.5,0.75,1,1.25,1.5,2\}$; both choose $T=1$, so no probability sharpening or flattening is applied.
+
+\textbf{Binary baseline.} Logistic regression predicts $\mathbf1(Y>q)$ using the same mode's features plus $q$, with one-hot station encoding, numeric scaling and L2 regularisation. Each sampled anchor is expanded to all seven training thresholds. Regularisation 0.01 wins against 0.1 for both modes on 2022. These probabilities are uncalibrated; unseen-threshold accuracy is not established by the seven evaluated queries.
+
+\textbf{Historical-frequency baseline.} Training-only station/month/hour event rates are shrunk towards the training global rate using 100 pseudo-observations; unseen groups fall back to the global rate. This is a substantive comparator for B, not merely an always-dry classifier.
+
+\clearpage
+\section{Predictive performance on held-out 2024 data}
+The primary probability score is $\mathrm{BS}=N^{-1}\sum_i(\widehat p_i-z_i)^2$ (lower is better), supplemented by log loss, PR-AUC, ROC-AUC and reliability tables. Spark AUC curves use 1,000-bin downsampling; PR-AUC is Spark's area-under-curve convention, not average precision \cite{sparkeval}. Small AUC differences between repeated tables can result from partition-dependent downsampling. Brier values are computed over all included observations.
+
+For a direct A/B comparison, both forests score the same 5,729,508 station-time anchors: 89.9\% of B's eligible test set. All retained labels agree. The models were trained on their respective eligible populations, so this compares the two fitted pipelines rather than a controlled feature ablation on identical training rows.
+\plot{18_common_comparison}{Common-anchor comparison. Left: relative Brier reduction of A versus B, with conditional 95\% seven-day block-bootstrap intervals. Right: PR-AUC and event prevalence on a logarithmic scale. Threshold positions are equally spaced categories.}{fig:t2common}
+\begin{table}[H]\centering\small
+\begin{tabular}{rrrrrr}\toprule $q$ (mm) & Event rate (\%) & Brier A & Brier B & PR-AUC A & PR-AUC B\\\midrule
+0 & 6.398 & 0.03798 & 0.05924 & 0.6091 & 0.1097 \\
+0.2 & 4.892 & 0.03090 & 0.04614 & 0.5582 & 0.0881 \\
+1 & 2.579 & 0.01870 & 0.02499 & 0.4215 & 0.0484 \\
+2 & 1.686 & 0.01349 & 0.01652 & 0.3155 & 0.0329 \\
+5 & 0.829 & 0.00732 & 0.00820 & 0.1885 & 0.0176 \\
+10 & 0.378 & 0.00354 & 0.00376 & 0.1020 & 0.0085 \\
+20 & 0.100 & 0.00098 & 0.00100 & 0.0304 & 0.0029 \\
+\bottomrule\end{tabular}\caption{Both forests evaluated on identical 2024 anchors. Exceeding 20 mm in 30 minutes is much rarer than any positive rain; a smaller raw Brier at a high threshold does not by itself imply a more useful model.}\label{tab:t2common}\end{table}
+\finding{The equal-threshold mean Brier is 0.01613 for A and 0.02283 for B: a 29.4\% relative reduction in probability squared error, not a percentage-point accuracy gain. At 1 mm, PR-AUC is 0.4215 versus 0.0484 on the shared sample.}
+The Brier reduction decreases from 35.9\% at 0 mm to 1.7\% at 20 mm. The fitted history-based pipeline performs better, especially for smaller thresholds. Rare upper-tail events remain difficult; the experiment does not separately identify errors caused by abrupt storm development. Results describe the observed eligible network, not all missing station-times.
+
+\clearpage
+\subsection{Baselines and calibration: where the gains come from}
+\begin{table}[H]\centering\small
+\begin{tabular}{llrrrr}\toprule Mode & Model & Mean Brier & \shortstack{PR-AUC\\$q=1$ mm} & \shortstack{ROC-AUC\\$q=1$ mm} & \shortstack{Log loss\\$q=1$ mm}\\\midrule
+A & Random forest & 0.01613 & 0.4218 & 0.8035 & 0.0824 \\
+A & Binary LR & 0.01944 & 0.3629 & 0.8607 & 0.0875 \\
+A & Historical frequency & 0.02270 & 0.0467 & 0.6645 & 0.1166 \\
+B & Random forest & 0.02274 & 0.0494 & 0.6823 & 0.1165 \\
+B & Binary LR & 0.02301 & 0.0428 & 0.6568 & 0.1165 \\
+B & Historical frequency & 0.02252 & 0.0516 & 0.6843 & 0.1146 \\
+\bottomrule\end{tabular}\caption{Within-mode baseline comparisons. A uses 5,729,508 anchors; B uses 6,374,476. Each mode's three models share its sample. For direct A/B conclusions use Table~\ref{tab:t2common}, not this different-population table.}\label{tab:t2baseline}\end{table}
+A's forest beats both baselines in mean Brier and at every evaluated rainfall threshold. However, it does not win every metric: at 1 mm, binary LR has ROC-AUC 0.8607 versus 0.8035 for the forest, while the forest has better PR-AUC, Brier and log loss. This illustrates why ROC-AUC alone is insufficient for selecting probabilities in a rare-event problem.
+\plot{19_baseline_skill}{Brier skill relative to each mode's historical-frequency baseline. Zero is equal performance; negative values are worse. A's LR baseline becomes worse than historical frequency at the larger rainfall thresholds. B's forest has small, threshold-dependent gains or losses.}{fig:t2baselines}
+B's historical-frequency baseline has mean Brier 0.02252, slightly better than its forest (0.02274) and binary LR (0.02301). The test set is used to report this limitation, not to retune the model. Greater model complexity has not established an overall advantage for the calendar-only information setting.
+\begingroup\renewcommand{\plot}[3]{\begin{figure}[H]\centering\includegraphics[width=0.90\linewidth]{#1.pdf}\caption{#2}\label{#3}\end{figure}}
+\plot{20_reliability}{Reliability at $q=1$ mm on the shared anchors. Each point summarises a fixed 0.1-wide probability bin; marker area increases with log sample count. Axes differ to expose B's two occupied low-probability bins. The diagonal is perfect bin-average calibration.}{fig:t2reliability}\endgroup
+A separates many probability levels, but several high-probability bins underpredict the observed event frequency. On its full eligible test set, mean predicted risk is 2.38\% versus 2.58\% observed, with ten-bin weighted absolute calibration error 0.196 percentage points. This small aggregate error does not establish fine-resolution calibration. B provides little event-specific discrimination.
+
+\clearpage
+\section{Diagnostics and operational interpretation}
+\plot{21_diagnostics}{Left: A's monthly Brier skill against its historical-frequency baseline at 1 mm. Right: six largest forest impurity importances. Importance is fitted-model attribution, not causal evidence or an independent feature-ablation experiment.}{fig:t2diagnostics}
+At 1 mm, A's Brier skill is positive in every month, ranging from 9.8\% to 33.9\%. It is also positive at all 70 evaluated stations, from 22.1\% to 41.9\%. These are descriptive subgroup point estimates; stations and months differ in event rates and sample sizes, so they are not rankings of intrinsic forecast difficulty.
+
+The leading predictors are the recent 15-minute total (27.9\%), 30-minute maximum (18.4\%), 60-minute total (15.1\%) and 60-minute dry fraction (14.7\%). Correlated totals share information; wet count and dry fraction are deterministically related. Their impurity importances cannot identify independent causal effects. The strong role of recent rain is consistent with the difference between a short-term conditional forecast and a calendar-only risk estimate.
+
+\subsection{Probabilities and alarm cutoffs answer different questions}
+The query threshold $q$ is a rainfall amount. An alarm cutoff $c$ is a probability, and predicts an exceedance when $\widehat p(q)\geq c$. Cutoffs are selected from a fixed candidate grid on 2022 F1, after applying the fixed 2023-selected temperature; 2024 is never used to choose them.
+\begin{table}[H]\centering\small
+\begin{tabular}{llrrrr}\toprule Model & Cutoff source & $c$ & Precision & Recall & F1\\\midrule
+A forest & Default & 0.5 & 0.693 & 0.247 & 0.364 \\
+A forest & Validation F1 & 0.2 & 0.474 & 0.464 & 0.469 \\
+A binary LR & Validation F1 & 0.2 & 0.449 & 0.371 & 0.406 \\
+B forest & Validation F1 & 0.025 & 0.041 & 0.757 & 0.078 \\
+\bottomrule\end{tabular}\caption{2024 decision performance at rainfall threshold 1 mm. A rows use its full eligible sample; B uses its own larger sample. Cutoff choice changes decisions, not the underlying probability scores.}\label{tab:t2decisions}\end{table}
+For A, reducing $c$ from 0.5 to the validation-selected 0.2 increases recall from 24.7\% to 46.4\%, while precision drops from 69.3\% to 47.4\%. B's selected 0.025 cutoff reaches high recall but only about 4.1\% precision: most alerts would be false positives. B makes no positive predictions at $c=0.5$. An always-negative prediction already achieves about 97.4\% accuracy at 1 mm, which is why accuracy is not our principal evidence of usefulness.
+
+\subsection{Uncertainty with overlapping labels}
+For the common-sample Brier comparison, we resample 2,000 circular moving-block replicates of seven consecutive calendar days (seed 2026), keeping all stations and thresholds together. Daily sums of squared errors and counts reconstruct the anchor-weighted score in each replicate. There are 363 supported dates; zero-count dates retain calendar gaps without creating rainfall observations. The conditional 95\% interval for the mean relative Brier reduction is 25.4--32.9\%. This addresses some temporal and spatial dependence in the fixed 2024 predictions; it does not include model-refitting uncertainty or guarantee future-year performance. Seven days is a chosen block length, not a verified storm-independence scale.
+
+\clearpage
+\section{Model use, limitations and reproducibility}
+\textbf{Which model should be used?} A is the stronger short-term model when recent published station data can be supplied. B can answer advance calendar-risk queries without recent observations, but the historical-frequency baseline is the stronger overall reference in this experiment. Neither model can guarantee a particular storm, and the calendar model does not become a real-time forecast merely by accepting a future timestamp.
+
+\textbf{Prediction interface.} Both modes accept station, Singapore prediction time on the five-minute grid, and a finite rainfall threshold. A additionally reads recent cleaned observations internally under its latency rule; unavailable history produces an explicit error rather than a hidden switch to B. B uses a station-location catalogue frozen from training. The 70 tested station IDs all occur in the 88-station training catalogue, so this experiment does not validate unseen-station generalisation. A 2026 prediction requires new observations; the 2017--2024 files alone cannot supply them. No automated real-time ingestion service is claimed.
+
+\textbf{Missingness and revisions.} History and future-window requirements select which weather periods can be evaluated. A covers 89.9\% of B's eligible 2024 anchors; excluded times may not be random. Historical publication metadata support a conservative availability check, but no archived as-of feed verifies every earlier data revision. Task 1's source gaps are not repaired here. Relocations and changing station networks can also shift the input distribution.
+
+\textbf{Tail and calibration limits.} The empirical within-bin shape is global, the largest training accumulation is 71.8 mm, and only seven nonnegative thresholds are evaluated. Monotonicity is not accuracy at arbitrary unseen thresholds. Both forests have zero threshold-order violations in the complete test audit; the two binary baselines also happen to have none on the evaluated grid, despite no explicit constraint. The selected temperature of 1 is not evidence of perfect calibration, and the LR probabilities have no separate calibration fit. Low rare-event Brier values must be interpreted alongside prevalence and PR-AUC.
+
+\textbf{Scope of conclusions.} The 2024 holdout measures temporal transfer from earlier years at observed stations. It does not establish climate-change extrapolation, performance at new stations, independence of the millions of overlapping windows, or performance in 2026. A and B use different eligible training populations and the forest includes several correlated history features. A controlled ablation, additional held-out years, alternative block lengths, better tail modelling and an operational as-of observation feed are useful next experiments. No extra model was selected by examining the 2024 test results.
+
+\textbf{Saved evidence and computing cost.} The submission retains trained forests, binary pipelines, empirical supports, station catalogues, baseline tables and evaluation evidence. Large feature tables can be regenerated from cleaned observations; their original Cloud Storage locations and preparation audits are recorded in the run metadata. Actual job records and source snapshots accompany the results. The completed training/selection/calibration/evaluation jobs took about 31.4 minutes for A and 48.3 minutes for B; these are not pure fitting times, and B preceded an equivalent AUC-computation optimisation used by A, so they are not a fair speed benchmark. All three final jobs completed successfully and the temporary cluster was deleted after outputs were saved.
+
+Both downloaded RF pipelines reproduce 140 cloud audit probabilities each with zero absolute difference; both binary pipelines reload and produce valid probabilities. Reusable analysis and report-generation scripts reconcile daily and aggregate metrics before producing the figures and report. Numerical outputs are real-data results; synthetic fixtures are confined to software tests.
+
+\finding{Recent published rainfall substantially improves next-30-minute exceedance estimates in this holdout. Station and calendar alone retain a useful risk interpretation, but the forest does not overall beat a simple historical-frequency baseline in that setting. The two models answer different information-availability questions, and their limits should accompany their probabilities.}
+
+\clearpage
+\section{Conclusion}
+Rainfall in the observed network varies across months, hours and locations, but incomplete source coverage limits what can be compared. November has the largest eligible-year mean monthly amount, and wet-interval frequency peaks in the afternoon. Full-year totals are supported only for 2017, 2022 and 2024 under the stated completeness rules. Monthly maps preserve broader evidence across all eight years without treating missing observations as dry weather or claiming national area-average rainfall.
+
+Recent station history provides the strongest predictive results in the 2024 holdout. A's mean Brier error is 0.01613 versus 0.02283 for B on identical anchors, a 29.4\% reduction, with a conditional seven-day block-bootstrap interval of 25.4--32.9\%. A also improves on the historical-frequency and logistic-regression baselines in mean Brier. Its advantage narrows for rare, high-amount events, and its probabilities are imperfectly calibrated. B supports future-date historical risk queries, but its forest does not overall improve on historical frequency.
+
+The practical distinction is the information available at issue time. Use A when recent published rainfall can be supplied and regard B as a calendar-risk estimate when it cannot. Neither model has been validated for unseen stations or future-year distribution shifts. Rolling-year evaluation, a controlled feature ablation and an operational as-of data feed are the main next steps; they are proposed extensions rather than completed experiments.
+
+\section{AI usage declaration}
+OpenAI Codex assisted with code development, cleaning diagnostics, Cloud execution, feature and model implementation, tests, figure design, evaluation analysis and drafting this report. Numerical claims were derived from saved real-data outputs and reconciled with audit tables; synthetic data were used only as software-test fixtures. AI-generated interpretation does not independently validate meteorological measurements or guarantee future prediction performance. The authors remain responsible for reviewing the implementation, numerical claims, interpretation and references in the submitted work.
+\begin{thebibliography}{9}
+\bibitem{data} National Environment Agency. \emph{Historical Rainfall across Singapore}, annual datasets 2017--2024. Data.gov.sg. \url{https://data.gov.sg/collections/2279/view}. Accessed 9 October 2026.
+\bibitem{climate} Meteorological Service Singapore. \emph{Climate of Singapore}. \url{https://www.weather.gov.sg/climate-climate-of-singapore/}. Accessed 9 October 2026.
+\bibitem{geo} geoBoundaries / Urban Redevelopment Authority. Singapore outline and 55 planning-area geometries. Provenance and licences retained in \texttt{assets/singapore.source.json} and \texttt{assets/planning\_areas.source.json}; planning-area source is based on URA Master Plan 2014 geometry.
+
+\bibitem{sparkml} Apache Spark. \emph{Classification and regression}, Spark 3.5.3 documentation. \url{https://dlcdn.apache.org/spark/docs/3.5.3/ml-classification-regression.html}. Accessed 9 October 2026.
+\bibitem{sparkeval} Apache Spark. \emph{BinaryClassificationMetrics}, Spark 3.5.3 Java API. \url{https://spark.apache.org/docs/3.5.3/api/java/org/apache/spark/mllib/evaluation/BinaryClassificationMetrics.html}. Accessed 9 October 2026.
+\end{thebibliography}
+\end{document}
