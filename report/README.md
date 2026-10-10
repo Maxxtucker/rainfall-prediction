@@ -4,7 +4,7 @@
 
 ## Build
 
-From the project root, with XeLaTeX and the Liberation Serif, Sans and Mono fonts installed (`fonts-liberation` on Debian/Ubuntu):
+From the project root, with XeLaTeX and either Liberation fonts (`fonts-liberation` on Debian/Ubuntu) or the TeX Gyre fallback fonts installed:
 
 ```bash
 python -m pip install -r requirements-report.txt
@@ -21,6 +21,7 @@ bash report/build.sh
 | Abstract and introduction | `sections/introduction.tex` |
 | Data preparation and computing environment | `sections/data.tex` |
 | Task 1 findings | `sections/weather.tex` |
+| Supplementary figures and captions | `sections/appendix.tex` |
 | Task 2 methods and original evaluation | `task2/section_template.tex` |
 | RF follow-up methods and findings | `task2/rf_sensitivity.template.tex` |
 | Discussion, conclusion and AI declaration | `sections/discussion.tex` |

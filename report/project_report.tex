@@ -1,9 +1,9 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage[margin=22mm,headheight=15pt]{geometry}
 \usepackage{fontspec}
-\setmainfont{Liberation Serif}
-\setsansfont{Liberation Sans}
-\setmonofont{Liberation Mono}[Scale=MatchLowercase]
+\IfFontExistsTF{Liberation Serif}{\setmainfont{Liberation Serif}}{\setmainfont{texgyretermes-regular.otf}[BoldFont=texgyretermes-bold.otf,ItalicFont=texgyretermes-italic.otf,BoldItalicFont=texgyretermes-bolditalic.otf]}
+\IfFontExistsTF{Liberation Sans}{\setsansfont{Liberation Sans}}{\setsansfont{texgyreheros-regular.otf}[BoldFont=texgyreheros-bold.otf,ItalicFont=texgyreheros-italic.otf,BoldItalicFont=texgyreheros-bolditalic.otf]}
+\IfFontExistsTF{Liberation Mono}{\setmonofont{Liberation Mono}[Scale=MatchLowercase]}{\setmonofont{texgyrecursor-regular.otf}[BoldFont=texgyrecursor-bold.otf,ItalicFont=texgyrecursor-italic.otf,BoldItalicFont=texgyrecursor-bolditalic.otf,Scale=MatchLowercase]}
 \usepackage{graphicx,booktabs,array,amsmath,xcolor,hyperref,fancyhdr,caption,titlesec,microtype,tabularx,placeins}
 \definecolor{ink}{HTML}{213B48}
 \definecolor{teal}{HTML}{086D78}
@@ -70,7 +70,7 @@ The report follows these two questions from data preparation to results. Spark h
 \subsection{What the records contain}
 We use the eight annual Historical Rainfall across Singapore datasets for 2017--2024. Each observation contains a station identifier, coordinates, a timestamp, rainfall in millimetres and update metadata. All times are interpreted in Singapore time. The measurement is an amount accumulated over a five-minute interval, rather than a rainfall rate. The publisher cautions that records may be missing and have not undergone the quality control applied to official climate records \cite{data}.
 
-The cleaned dataset contains 48,538,625 observations from 91 station IDs. Recorded zeros account for 97.08\% of observations, while positive amounts have a long upper tail (Figure~\ref{fig:profile}). We therefore examine how often rain occurs separately from how much falls during wet intervals. A zero is a measurement of no rain; a missing record provides no such information.
+The cleaned dataset contains 48,538,625 observations from 91 station IDs. Recorded zeros account for 97.08\% of observations, while positive amounts have a long upper tail (Figure~\ref{fig:profile}). We therefore examine how often rain occurs separately from how much falls during wet intervals. A zero is a measurement of no rain; a missing record provides no such information. Appendix~\ref{app:data} provides the positive-rainfall distribution and a raw-versus-clean source-gap example.
 
 \plot{01_data_profile}{The observation sample by year: record counts, the percentage of recorded zeros, and quantiles of positive five-minute rainfall. Positive-rainfall quantiles exclude dry intervals.}{fig:profile}
 
@@ -149,6 +149,8 @@ Rainfall also varies substantially across monitoring locations. In December 2024
 \subsection{How sensitive are these summaries to coverage?}
 
 Changing the monthly coverage cutoff produces relatively small changes in the supported monthly means. Relative to the 90\% cutoff, using 80\% gives a median absolute change of 0.61\% across 85 shared year-months, with a maximum of 5.78\%. Using 95\% gives a median change of 0.40\% across 84 shared year-months, with a maximum of 2.97\%. This is reassuring for the descriptive amount summaries, although each cutoff changes the contributing stations. It does not establish that missing observations are random. Residual gaps, uneven station coverage and the short study period remain the main reasons to treat these findings as patterns in the available observations rather than evidence of long-term climate change.
+
+Appendices~\ref{app:temporal}--\ref{app:spatial} retain monthly trajectories, annual station totals, daily-rainfall summaries, coverage-sensitivity curves and additional spatial views. They supplement the principal comparisons without requiring all stations to qualify in all eight years.
 
 \FloatBarrier
 \section{Predicting the next 30 minutes}
@@ -248,6 +250,8 @@ A distinguishes a wider range of risks, but several high-probability bins undere
 
 Finally, a rainfall threshold and an alarm cutoff are different choices. At $q=1$ mm, changing A's probability cutoff from 0.5 to the validation-selected 0.2 raises recall from 24.7\% to 46.4\%, while precision falls from 69.3\% to 47.4\%. Cutoffs are selected by 2022 F1 after fixing the 2023 temperature, without using 2024 outcomes. An always-negative rule already achieves about 97.4\% accuracy here, which is why probability quality and the precision--recall tradeoff are more informative than accuracy.
 
+Appendix~\ref{app:prediction} provides threshold-specific baseline skill, monthly skill and feature-importance diagnostics for the original evaluated models.
+
 \FloatBarrier
 \section{Does a larger training sample improve the forest?}\label{sec:rfsensitivity}
 
@@ -306,4 +310,43 @@ OpenAI Codex assisted with code development, data-cleaning diagnostics, cloud ex
 \bibitem{sparkeval} Apache Spark. \emph{BinaryClassificationMetrics}, Spark 3.5.3 Java API. \url{https://spark.apache.org/docs/3.5.3/api/java/org/apache/spark/mllib/evaluation/BinaryClassificationMetrics.html}. Accessed 9 October 2026.
 \end{thebibliography}
 \endgroup
+\clearpage
+\appendix
+\numberwithin{figure}{section}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{\Alph{section}.\arabic{figure}}
+\section{Distribution and source-gap evidence}\label{app:data}
+These supplementary figures separate the distribution of measured rain from the absence of measurements. They support the data-quality discussion without treating an unrecorded interval as dry weather.
+\plot{02_positive_distribution}{Distribution of positive five-minute rainfall across 2017--2024. Bars give the share of positive observations in log-spaced bins; the horizontal axis is logarithmic. Recorded zeros are excluded. The long upper tail motivates evaluating rare accumulations separately.}{fig:appdistribution}
+\plot{04_source_gap}{Daily network-wide raw and cleaned record counts in August 2018. The absence of observations on 4--31 August is already present in the source file. The cleaning process therefore does not explain this gap, and this figure does not identify its upstream cause.}{fig:appgap}
+\FloatBarrier
+
+\clearpage
+\section{Monthly trajectories and annual support}\label{app:temporal}
+The monthly trajectories retain usable periods individually. The annual plot applies the stricter full-year rule, showing why monthly evidence is more extensive than annual evidence.
+\plot{07_monthly_trends}{Mean observed monthly station totals, with a separate trajectory for each calendar month. Missing year-months break the lines. Vertical ranges differ across panels; use the main monthly heatmap to compare absolute amounts between months. Station composition can change between points, so these are descriptive network trajectories.}{fig:apptrajectories}
+\plot{08_annual_totals}{Observed calendar-year totals at eligible stations. Points show station totals, coral diamonds their mean, and $n$ the contributing station count. Grey columns have no station meeting annual coverage of at least 95\% and coverage of at least 90\% in every month. The three supported years use different station sets and do not establish a national wettest-year ranking.}{fig:appannual}
+\FloatBarrier
+
+\clearpage
+\section{Daily rainfall and coverage sensitivity}\label{app:robustness}
+Daily upper-tail amounts and wet-day frequencies describe different aspects of rainfall. The sensitivity curves show how changing the completeness rule affects seasonal summaries, while retaining the limitations of the observed network.
+\plot{11_daily_tails}{Monthly daily-rainfall P99 (upper) and wet station-day percentage (lower). Included days have at least 95\% daily coverage within eligible station-months. Quantiles include dry days; wet means observed daily rainfall above zero. P99 is an approximate Spark quantile of station-days, not an independent-storm return level. Grey cells lack qualifying support.}{fig:apptails}
+\plot{12_sensitivity}{Seasonal mean amount and wet-interval frequency under 80\%, 90\% and 95\% monthly coverage cutoffs. Each curve uses its own eligible stations and equally weighted available years. Similar curves support the stability of these summaries under the tested cutoffs; they do not establish random missingness.}{fig:appsensitivity}
+\FloatBarrier
+
+\clearpage
+\section{Additional spatial views}\label{app:spatial}
+The twelve-month view complements the main December comparison. Regional colours summarise contributing gauges and should be read together with their locations and coverage.
+\plot{14_spatial_year_2024}{All twelve months of 2024. Colours show observed monthly totals at qualified stations, and $n$ gives their number. The original gallery's global monthly colour scale is retained; it differs from the December-only scale in the main text. The eligible network changes by month, and no rainfall is interpolated between gauges.}{fig:appspatialseason}
+\plot{15_regions_month_12}{December planning-area station means across eight years. Each coloured polygon shows the arithmetic mean of its assigned eligible stations; dots show contributing locations. Grey means no supporting station, not zero rainfall. The original regional scale is retained. These are gauge summaries, not area-weighted rainfall estimates; station counts and placements affect their representativeness.}{fig:appregions}
+\FloatBarrier
+
+\clearpage
+\section{Additional predictive diagnostics}\label{app:prediction}
+These figures retain the threshold-specific baseline comparison and diagnostics for the original evaluated models. They do not evaluate the later sensitivity candidates on the final test set.
+\plot{19_baseline_skill}{Brier skill relative to each mode's historical-frequency baseline on its own eligible 2024 test population. Positive values indicate lower error than the baseline; zero indicates equal error. A's random forest improves on the baseline at every evaluated threshold, whereas A's logistic regression deteriorates at larger thresholds. B's forest has small, threshold-dependent gains and losses. The two panels use different eligible populations.}{fig:appbaselines}
+\plot{21_diagnostics}{Left: A's monthly Brier skill relative to historical frequency at a rainfall threshold of 1 mm in 2024. Right: its six largest random-forest impurity importances. Positive monthly skill describes this holdout. Correlated rainfall summaries share information, so importance does not identify an independent feature effect or establish causation.}{fig:appdiagnostics}
+\FloatBarrier
+
 \end{document}

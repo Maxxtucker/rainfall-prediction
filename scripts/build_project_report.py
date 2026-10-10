@@ -124,7 +124,7 @@ def render_task2(facts, results_root):
 
 def assemble_report(task2, sensitivity):
     sections = {'TASK2': task2, 'RF_SENSITIVITY': sensitivity}
-    for name in ('introduction', 'data', 'weather', 'discussion'):
+    for name in ('introduction', 'data', 'weather', 'discussion', 'appendix'):
         sections[name.upper()] = (ROOT / 'report/sections' / (name + '.tex')).read_text()
 
     report = (ROOT / 'report/project_report.template.tex').read_text()

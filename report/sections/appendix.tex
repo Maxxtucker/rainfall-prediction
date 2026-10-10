@@ -1,0 +1,38 @@
+\clearpage
+\appendix
+\numberwithin{figure}{section}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{\Alph{section}.\arabic{figure}}
+\section{Distribution and source-gap evidence}\label{app:data}
+These supplementary figures separate the distribution of measured rain from the absence of measurements. They support the data-quality discussion without treating an unrecorded interval as dry weather.
+\plot{02_positive_distribution}{Distribution of positive five-minute rainfall across 2017--2024. Bars give the share of positive observations in log-spaced bins; the horizontal axis is logarithmic. Recorded zeros are excluded. The long upper tail motivates evaluating rare accumulations separately.}{fig:appdistribution}
+\plot{04_source_gap}{Daily network-wide raw and cleaned record counts in August 2018. The absence of observations on 4--31 August is already present in the source file. The cleaning process therefore does not explain this gap, and this figure does not identify its upstream cause.}{fig:appgap}
+\FloatBarrier
+
+\clearpage
+\section{Monthly trajectories and annual support}\label{app:temporal}
+The monthly trajectories retain usable periods individually. The annual plot applies the stricter full-year rule, showing why monthly evidence is more extensive than annual evidence.
+\plot{07_monthly_trends}{Mean observed monthly station totals, with a separate trajectory for each calendar month. Missing year-months break the lines. Vertical ranges differ across panels; use the main monthly heatmap to compare absolute amounts between months. Station composition can change between points, so these are descriptive network trajectories.}{fig:apptrajectories}
+\plot{08_annual_totals}{Observed calendar-year totals at eligible stations. Points show station totals, coral diamonds their mean, and $n$ the contributing station count. Grey columns have no station meeting annual coverage of at least 95\% and coverage of at least 90\% in every month. The three supported years use different station sets and do not establish a national wettest-year ranking.}{fig:appannual}
+\FloatBarrier
+
+\clearpage
+\section{Daily rainfall and coverage sensitivity}\label{app:robustness}
+Daily upper-tail amounts and wet-day frequencies describe different aspects of rainfall. The sensitivity curves show how changing the completeness rule affects seasonal summaries, while retaining the limitations of the observed network.
+\plot{11_daily_tails}{Monthly daily-rainfall P99 (upper) and wet station-day percentage (lower). Included days have at least 95\% daily coverage within eligible station-months. Quantiles include dry days; wet means observed daily rainfall above zero. P99 is an approximate Spark quantile of station-days, not an independent-storm return level. Grey cells lack qualifying support.}{fig:apptails}
+\plot{12_sensitivity}{Seasonal mean amount and wet-interval frequency under 80\%, 90\% and 95\% monthly coverage cutoffs. Each curve uses its own eligible stations and equally weighted available years. Similar curves support the stability of these summaries under the tested cutoffs; they do not establish random missingness.}{fig:appsensitivity}
+\FloatBarrier
+
+\clearpage
+\section{Additional spatial views}\label{app:spatial}
+The twelve-month view complements the main December comparison. Regional colours summarise contributing gauges and should be read together with their locations and coverage.
+\plot{14_spatial_year_2024}{All twelve months of 2024. Colours show observed monthly totals at qualified stations, and $n$ gives their number. The original gallery's global monthly colour scale is retained; it differs from the December-only scale in the main text. The eligible network changes by month, and no rainfall is interpolated between gauges.}{fig:appspatialseason}
+\plot{15_regions_month_12}{December planning-area station means across eight years. Each coloured polygon shows the arithmetic mean of its assigned eligible stations; dots show contributing locations. Grey means no supporting station, not zero rainfall. The original regional scale is retained. These are gauge summaries, not area-weighted rainfall estimates; station counts and placements affect their representativeness.}{fig:appregions}
+\FloatBarrier
+
+\clearpage
+\section{Additional predictive diagnostics}\label{app:prediction}
+These figures retain the threshold-specific baseline comparison and diagnostics for the original evaluated models. They do not evaluate the later sensitivity candidates on the final test set.
+\plot{19_baseline_skill}{Brier skill relative to each mode's historical-frequency baseline on its own eligible 2024 test population. Positive values indicate lower error than the baseline; zero indicates equal error. A's random forest improves on the baseline at every evaluated threshold, whereas A's logistic regression deteriorates at larger thresholds. B's forest has small, threshold-dependent gains and losses. The two panels use different eligible populations.}{fig:appbaselines}
+\plot{21_diagnostics}{Left: A's monthly Brier skill relative to historical frequency at a rainfall threshold of 1 mm in 2024. Right: its six largest random-forest impurity importances. Positive monthly skill describes this holdout. Correlated rainfall summaries share information, so importance does not identify an independent feature effect or establish causation.}{fig:appdiagnostics}
+\FloatBarrier

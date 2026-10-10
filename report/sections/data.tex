@@ -3,7 +3,7 @@
 \subsection{What the records contain}
 We use the eight annual Historical Rainfall across Singapore datasets for 2017--2024. Each observation contains a station identifier, coordinates, a timestamp, rainfall in millimetres and update metadata. All times are interpreted in Singapore time. The measurement is an amount accumulated over a five-minute interval, rather than a rainfall rate. The publisher cautions that records may be missing and have not undergone the quality control applied to official climate records \cite{data}.
 
-The cleaned dataset contains 48,538,625 observations from 91 station IDs. Recorded zeros account for 97.08\% of observations, while positive amounts have a long upper tail (Figure~\ref{fig:profile}). We therefore examine how often rain occurs separately from how much falls during wet intervals. A zero is a measurement of no rain; a missing record provides no such information.
+The cleaned dataset contains 48,538,625 observations from 91 station IDs. Recorded zeros account for 97.08\% of observations, while positive amounts have a long upper tail (Figure~\ref{fig:profile}). We therefore examine how often rain occurs separately from how much falls during wet intervals. A zero is a measurement of no rain; a missing record provides no such information. Appendix~\ref{app:data} provides the positive-rainfall distribution and a raw-versus-clean source-gap example.
 
 \plot{01_data_profile}{The observation sample by year: record counts, the percentage of recorded zeros, and quantiles of positive five-minute rainfall. Positive-rainfall quantiles exclude dry intervals.}{fig:profile}
 

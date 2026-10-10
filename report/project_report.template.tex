@@ -1,9 +1,9 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage[margin=22mm,headheight=15pt]{geometry}
 \usepackage{fontspec}
-\setmainfont{Liberation Serif}
-\setsansfont{Liberation Sans}
-\setmonofont{Liberation Mono}[Scale=MatchLowercase]
+\IfFontExistsTF{Liberation Serif}{\setmainfont{Liberation Serif}}{\setmainfont{texgyretermes-regular.otf}[BoldFont=texgyretermes-bold.otf,ItalicFont=texgyretermes-italic.otf,BoldItalicFont=texgyretermes-bolditalic.otf]}
+\IfFontExistsTF{Liberation Sans}{\setsansfont{Liberation Sans}}{\setsansfont{texgyreheros-regular.otf}[BoldFont=texgyreheros-bold.otf,ItalicFont=texgyreheros-italic.otf,BoldItalicFont=texgyreheros-bolditalic.otf]}
+\IfFontExistsTF{Liberation Mono}{\setmonofont{Liberation Mono}[Scale=MatchLowercase]}{\setmonofont{texgyrecursor-regular.otf}[BoldFont=texgyrecursor-bold.otf,ItalicFont=texgyrecursor-italic.otf,BoldItalicFont=texgyrecursor-bolditalic.otf,Scale=MatchLowercase]}
 \usepackage{graphicx,booktabs,array,amsmath,xcolor,hyperref,fancyhdr,caption,titlesec,microtype,tabularx,placeins}
 \definecolor{ink}{HTML}{213B48}
 \definecolor{teal}{HTML}{086D78}
@@ -73,4 +73,5 @@
 \bibitem{sparkeval} Apache Spark. \emph{BinaryClassificationMetrics}, Spark 3.5.3 Java API. \url{https://spark.apache.org/docs/3.5.3/api/java/org/apache/spark/mllib/evaluation/BinaryClassificationMetrics.html}. Accessed 9 October 2026.
 \end{thebibliography}
 \endgroup
+@@APPENDIX@@
 \end{document}

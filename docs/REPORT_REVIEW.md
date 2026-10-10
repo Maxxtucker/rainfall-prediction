@@ -50,3 +50,7 @@ The earlier narrative rewrite and the new RF evidence now share one maintained r
 The revision distinguishes three comparisons: changing only the sample size, changing one RF setting at 15%, and increasing the sample for the selected setting. It reports the small gains in their numerical scale and does not infer unchanged PR-AUC or calibration from Brier alone. The discussion acknowledges that this follow-up occurred after the original test results were available; it is not presented as a predeclared blind study.
 
 The December maps use a common scale, and the reliability panel includes bin counts so sparse probability bins are visible. The report keeps its AI declaration and blank group details for the authors to complete. Verification for this revision is recorded separately in `VALIDATION.md`; no new training or final-test run was performed.
+
+## Supplementary figures restored, 10 October 2026
+
+Ten retained figures are assembled from `report/sections/appendix.tex` into five appendices: distribution/source gap, monthly/annual summaries, daily tails/coverage sensitivity, spatial views, and predictive diagnostics. Main-text cross-references point to these sections. Captions distinguish changing station sets, unsupported periods, gauge summaries, and conditional model diagnostics. The canonical template uses TeX Gyre file-based fallbacks if Liberation fonts are unavailable. The updated PDF was compiled locally and its appendix pages rendered for layout review.

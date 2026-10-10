@@ -4,9 +4,9 @@
   "figures": "figures/task1-v5-report",
   "report": "report/project_report.pdf",
   "source_archive_sha256": "d0f5110166032837a15a4cdbfa88dfb750a4f368ed4b1a1f2e7fc0fd40e17fab",
-  "report_sha256": "ffd99f94fb51e6e76aec7d8675fbcbf49086c254738852eefc36116f99ae0b02",
+  "report_sha256": "7ddb8bf311fe1441e0e6b360b9c3c323d1f9523ee92432836a6508db94b3dd2a",
   "numeric_validation": "passed; see validation.json",
-  "visual_review": "Combined 19-page report; new sensitivity page and changed pages rendered and reviewed on 2026-10-10",
+  "visual_review": "Combined 19-page report; five supplementary-figure appendix pages rendered and reviewed on 2026-10-10",
   "figure_count": 46,
   "original_task1_report": {
     "path_at_time_of_run": "report/task1/task1_report.pdf",
