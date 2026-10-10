@@ -1,0 +1,62 @@
+{
+  "done": true,
+  "driverControlFilesUri": "gs://rainfall-project-511007-rainfall-maxiaoxiao/google-cloud-dataproc-metainfo/8317843e-b653-4609-9e52-1468cc39cb2d/jobs/c134bedcdc4845408364f12c6bef9576/",
+  "driverOutputResourceUri": "gs://rainfall-project-511007-rainfall-maxiaoxiao/google-cloud-dataproc-metainfo/8317843e-b653-4609-9e52-1468cc39cb2d/jobs/c134bedcdc4845408364f12c6bef9576/driveroutput",
+  "jobUuid": "34f814b6-8d0a-369d-bac0-50973d300d6c",
+  "placement": {
+    "clusterName": "rainfall-spark",
+    "clusterUuid": "8317843e-b653-4609-9e52-1468cc39cb2d"
+  },
+  "pysparkJob": {
+    "args": [
+      "--data",
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/task2-dual-v1/data",
+      "--models",
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/task2-dual-v2/models",
+      "--output",
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/rf-sensitivity-20261010"
+    ],
+    "mainPythonFileUri": "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/rf-sensitivity-20261010/source/rf_sensitivity.py",
+    "properties": {
+      "spark.driver.maxResultSize": "1g",
+      "spark.driver.memory": "6g",
+      "spark.sql.session.timeZone": "Asia/Singapore"
+    },
+    "pythonFileUris": [
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/rf-sensitivity-20261010/source/rainfall.zip"
+    ]
+  },
+  "reference": {
+    "jobId": "c134bedcdc4845408364f12c6bef9576",
+    "projectId": "rainfall-project-511007"
+  },
+  "status": {
+    "state": "DONE",
+    "stateStartTime": "2026-10-09T16:59:33.285316Z"
+  },
+  "statusHistory": [
+    {
+      "state": "PENDING",
+      "stateStartTime": "2026-10-09T16:16:57.154409Z"
+    },
+    {
+      "state": "SETUP_DONE",
+      "stateStartTime": "2026-10-09T16:16:57.243375Z"
+    },
+    {
+      "details": "Agent reported job success",
+      "state": "RUNNING",
+      "stateStartTime": "2026-10-09T16:16:57.685536Z"
+    }
+  ],
+  "yarnApplications": [
+    {
+      "memoryMbSeconds": "51379331",
+      "name": "Rainfall RF sensitivity: validation only",
+      "progress": 1.0,
+      "state": "FINISHED",
+      "trackingUrl": "http://rainfall-spark-m.asia-southeast1-c.c.rainfall-project-511007.internal.:8088/proxy/application_1791562542352_0001/",
+      "vcoreSeconds": "15172"
+    }
+  ]
+}

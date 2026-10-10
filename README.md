@@ -100,6 +100,8 @@ Use fresh run names: jobs reject existing destinations. Verify outputs are safel
 
 ## Model and evaluation design
 
+The follow-up nested 15%/30% sampling comparison and expanded RF search use 2022 validation only; the original final models are preserved. Protocol and reproducible commands: [docs/RF_SENSITIVITY.md](docs/RF_SENSITIVITY.md). This experiment does not retune against 2024 test results.
+
 The target is the sum at exactly t+5,…,t+30 minutes; all six labels must exist. A and B use different eligible training populations. Train: 2017–2021; select hyperparameters: 2022; RF temperature: 2023; final test: 2024. Labels crossing the next split boundary are purged. Fitting uses a deterministic label-independent 15% training sample; validation, calibration and test retain every eligible anchor. Seven thresholds are evaluated: 0, 0.2, 1, 2, 5, 10 and 20 mm.
 
 RF models estimate seven amount-bin probabilities and combine them with training-only empirical within-bin survival. Binary logistic regression takes the mode's features plus rainfall threshold. A smoothed station/month/hour historical-frequency baseline provides a substantive comparator. A/B paired comparison uses 5,729,508 identical test anchors. On this sample mean Brier is 0.01613 for A and 0.02283 for B (29.4% reduction). B's forest does not overall beat historical frequency on its own test population. These are 2024 results, not guarantees for 2026 or unseen stations. See [docs/TASK2_CALENDAR_RISK.md](docs/TASK2_CALENDAR_RISK.md).

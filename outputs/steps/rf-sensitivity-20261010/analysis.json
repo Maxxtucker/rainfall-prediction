@@ -1,0 +1,101 @@
+{
+  "comparisons": [
+    {
+      "mode": "short_term",
+      "reference": "original15",
+      "candidate": "sample30",
+      "reference_brier": 0.016697500199732294,
+      "candidate_brier": 0.016695444468450792,
+      "relative_improvement_percent": 0.012311611061004193,
+      "conditional_95_percent_interval": [
+        -0.01377856621053564,
+        0.0387870808425161
+      ],
+      "bootstrap_repetitions": 2000,
+      "calendar_block_days": 7,
+      "seed": 2026,
+      "year": 2022
+    },
+    {
+      "mode": "short_term",
+      "reference": "original15",
+      "candidate": "depth10",
+      "reference_brier": 0.016697500199732294,
+      "candidate_brier": 0.016647452800634135,
+      "relative_improvement_percent": 0.2997298906992118,
+      "conditional_95_percent_interval": [
+        0.21251341093171802,
+        0.38920942349970034
+      ],
+      "bootstrap_repetitions": 2000,
+      "calendar_block_days": 7,
+      "seed": 2026,
+      "year": 2022
+    },
+    {
+      "mode": "short_term",
+      "reference": "depth10",
+      "candidate": "selected30",
+      "reference_brier": 0.016647452800634135,
+      "candidate_brier": 0.016637654740804093,
+      "relative_improvement_percent": 0.05885621030064631,
+      "conditional_95_percent_interval": [
+        0.03613452140601171,
+        0.08230624666034227
+      ],
+      "bootstrap_repetitions": 2000,
+      "calendar_block_days": 7,
+      "seed": 2026,
+      "year": 2022
+    },
+    {
+      "mode": "calendar",
+      "reference": "original15",
+      "candidate": "sample30",
+      "reference_brier": 0.023327331987027182,
+      "candidate_brier": 0.023328002603291712,
+      "relative_improvement_percent": -0.0028748091076303104,
+      "conditional_95_percent_interval": [
+        -0.07005760172474869,
+        0.04712371865223384
+      ],
+      "bootstrap_repetitions": 2000,
+      "calendar_block_days": 7,
+      "seed": 2026,
+      "year": 2022
+    },
+    {
+      "mode": "calendar",
+      "reference": "original15",
+      "candidate": "features_half",
+      "reference_brier": 0.023327331987027182,
+      "candidate_brier": 0.023316738268650557,
+      "relative_improvement_percent": 0.04541333051939523,
+      "conditional_95_percent_interval": [
+        -0.08925472929952419,
+        0.12366995007034189
+      ],
+      "bootstrap_repetitions": 2000,
+      "calendar_block_days": 7,
+      "seed": 2026,
+      "year": 2022
+    },
+    {
+      "mode": "calendar",
+      "reference": "features_half",
+      "candidate": "selected30",
+      "reference_brier": 0.023316738268650557,
+      "candidate_brier": 0.02330796612196528,
+      "relative_improvement_percent": 0.03762167154001065,
+      "conditional_95_percent_interval": [
+        -0.09163972499410762,
+        0.1479577727679453
+      ],
+      "bootstrap_repetitions": 2000,
+      "calendar_block_days": 7,
+      "seed": 2026,
+      "year": 2022
+    }
+  ],
+  "test_accessed": false
+}

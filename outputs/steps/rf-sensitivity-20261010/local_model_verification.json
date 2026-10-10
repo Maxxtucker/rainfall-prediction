@@ -1,0 +1,174 @@
+{
+  "passed": true,
+  "models": [
+    {
+      "mode": "short_term",
+      "candidate": "sample30",
+      "pipeline_reloaded": true,
+      "parameters": {
+        "trees": 40,
+        "depth": 8,
+        "min_instances_per_node": 25,
+        "feature_subset_strategy": "sqrt",
+        "subsampling_rate": 0.8,
+        "seed": 2026
+      },
+      "train_sample": 5608769
+    },
+    {
+      "mode": "short_term",
+      "candidate": "depth10",
+      "pipeline_reloaded": true,
+      "parameters": {
+        "trees": 40,
+        "depth": 10,
+        "min_instances_per_node": 25,
+        "feature_subset_strategy": "sqrt",
+        "subsampling_rate": 0.8,
+        "seed": 2026
+      },
+      "train_sample": 2802737
+    },
+    {
+      "mode": "short_term",
+      "candidate": "trees80",
+      "pipeline_reloaded": true,
+      "parameters": {
+        "trees": 80,
+        "depth": 8,
+        "min_instances_per_node": 25,
+        "feature_subset_strategy": "sqrt",
+        "subsampling_rate": 0.8,
+        "seed": 2026
+      },
+      "train_sample": 2802737
+    },
+    {
+      "mode": "short_term",
+      "candidate": "leaf50",
+      "pipeline_reloaded": true,
+      "parameters": {
+        "trees": 40,
+        "depth": 8,
+        "min_instances_per_node": 50,
+        "feature_subset_strategy": "sqrt",
+        "subsampling_rate": 0.8,
+        "seed": 2026
+      },
+      "train_sample": 2802737
+    },
+    {
+      "mode": "short_term",
+      "candidate": "features_half",
+      "pipeline_reloaded": true,
+      "parameters": {
+        "trees": 40,
+        "depth": 8,
+        "min_instances_per_node": 25,
+        "feature_subset_strategy": "0.5",
+        "subsampling_rate": 0.8,
+        "seed": 2026
+      },
+      "train_sample": 2802737
+    },
+    {
+      "mode": "short_term",
+      "candidate": "selected30",
+      "pipeline_reloaded": true,
+      "parameters": {
+        "trees": 40,
+        "depth": 10,
+        "min_instances_per_node": 25,
+        "feature_subset_strategy": "sqrt",
+        "subsampling_rate": 0.8,
+        "seed": 2026
+      },
+      "train_sample": 5608769
+    },
+    {
+      "mode": "calendar",
+      "candidate": "sample30",
+      "pipeline_reloaded": true,
+      "parameters": {
+        "trees": 40,
+        "depth": 8,
+        "min_instances_per_node": 25,
+        "feature_subset_strategy": "sqrt",
+        "subsampling_rate": 0.8,
+        "seed": 2026
+      },
+      "train_sample": 8233882
+    },
+    {
+      "mode": "calendar",
+      "candidate": "depth10",
+      "pipeline_reloaded": true,
+      "parameters": {
+        "trees": 40,
+        "depth": 10,
+        "min_instances_per_node": 25,
+        "feature_subset_strategy": "sqrt",
+        "subsampling_rate": 0.8,
+        "seed": 2026
+      },
+      "train_sample": 4115222
+    },
+    {
+      "mode": "calendar",
+      "candidate": "trees80",
+      "pipeline_reloaded": true,
+      "parameters": {
+        "trees": 80,
+        "depth": 8,
+        "min_instances_per_node": 25,
+        "feature_subset_strategy": "sqrt",
+        "subsampling_rate": 0.8,
+        "seed": 2026
+      },
+      "train_sample": 4115222
+    },
+    {
+      "mode": "calendar",
+      "candidate": "leaf50",
+      "pipeline_reloaded": true,
+      "parameters": {
+        "trees": 40,
+        "depth": 8,
+        "min_instances_per_node": 50,
+        "feature_subset_strategy": "sqrt",
+        "subsampling_rate": 0.8,
+        "seed": 2026
+      },
+      "train_sample": 4115222
+    },
+    {
+      "mode": "calendar",
+      "candidate": "features_half",
+      "pipeline_reloaded": true,
+      "parameters": {
+        "trees": 40,
+        "depth": 8,
+        "min_instances_per_node": 25,
+        "feature_subset_strategy": "0.5",
+        "subsampling_rate": 0.8,
+        "seed": 2026
+      },
+      "train_sample": 4115222
+    },
+    {
+      "mode": "calendar",
+      "candidate": "selected30",
+      "pipeline_reloaded": true,
+      "parameters": {
+        "trees": 40,
+        "depth": 8,
+        "min_instances_per_node": 25,
+        "feature_subset_strategy": "0.5",
+        "subsampling_rate": 0.8,
+        "seed": 2026
+      },
+      "train_sample": 8233882
+    }
+  ],
+  "test_accessed": false
+}

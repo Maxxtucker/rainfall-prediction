@@ -38,3 +38,7 @@ Opening paragraphs state the question or finding; method paragraphs explain the 
 ## Layout corrections
 
 Added a concise abstract and a combined conclusion; removed conversational/draft instructions from the narrative; shortened baseline column headings; separated timeline annotations from history/future points; removed colliding reliability labels; wrapped the diagnostic axis label; retained consistent external vector figures, captions and page styling. The final PDF is rendered and inspected after compilation. External-image support in the editor's single-file compiler remains a tool limitation, not a report-source error.
+
+## Sampling and RF follow-up
+
+The new validation-only section separates fixed-configuration sample-size comparisons from one-factor tuning. It reports all 14 candidates rather than only winners, preserves the original 2024-tested models, and explicitly limits conditional block intervals to one seed and fixed fitted models. Intervals for selected settings are not search-adjusted. Small improvements support a compute/accuracy compromise but do not prove equivalence or establish a universal optimum.

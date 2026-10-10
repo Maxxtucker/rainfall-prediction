@@ -1,0 +1,15 @@
+mode,name,fraction,reuse,depth,trees,min_instances_per_node,feature_subset_strategy,subsampling_rate,seed,validation_macro_brier,fit_seconds,elapsed_seconds,test_accessed
+short_term,original15,0.15,True,8,40,25,sqrt,0.8,2026,0.016697500199732294,0.0,60.48,False
+short_term,sample30,0.3,False,8,40,25,sqrt,0.8,2026,0.016695444468450792,118.13,175.35,False
+short_term,depth10,0.15,False,10,40,25,sqrt,0.8,2026,0.016647452800634135,114.05,172.83,False
+short_term,trees80,0.15,False,8,80,25,sqrt,0.8,2026,0.016696306411667475,146.41,214.63,False
+short_term,leaf50,0.15,False,8,40,50,sqrt,0.8,2026,0.016710657406721025,69.45,123.61,False
+short_term,features_half,0.15,False,8,40,25,0.5,0.8,2026,0.01668205644639195,83.21,136.57,False
+short_term,selected30,0.3,False,10,40,25,sqrt,0.8,2026,0.0166376547408041,189.94,248.64,False
+calendar,original15,0.15,True,8,40,25,sqrt,0.8,2026,0.023327331987027185,0.0,51.41,False
+calendar,sample30,0.3,False,8,40,25,sqrt,0.8,2026,0.02332800260329172,158.22,215.47,False
+calendar,depth10,0.15,False,10,40,25,sqrt,0.8,2026,0.02331831942513885,132.89,199.96,False
+calendar,trees80,0.15,False,8,80,25,sqrt,0.8,2026,0.023328175058673167,196.78,265.23,False
+calendar,leaf50,0.15,False,8,40,50,sqrt,0.8,2026,0.023334204293287284,84.58,139.54,False
+calendar,features_half,0.15,False,8,40,25,0.5,0.8,2026,0.023316738268650543,88.45,147.92,False
+calendar,selected30,0.3,False,8,40,25,0.5,0.8,2026,0.02330796612196526,161.84,218.9,False

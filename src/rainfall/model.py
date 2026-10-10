@@ -113,15 +113,16 @@ def calibrated_survival(probability, weights, temperature=1.0):
     return F.greatest(F.lit(0.0),F.least(F.lit(1.0),numerator/denominator))
 
 
-def make_pipeline(numeric_features, depth, trees=40, max_bins=128, seed=2026):
+def make_pipeline(numeric_features, depth, trees=40, max_bins=128, seed=2026,
+                  min_instances_per_node=25, feature_subset_strategy="sqrt", subsampling_rate=0.8):
     imputed = [name + "_imputed" for name in numeric_features]
     stages = [
         StringIndexer(inputCol="station_id", outputCol="station_index", handleInvalid="keep", stringOrderType="alphabetAsc"),
         Imputer(strategy="median", inputCols=numeric_features, outputCols=imputed),
         VectorAssembler(inputCols=imputed + ["station_index"], outputCol="features"),
         RandomForestClassifier(labelCol="label_bin", featuresCol="features", probabilityCol="probability", numTrees=trees,
-                               maxDepth=depth, maxBins=max_bins, minInstancesPerNode=25,
-                               featureSubsetStrategy="sqrt", subsamplingRate=0.8,
+                               maxDepth=depth, maxBins=max_bins, minInstancesPerNode=min_instances_per_node,
+                               featureSubsetStrategy=feature_subset_strategy, subsamplingRate=subsampling_rate,
                                seed=seed, maxMemoryInMB=512),
     ]
     return Pipeline(stages=stages)

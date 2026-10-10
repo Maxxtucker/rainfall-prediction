@@ -20,3 +20,11 @@ Tests use fabricated fixtures for missingness, strict threshold semantics, futur
 Task 1: 48,538,713 raw rows reconcile with 48,538,625 cleaned observations from 91 station IDs; 85/96 year-months have eligible stations. Task 2: every model's final metadata marks test evaluation completed; common sample has 5,729,508 anchors. No model was retrained during report/submission cleanup. The cluster was deleted after saving results.
 
 Limits remain explicit: no 2026 holdout, unseen-station validation, operational live feed or controlled feature ablation. Seven-day moving-block intervals condition on fixed 2024 predictions and do not include refitting uncertainty. Historical revisions cannot be completely reconstructed from update fields.
+
+## RF sensitivity follow-up (10 October 2026)
+
+- All 41 updated tests passed (58.515 seconds), including nested deterministic samples and RF parameter overrides.
+- Dataproc job `c134bedcdc4845408364f12c6bef9576` finished with state DONE. The experiment completion checkpoint records 14 scored candidates and 2,530.3 seconds through final output writing. Dataproc status propagation took additional time.
+- Both original validation scores reproduce previous model-selection records within 3e-14. The exact old 15% sample counts and validation counts are asserted at runtime.
+- Every new forest (12) reloads locally with the recorded parameters, seven classes, expected feature count and original full-training empirical support counts. No 2023/2024 evaluation partition was accessed.
+- Outputs and paired 2022 calendar-day summaries are under `outputs/steps/rf-sensitivity-20261010/`; the cluster was deleted after collection.

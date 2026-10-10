@@ -10,7 +10,8 @@ def main():
     def rows(lines):return '\n'.join(line+r' \\' for line in lines)
     def pct(x):return f'{100*x:.1f}'
     A=f['models']['short_term'];B=f['models']['calendar'];common=pd.DataFrame(f['common_threshold_results']);c=common.pivot(index='threshold',columns='model',values='brier');skill=100*(1-c.short_term/c.calendar)
-    v={}
+    sensitivity=Path('report/task2/rf_sensitivity.tex')
+    v={'RF_SENSITIVITY': sensitivity.read_text() if sensitivity.exists() else ''}
     labels=[('train_full','2017--2021 (full)','Empirical supports and baseline'),('train_sample','2017--2021 (15\\%)','RF and binary fitting'),('validation','2022','Model and cutoff selection'),('calibration','2023','RF temperature selection'),('test','2024','Final held-out evaluation')]
     v['SPLIT_ROWS']=rows([f"{name} & {A['counts'][key]:,} & {B['counts'][key]:,} & {role}" for key,name,role in labels])
     cr=[]

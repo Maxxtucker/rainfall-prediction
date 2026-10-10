@@ -15,7 +15,7 @@ from pyspark.ml import PipelineModel
 from pyspark.sql import SparkSession, functions as F, types as T
 
 from rainfall.data import clean, explore, make_features, profile_rainfall, _matched_month_panel, HISTORY_NUMERIC_FEATURES as NUMERIC_FEATURES
-from rainfall.model import make_pipeline, temporal_split, calibrated_array, survival_expression
+from rainfall.model import make_pipeline, temporal_split, calibrated_array, survival_expression, deterministic_sample
 
 SGT = timezone(timedelta(hours=8))
 COLUMNS = [
@@ -46,6 +46,30 @@ def observation(timestamp, amount=0.0, station="FAKE_A001", **overrides):
 
 
 class SparkSemanticsTests(unittest.TestCase):
+    def test_sample_size_comparison_preserves_nested_anchors(self):
+        start = datetime(2020, 1, 1, tzinfo=SGT)
+        frame = self.spark.createDataFrame(
+            [("FAKE_A001", start + timedelta(minutes=5 * i)) for i in range(1000)],
+            "station_id string, timestamp timestamp")
+        small = deterministic_sample(frame, .15, 2026)
+        large = deterministic_sample(frame, .30, 2026)
+        self.assertGreater(large.count(), small.count())
+        self.assertEqual(small.exceptAll(large).count(), 0)
+        self.assertEqual(small.exceptAll(deterministic_sample(large, .15, 2026)).count(), 0)
+
+    def test_rf_search_preserves_defaults_and_applies_overrides(self):
+        default = make_pipeline(["latitude"], 8).getStages()[-1]
+        self.assertEqual(default.getMinInstancesPerNode(), 25)
+        self.assertEqual(default.getFeatureSubsetStrategy(), "sqrt")
+        self.assertEqual(default.getSubsamplingRate(), .8)
+        changed = make_pipeline(["latitude"], 10, 80, 128, 2026,
+                                min_instances_per_node=50,
+                                feature_subset_strategy="0.5").getStages()[-1]
+        self.assertEqual(changed.getNumTrees(), 80)
+        self.assertEqual(changed.getMaxDepth(), 10)
+        self.assertEqual(changed.getMinInstancesPerNode(), 50)
+        self.assertEqual(changed.getFeatureSubsetStrategy(), "0.5")
+
     @classmethod
     def setUpClass(cls):
         builder = (SparkSession.builder.appName("rainfall-semantic-smoke-test")

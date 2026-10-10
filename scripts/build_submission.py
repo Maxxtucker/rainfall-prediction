@@ -62,6 +62,15 @@ def main():
     selections = ['assets', 'cloud', 'config', 'docs', 'figures', 'jobs', 'report',
                   'scripts', 'src', 'tests', 'outputs/steps/task1-v5',
                   'outputs/steps/task2-dual-v1', 'outputs/steps/task2-dual-v2']
+    sensitivity = ROOT / 'outputs/steps/rf-sensitivity-20261010'
+    if sensitivity.exists():
+        if not json_part(sensitivity / 'completion').get('complete'):
+            raise ValueError('Incomplete RF sensitivity experiment')
+        if not (sensitivity / 'local_model_verification.json').is_file():
+            raise ValueError('RF sensitivity models have not been verified locally')
+        if not json.loads((sensitivity / 'local_model_verification.json').read_text()).get('passed'):
+            raise ValueError('RF sensitivity model verification failed')
+        selections.append(str(sensitivity.relative_to(ROOT)))
     paths = [ROOT / n for n in ['README.md', '.gitignore', 'requirements.txt',
                               'requirements-local.txt', 'requirements-plot.txt',
                               'requirements-report.txt']]
@@ -69,7 +78,7 @@ def main():
         paths.extend(p for p in (ROOT / selection).rglob('*') if p.is_file())
     def include(path):
         rel = path.relative_to(ROOT)
-        return not (path.is_symlink() or '__pycache__' in rel.parts
+        return not (path.is_symlink() or '__pycache__' in rel.parts or '.qa' in rel.parts
                     or path.suffix in {'.pyc', '.svg', '.log', '.aux', '.out', '.xdv', '.synctex'}
                     or path.name in {'.DS_Store', 'env.sh', 'gcloud.json'}
                     or 'models-pre-final-sync' in rel.parts
