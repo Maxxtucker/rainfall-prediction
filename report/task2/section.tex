@@ -1,58 +1,62 @@
-\clearpage
-\section{Task 2: predicting the next 30 minutes}
-\subsection{Prediction target and two information settings}
-The required query consists of a station $s$, prediction time $t$ and rainfall threshold $q$ in millimetres. We estimate a probability, not a single rainfall amount:
+\section{Predicting the next 30 minutes}
+\subsection{What information is available when a prediction is made?}
+For station $s$, issue time $t$ and threshold $q$ in millimetres, the target is
 \[
 Y_{s,t}=\sum_{j=1}^{6}r_{s,t+5j\,\mathrm{min}},\qquad
 p_{s,t}(q)=P(Y_{s,t}>q\mid X_{s,t}).
 \]
-We operationally treat each observation timestamp as its five-minute interval endpoint. This is an alignment assumption, not an independently verified instrument convention. Labels require all six exact future five-minute records; the next six available rows are not substituted across a gap. Amounts are rounded to 0.001 mm and exceedance is strictly greater than $q$. Every five-minute anchor can contribute, so adjacent labels overlap. Task 2 uses local window completeness, not Task 1's monthly coverage filter or an eight-year common-station intersection.
+We treat observation timestamps as five-minute interval endpoints. This alignment is an assumption: we have not independently confirmed the instrument convention. A training label requires all six exact future records; taking the next six available rows could incorrectly span a gap. Totals are rounded to 0.001 mm, and exceedance means strictly greater than $q$. Eligibility depends on these local windows, rather than Task 1's monthly coverage filter.
 
-\textbf{A: short-term risk.} The three query inputs are supplemented internally with available recent rainfall from that station. At issue time $t$, the fixed 10-minute latency policy uses interval endpoints $t-10,t-15,\ldots,t-65$ minutes. All 12 observations and both publication timestamps must be present and available by $t$. Missing history is rejected, not imputed as zero. This models a short-term forecast issued near $t$; no neighbour rain, radar or numerical weather forecasts are used.
-\plot{17_prediction_timeline}{Information available to A at issue time $t$. Points mark interval endpoints. The 60-minute history ends ten minutes before $t$; the six future intervals form the training label and are never predictors.}{fig:t2timeline}
-\textbf{B: calendar risk.} Only station/location and cyclic time features are used. The requested future date need not have recent observations. The result describes historical seasonal and diurnal risk, rather than the evolving weather of a particular future storm. This distinction allows an advance query, such as tonight at 21:00, without pretending that tonight's preceding rain is already observed.
+The three requested inputs support two different uses. \textbf{A, the short-term model}, also reads recent rainfall from a supplied clean observation table. With a ten-minute latency allowance, it uses twelve observations ending at $t-65,t-60,\ldots,t-10$ minutes. Each must be present, and both publication timestamps for each record must be available by $t$. Missing history therefore excludes an example instead of becoming zero rainfall. Figure~\ref{fig:t2timeline} shows the separation between predictors and the future label.
+\plot{17_prediction_timeline}{The information used by A at issue time $t$. Markers show interval endpoints. The latest history interval ends ten minutes before issue time; the six intervals after issue time form the target.}{fig:t2timeline}
+\textbf{B, the calendar model}, needs only station, time and threshold. It estimates the historical risk associated with that place and time of year or day. For example, B can answer a query about tomorrow afternoon; A can use tomorrow's recent observations only when they become available. Neither model uses neighbouring stations, radar or numerical weather forecasts.
 
-\begin{table}[H]\centering\small
-\begin{tabular}{p{.19\linewidth}p{.52\linewidth}p{.20\linewidth}}\toprule Feature group & Construction & Used by\\\midrule
-Station and place & Categorical station ID; latitude and longitude & A and B\\
-Time cycles & Sine/cosine of fractional hour and annual phase, accounting for leap years & A and B\\
-Recent amounts & Last three available five-minute amounts; 15/30/60-minute totals; 30-minute maximum & A only\\
-Persistence and trend & Wet count and dry fraction over 12 intervals; latest 15-minute total minus previous 15-minute total & A only\\\bottomrule\end{tabular}
-\caption{The input feature sets contain 16 numeric predictors for A and six for B, plus station ID. Numeric year is not a predictor of a climate trend. All A windows end at $t-10$ minutes.}\label{tab:t2features}\end{table}
+Both models include station ID, latitude, longitude, and sine/cosine encodings of time of day and annual phase. The annual encoding accounts for leap years; numeric year is excluded. A adds the latest three five-minute amounts, 15-, 30- and 60-minute totals, the 30-minute maximum, the hour's wet count and dry fraction, and the difference between consecutive 15-minute totals. The rainfall summaries represent recent intensity, persistence and change. Cyclic time features capture the seasonal and daily patterns without introducing a discontinuity at midnight or New Year. This gives A sixteen numeric features and B six, each alongside station ID.
 
-\clearpage
-\subsection{Chronological experiments and Spark MLlib models}
-Random row splitting would place highly overlapping windows on both sides of the split. We instead separate calendar years and purge any label whose target end reaches the next split boundary. Feature construction, fitting, calibration and full evaluation run in PySpark on the Dataproc environment described earlier: one e2-standard-4 master and two e2-standard-4 workers, Spark 3.5.3 on YARN. Training jobs use 128 SQL shuffle partitions, adaptive SQL and 6 GB driver memory. Local Python only analyses the downloaded sufficient statistics and draws figures.
-\begin{table}[H]\centering\small
-\begin{tabular}{lrrp{.32\linewidth}}\toprule Period & A anchors & B anchors & Role\\\midrule
+\subsection{Training and model selection}
+Adjacent examples share much of their history and future rainfall, so a random train/test split would mix closely related observations. We instead assign separate years to training, selection, calibration and testing, removing labels whose target end reaches the following split boundary.
+\par
+\begin{table}[htbp]\centering\small
+\begin{tabular}{lrrp{.29\linewidth}}\toprule
+Period & A examples & B examples & Purpose\\\midrule
 2017--2021 (full) & 18,688,263 & 27,434,001 & Empirical supports and baseline \\
 2017--2021 (15\%) & 2,802,737 & 4,115,222 & RF and binary fitting \\
 2022 & 6,133,684 & 7,107,898 & Model and cutoff selection \\
 2023 & 5,465,591 & 6,719,274 & RF temperature selection \\
 2024 & 5,729,508 & 6,374,476 & Final held-out evaluation \\
-\bottomrule\end{tabular}\caption{Usable anchors after local completeness and boundary purging. The forest and binary classifier fit a deterministic, label-independent 15\% training sample (seed 2026). Validation, calibration and test use every eligible anchor. Full training data supply empirical within-bin distributions and the historical-frequency baseline.}\label{tab:t2splits}\end{table}
+\bottomrule
+\end{tabular}
+\caption{Eligible station-time examples after completeness checks and boundary purging. Every eligible example is used in validation, calibration and testing.}\label{tab:t2splits}
+\end{table}
+\par
+A has fewer examples because it additionally requires complete, published history. For classifier fitting we take a deterministic, label-independent 15\% sample using station, timestamp and seed 2026. This initially reduced fitting work. Section~\ref{sec:rfsensitivity} examines the effect of increasing the sample to 30\% and broadening the forest settings; the 2024 results below remain those of the original models. Above 20 mm, the samples contain 2,886 examples for A and 4,198 for B, including overlapping windows from the same rainfall episodes. The empirical distributions and historical baseline use all eligible training examples.
 
-\textbf{Distributional random forest.} Spark MLlib classifies the next-30-minute amount into seven bins: $\{0\}$, $(0,1]$, $(1,2]$, $(2,5]$, $(5,10]$, $(10,20]$ and $(20,\infty)$ \cite{sparkml}. Station IDs are indexed as categorical features; numeric preprocessing is fitted within the training pipeline. A median imputer for numeric features does not override the complete-history admission rule. Forest probabilities $\pi_k(X)$ are converted to strict exceedance probabilities using the training-only empirical survival $\widehat S_k(q)$ within each bin:
+Our main Spark MLlib model is a random forest that assigns the future total to seven bins: $\{0\}$, $(0,1]$, $(1,2]$, $(2,5]$, $(5,10]$, $(10,20]$ and $(20,\infty)$~\cite{sparkml}. Rather than train a classifier for every possible query, we combine its bin probabilities with the observed distribution of amounts inside each bin:
 \[
-\widehat p(q\mid X)=\sum_{k=0}^{6}\widetilde\pi_k(X)\widehat S_k(q),\qquad
+\widehat p(q\mid X)=\sum_{k=0}^{6}\widetilde\pi_k(X)\widehat S_k(q),
+\qquad
 \widetilde\pi_k=\frac{\pi_k^{1/T}}{\sum_\ell\pi_\ell^{1/T}}.
 \]
-This supports numeric query thresholds and makes the forest's output non-increasing in $q$. Within-bin rainfall shape is global, not conditional on the current weather. The supported tail stops at the largest training total, 71.8 mm; a zero beyond that support is a model limitation, not proof of impossibility.
+Here $\pi_k(X)$ is the forest probability for bin $k$, and $\widehat S_k(q)$ is the fraction of training amounts in that bin exceeding $q$. The temperature $T$ adjusts how concentrated the bin probabilities are; $T=1$ leaves them unchanged. The resulting probability cannot increase when the rainfall threshold increases. However, the within-bin distribution is shared across all weather conditions, and its upper support ends at the largest training total, 71.8 mm. Returning zero at or above that value reflects the model's support, not physical impossibility.
 
-Both modes compare depths 5 and 8 with 40 trees, minimum 25 instances per node, square-root feature subsets and 0.8 subsampling. Selection minimises the mean validation Brier over seven thresholds $q=0,0.2,1,2,5,10,20$. Both choose depth 8. Temperature is selected on 2023 from $\{0.5,0.75,1,1.25,1.5,2\}$; both choose $T=1$, so no probability sharpening or flattening is applied.
+The training pipeline indexes station IDs as categorical features and fits numeric median imputation; this does not relax A's complete-history requirement. We compare depths 5 and 8, holding 40 trees, 25 minimum examples per node, square-root feature subsets and 0.8 subsampling fixed. Selection minimises the equally weighted mean Brier score over $q\in\{0,0.2,1,2,5,10,20\}$ mm on 2022. Both models select depth 8. On 2023, both select $T=1$ from $\{0.5,0.75,1,1.25,1.5,2\}$, leaving their probabilities unchanged. Evaluation covers these seven thresholds; accepting other numeric thresholds does not establish their accuracy.
 
-\textbf{Binary baseline.} Logistic regression predicts $\mathbf1(Y>q)$ using the same mode's features plus $q$, with one-hot station encoding, numeric scaling and L2 regularisation (maximum 100 optimisation iterations). Each sampled anchor is expanded to all seven training thresholds. Regularisation 0.01 wins against 0.1 for both modes on 2022. These probabilities are uncalibrated; unseen-threshold accuracy is not established by the seven evaluated queries.
+Two baselines help establish what the forest adds. Logistic regression uses the same features plus the query threshold, with each sampled example expanded to the seven thresholds. Station IDs are one-hot encoded and numeric inputs scaled; L2 regularisation 0.01 beats 0.1 on validation for both modes. These probabilities have no separate calibration fit. The historical baseline instead estimates station/month/hour event frequencies, shrunk towards the training global rate with 100 pseudo-observations; unseen groups use that global rate. It is a meaningful competitor for B because it also captures seasonal and daily patterns.
 
-\textbf{Historical-frequency baseline.} Training-only station/month/hour event rates are shrunk towards the training global rate using 100 pseudo-observations; unseen groups fall back to the global rate. This is a substantive comparator for B, not merely an always-dry classifier.
+\section{Prediction results}
+\subsection{Does recent rainfall improve the forecast?}
+Our main score is the Brier score,
+\[
+\mathrm{BS}=\frac{1}{N}\sum_{i=1}^{N}(\widehat p_i-z_i)^2,
+\qquad z_i=\mathbf1(Y_i>q),
+\]
+which measures probability squared error; lower is better. PR-AUC summarises the precision--recall tradeoff, while ROC-AUC measures ranking across true- and false-positive rates. We also report log loss, which penalises confident errors, and reliability, which compares predicted probabilities with observed frequencies. Spark computes AUC using 1,000-bin curve downsampling, and its PR-AUC is not average precision~\cite{sparkeval}.
 
-\clearpage
-\section{Predictive performance on held-out 2024 data}
-The primary probability score is $\mathrm{BS}=N^{-1}\sum_i(\widehat p_i-z_i)^2$ (lower is better), supplemented by log loss, PR-AUC, ROC-AUC and reliability tables. Spark AUC curves use 1,000-bin downsampling; PR-AUC is Spark's area-under-curve convention, not average precision \cite{sparkeval}. Small AUC differences between repeated tables can result from partition-dependent downsampling. Brier values are computed over all included observations.
-
-For a direct A/B comparison, both forests score the same 5,729,508 station-time anchors: 89.9\% of B's eligible test set. All retained labels agree. The models were trained on their respective eligible populations, so this compares the two fitted pipelines rather than a controlled feature ablation on identical training rows.
-\plot{18_common_comparison}{Common-anchor comparison. Left: relative Brier reduction of A versus B, with conditional 95\% seven-day block-bootstrap intervals. Right: PR-AUC and event prevalence on a logarithmic scale. Threshold positions are equally spaced categories.}{fig:t2common}
-\begin{table}[H]\centering\small
-\begin{tabular}{rrrrrr}\toprule $q$ (mm) & Event rate (\%) & Brier A & Brier B & PR-AUC A & PR-AUC B\\\midrule
+For the direct comparison, both forests predict the same 5,729,508 examples, covering 89.9\% of B's eligible 2024 set. Their labels agree. Training populations still differ, so this compares the fitted systems rather than isolating the effect of history features on identical training rows.
+\par
+\begin{table}[htbp]\centering\small
+\begin{tabular}{rrrrrr}\toprule
+$q$ (mm) & Event rate (\%) & Brier A & Brier B & PR-AUC A & PR-AUC B\\\midrule
 0 & 6.398 & 0.03798 & 0.05924 & 0.6091 & 0.1097 \\
 0.2 & 4.892 & 0.03090 & 0.04614 & 0.5582 & 0.0881 \\
 1 & 2.579 & 0.01870 & 0.02499 & 0.4215 & 0.0484 \\
@@ -60,102 +64,33 @@ For a direct A/B comparison, both forests score the same 5,729,508 station-time 
 5 & 0.829 & 0.00732 & 0.00820 & 0.1885 & 0.0176 \\
 10 & 0.378 & 0.00354 & 0.00376 & 0.1020 & 0.0085 \\
 20 & 0.100 & 0.00098 & 0.00100 & 0.0304 & 0.0029 \\
-\bottomrule\end{tabular}\caption{Both forests evaluated on identical 2024 anchors. Exceeding 20 mm in 30 minutes is much rarer than any positive rain; a smaller raw Brier at a high threshold does not by itself imply a more useful model.}\label{tab:t2common}\end{table}
-\finding{The equal-threshold mean Brier is 0.01613 for A and 0.02283 for B: a 29.4\% relative reduction in probability squared error, not a percentage-point accuracy gain. At 1 mm, PR-AUC is 0.4215 versus 0.0484 on the shared sample.}
-The Brier reduction decreases from 35.9\% at 0 mm to 1.7\% at 20 mm. The fitted history-based pipeline performs better, especially for smaller thresholds. Rare upper-tail events remain difficult; the experiment does not separately identify errors caused by abrupt storm development. Results describe the observed eligible network, not all missing station-times.
+\bottomrule
+\end{tabular}
+\caption{Forest performance on identical 2024 examples. The event rate gives context for rare-event scores: small Brier values at large thresholds alone do not establish useful prediction.}\label{tab:t2common}
+\end{table}
+\par
+Across the seven thresholds, mean Brier falls from 0.02283 for B to 0.01613 for A, a 29.4\% relative reduction in probability squared error. This is not an accuracy increase of 29.4 percentage points. The advantage is greatest for any positive rain (35.9\% reduction) and decreases to 1.7\% above 20 mm. Recent rain is therefore useful in this holdout, but the heaviest events remain difficult.
+\plot{18_common_comparison}{Comparison on shared 2024 examples. Left: relative Brier reduction with conditional 95\% block-bootstrap intervals. Right: PR-AUC and event prevalence on a logarithmic scale. Rainfall thresholds are displayed as equally spaced categories.}{fig:t2common}
+To account for overlapping labels and shared weather across stations, we form 2,000 bootstrap replicates by resampling circular blocks of seven consecutive calendar days, retaining all stations and thresholds together. The resulting 95\% interval for the mean relative Brier reduction is 25.4--32.9\%. It describes uncertainty in the fixed 2024 predictions; it does not include refitting or establish that seven-day blocks remove all dependence.
 
-\clearpage
-\subsection{Baselines and calibration: where the gains come from}
-\begin{table}[H]\centering\small
-\begin{tabular}{llrrrr}\toprule Mode & Model & Mean Brier & \shortstack{PR-AUC\\$q=1$ mm} & \shortstack{ROC-AUC\\$q=1$ mm} & \shortstack{Log loss\\$q=1$ mm}\\\midrule
-A & Random forest & 0.01613 & 0.4218 & 0.8035 & 0.0824 \\
-A & Binary LR & 0.01944 & 0.3629 & 0.8607 & 0.0875 \\
-A & Historical frequency & 0.02270 & 0.0467 & 0.6645 & 0.1166 \\
-B & Random forest & 0.02274 & 0.0494 & 0.6823 & 0.1165 \\
-B & Binary LR & 0.02301 & 0.0428 & 0.6568 & 0.1165 \\
-B & Historical frequency & 0.02252 & 0.0516 & 0.6843 & 0.1146 \\
-\bottomrule\end{tabular}\caption{Within-mode baseline comparisons. A uses 5,729,508 anchors; B uses 6,374,476. Each mode's three models share its sample. For direct A/B conclusions use Table~\ref{tab:t2common}, not this different-population table.}\label{tab:t2baseline}\end{table}
-A's forest beats both baselines in mean Brier and at every evaluated rainfall threshold. However, it does not win every metric: at 1 mm, binary LR has ROC-AUC 0.8607 versus 0.8035 for the forest, while the forest has better PR-AUC, Brier and log loss. This illustrates why ROC-AUC alone is insufficient for selecting probabilities in a rare-event problem.
-\plot{19_baseline_skill}{Brier skill relative to each mode's historical-frequency baseline. Zero is equal performance; negative values are worse. A's LR baseline becomes worse than historical frequency at the larger rainfall thresholds. B's forest has small, threshold-dependent gains or losses.}{fig:t2baselines}
-B's historical-frequency baseline has mean Brier 0.02252, slightly better than its forest (0.02274) and binary LR (0.02301). The test set is used to report this limitation, not to retune the model. Greater model complexity has not established an overall advantage for the calendar-only information setting.
-\begingroup\renewcommand{\plot}[3]{\begin{figure}[H]\centering\includegraphics[width=0.90\linewidth]{#1.pdf}\caption{#2}\label{#3}\end{figure}}
-\plot{20_reliability}{Reliability at $q=1$ mm on the shared anchors. Each point summarises a fixed 0.1-wide probability bin; marker area increases with log sample count. Axes differ to expose B's two occupied low-probability bins. The diagonal is perfect bin-average calibration.}{fig:t2reliability}\endgroup
-A separates many probability levels, but several high-probability bins underpredict the observed event frequency. On its full eligible test set, mean predicted risk is 2.38\% versus 2.58\% observed, with ten-bin weighted absolute calibration error 0.196 percentage points. This small aggregate error does not establish fine-resolution calibration. B provides little event-specific discrimination.
+\subsection{What the baselines and probability checks reveal}
+\par
+\begin{table}[htbp]\centering\small
+\begin{tabular}{llrrr}\toprule
+Mode & Model & Mean Brier & PR-AUC at 1 mm & Log loss at 1 mm\\\midrule
+A & Random forest & 0.01613 & 0.4218 & 0.0824 \\
+A & Binary LR & 0.01944 & 0.3629 & 0.0875 \\
+A & Historical frequency & 0.02270 & 0.0467 & 0.1166 \\
+B & Random forest & 0.02274 & 0.0494 & 0.1165 \\
+B & Binary LR & 0.02301 & 0.0428 & 0.1165 \\
+B & Historical frequency & 0.02252 & 0.0516 & 0.1146 \\
+\bottomrule
+\end{tabular}
+\caption{Baselines on each mode's eligible test population: 5,729,508 examples for A and 6,374,476 for B. Use Table~\ref{tab:t2common} for direct A/B comparisons. Small repeated AUC differences arise from Spark's partition-dependent curve downsampling.}\label{tab:t2baseline}
+\end{table}
+\par
+A's forest improves Brier over both baselines at every evaluated threshold. Logistic regression nevertheless has higher ROC-AUC at 1 mm (0.8607 versus 0.8035), despite worse PR-AUC, Brier and log loss. A single ranking metric would therefore give an incomplete assessment. For B, historical frequencies achieve the lowest mean Brier. More complex modelling has not demonstrated an overall benefit when only station and calendar information are available.
+\plot{20_reliability}{Calibration at 1 mm on the shared examples. Upper panels compare bin-average predictions with observed event rates; B is enlarged to show its two occupied bins. Lower panels show sample counts in fixed 0.1-wide probability bins across the full probability range.}{fig:t2reliability}
+A distinguishes a wider range of risks, but several high-probability bins underestimate the event frequency. Mean predicted risk is 2.38\%, against 2.58\% observed, and the ten-bin weighted absolute calibration error is 0.196 percentage points. These figures use A's full eligible set, which is also the shared set. The small aggregate error needs to be read alongside the uneven bin counts; it cannot establish reliable probabilities at every risk level.
 
-\clearpage
-\section{Diagnostics and operational interpretation}
-\plot{21_diagnostics}{Left: A's monthly Brier skill against its historical-frequency baseline at 1 mm. Right: six largest forest impurity importances. Importance is fitted-model attribution, not causal evidence or an independent feature-ablation experiment.}{fig:t2diagnostics}
-At 1 mm, A's Brier skill is positive in every month, ranging from 9.8\% to 33.9\%. It is also positive at all 70 evaluated stations, from 22.1\% to 41.9\%. These are descriptive subgroup point estimates; stations and months differ in event rates and sample sizes, so they are not rankings of intrinsic forecast difficulty.
-
-The leading predictors are the recent 15-minute total (27.9\%), 30-minute maximum (18.4\%), 60-minute total (15.1\%) and 60-minute dry fraction (14.7\%). Correlated totals share information; wet count and dry fraction are deterministically related. Their impurity importances cannot identify independent causal effects. The strong role of recent rain is consistent with the difference between a short-term conditional forecast and a calendar-only risk estimate.
-
-\subsection{Probabilities and alarm cutoffs answer different questions}
-The query threshold $q$ is a rainfall amount. An alarm cutoff $c$ is a probability, and predicts an exceedance when $\widehat p(q)\geq c$. Cutoffs are selected from a fixed candidate grid on 2022 F1, after applying the fixed 2023-selected temperature; 2024 is never used to choose them.
-\begin{table}[H]\centering\small
-\begin{tabular}{llrrrr}\toprule Model & Cutoff source & $c$ & Precision & Recall & F1\\\midrule
-A forest & Default & 0.5 & 0.693 & 0.247 & 0.364 \\
-A forest & Validation F1 & 0.2 & 0.474 & 0.464 & 0.469 \\
-A binary LR & Validation F1 & 0.2 & 0.449 & 0.371 & 0.406 \\
-B forest & Validation F1 & 0.025 & 0.041 & 0.757 & 0.078 \\
-\bottomrule\end{tabular}\caption{2024 decision performance at rainfall threshold 1 mm. A rows use its full eligible sample; B uses its own larger sample. Cutoff choice changes decisions, not the underlying probability scores.}\label{tab:t2decisions}\end{table}
-For A, reducing $c$ from 0.5 to the validation-selected 0.2 increases recall from 24.7\% to 46.4\%, while precision drops from 69.3\% to 47.4\%. B's selected 0.025 cutoff reaches high recall but only about 4.1\% precision: most alerts would be false positives. B makes no positive predictions at $c=0.5$. An always-negative prediction already achieves about 97.4\% accuracy at 1 mm, which is why accuracy is not our principal evidence of usefulness.
-
-\subsection{Uncertainty with overlapping labels}
-For the common-sample Brier comparison, we resample 2,000 circular moving-block replicates of seven consecutive calendar days (seed 2026), keeping all stations and thresholds together. Daily sums of squared errors and counts reconstruct the anchor-weighted score in each replicate. There are 363 supported dates; zero-count dates retain calendar gaps without creating rainfall observations. The conditional 95\% interval for the mean relative Brier reduction is 25.4--32.9\%. This addresses some temporal and spatial dependence in the fixed 2024 predictions; it does not include model-refitting uncertainty or guarantee future-year performance. Seven days is a chosen block length, not a verified storm-independence scale.
-
-\clearpage
-\section{Sampling and RF sensitivity on 2022 validation}
-The original 15\% fitting sample was a computational choice, not an empirically established optimum. We subsequently compare 15\% and 30\% at identical RF settings, then broaden the search. The station/time hash and seed 2026 are unchanged, so the 30\% sample contains the original 15\%. Both use the same full 2022 validation anchors and training-only empirical supports; temperature is fixed at 1. No 2023 or 2024 partitions are read in this follow-up.
-
-At 15\%, the one-factor search changes depth 8 to 10, trees 40 to 80, minimum leaf size 25 to 50, or sqrt feature selection to half the features; subsampling remains 0.8. The best 15\% setting is additionally fitted at 30\%. This extends the earlier depth-5/8 search without claiming an exhaustive grid.
-\begin{table}[H]\centering\small
-\caption{Mean validation Brier across seven thresholds (lower is better). Improvement is relative to each mode's original 15\% forest; positive is better. Fit time excludes validation scoring. The original models are reused, so their fit times are not remeasured.}
-\begin{tabular}{llrrr}\toprule Mode & Candidate & Validation Brier & Improvement (\%) & Fit (min)\\\midrule
-A & Reference, 15\% & 0.01669750 & +0.000 & -- \\
-A & Reference, 30\% & 0.01669544 & +0.012 & 1.97 \\
-A & Depth 10, 15\% & 0.01664745 & +0.300 & 1.90 \\
-A & 80 trees, 15\% & 0.01669631 & +0.007 & 2.44 \\
-A & Min. leaf 50, 15\% & 0.01671066 & -0.079 & 1.16 \\
-A & Half features, 15\% & 0.01668206 & +0.092 & 1.39 \\
-A & Selected setting, 30\% & 0.01663765 & +0.358 & 3.17 \\
-\midrule
-B & Reference, 15\% & 0.02332733 & +0.000 & -- \\
-B & Reference, 30\% & 0.02332800 & -0.003 & 2.64 \\
-B & Depth 10, 15\% & 0.02331832 & +0.039 & 2.21 \\
-B & 80 trees, 15\% & 0.02332818 & -0.004 & 3.28 \\
-B & Min. leaf 50, 15\% & 0.02333420 & -0.029 & 1.41 \\
-B & Half features, 15\% & 0.02331674 & +0.045 & 1.47 \\
-B & Selected setting, 30\% & 0.02330797 & +0.083 & 2.70 \\
-\bottomrule\end{tabular}\label{tab:rfsensitivity}\end{table}
-For A at the reference setting, increasing the sample from 15\% to 30\% changes mean validation Brier by +0.012\% relative improvement (conditional 95\% interval [-0.014\%, +0.039\%]).
-
-For A at the selected setting, increasing the sample from 15\% to 30\% changes mean validation Brier by +0.059\% relative improvement (conditional 95\% interval [+0.036\%, +0.082\%]).
-
-For B at the reference setting, increasing the sample from 15\% to 30\% changes mean validation Brier by -0.003\% relative improvement (conditional 95\% interval [-0.070\%, +0.047\%]).
-
-For B at the selected setting, increasing the sample from 15\% to 30\% changes mean validation Brier by +0.038\% relative improvement (conditional 95\% interval [-0.092\%, +0.148\%]).
-
-\textbf{Selected 15\% settings.} A: depth 10, 40 trees, minimum leaf 25, feature subset sqrt; B: depth 8, 40 trees, minimum leaf 25, feature subset 0.5.
-
-\textbf{Interpretation and limits.} These paired intervals use 2,000 circular seven-day calendar blocks, preserving stations and thresholds together. They condition on one sampling/RF seed and the fitted models, not refitting uncertainty. A small improvement supports a computational compromise for this experiment; an interval spanning zero does not prove equivalence. Selecting on 2022 can overfit that year; intervals for selected settings are not adjusted for this search. The original calibrated forests and all reported 2024 test results remain unchanged; the new models are validation-only sensitivity candidates.
-
-\textbf{Overlapping examples.} Consecutive five-minute prediction anchors share 25 minutes of target rainfall. They remain distinct training examples within a chronological split, rather than being reduced to one example every 30 minutes. Training and evaluation are separated by year with target-boundary purging. Counts therefore describe anchors, not independent storms.
-
-
-\clearpage
-\section{Model use, limitations and reproducibility}
-\textbf{Which model should be used?} A is the stronger short-term model when recent published station data can be supplied. B can answer advance calendar-risk queries without recent observations, but the historical-frequency baseline is the stronger overall reference in this experiment. Neither model can guarantee a particular storm, and the calendar model does not become a real-time forecast merely by accepting a future timestamp.
-
-\textbf{Prediction interface.} Both modes accept station, Singapore prediction time on the five-minute grid, and a finite rainfall threshold. A additionally reads recent cleaned observations internally under its latency rule; unavailable history produces an explicit error rather than a hidden switch to B. B uses a station-location catalogue frozen from training. The 70 tested station IDs all occur in the 88-station training catalogue, so this experiment does not validate unseen-station generalisation. A 2026 prediction requires new observations; the 2017--2024 files alone cannot supply them. No automated real-time ingestion service is claimed.
-
-\textbf{Missingness and revisions.} History and future-window requirements select which weather periods can be evaluated. A covers 89.9\% of B's eligible 2024 anchors; excluded times may not be random. Historical publication metadata support a conservative availability check, but no archived as-of feed verifies every earlier data revision. Task 1's source gaps are not repaired here. Relocations and changing station networks can also shift the input distribution.
-
-\textbf{Tail and calibration limits.} The empirical within-bin shape is global, the largest training accumulation is 71.8 mm, and only seven nonnegative thresholds are evaluated. Monotonicity is not accuracy at arbitrary unseen thresholds. Both forests have zero threshold-order violations in the complete test audit; the two binary baselines also happen to have none on the evaluated grid, despite no explicit constraint. The selected temperature of 1 is not evidence of perfect calibration, and the LR probabilities have no separate calibration fit. Low rare-event Brier values must be interpreted alongside prevalence and PR-AUC.
-
-\textbf{Scope of conclusions.} The 2024 holdout measures temporal transfer from earlier years at observed stations. It does not establish climate-change extrapolation, performance at new stations, independence of the millions of overlapping windows, or performance in 2026. A and B use different eligible training populations and the forest includes several correlated history features. A controlled ablation, additional held-out years, alternative block lengths, better tail modelling and an operational as-of observation feed are useful next experiments. No extra model was selected by examining the 2024 test results.
-
-\textbf{Saved evidence and computing cost.} The submission retains trained forests, binary pipelines, empirical supports, station catalogues, baseline tables and evaluation evidence. Large feature tables can be regenerated from cleaned observations; their original Cloud Storage locations and preparation audits are recorded in the run metadata. Actual job records and source snapshots accompany the results. The completed training/selection/calibration/evaluation jobs took about 31.4 minutes for A and 48.3 minutes for B; these are not pure fitting times, and B preceded an equivalent AUC-computation optimisation used by A, so they are not a fair speed benchmark. All three final jobs completed successfully and the temporary cluster was deleted after outputs were saved.
-
-Both downloaded RF pipelines reproduce 140 cloud audit probabilities each with zero absolute difference; both binary pipelines reload and produce valid probabilities. Reusable analysis and report-generation scripts reconcile daily and aggregate metrics before producing the figures and report. Numerical outputs are real-data results; synthetic fixtures are confined to software tests.
-
-\finding{Recent published rainfall substantially improves next-30-minute exceedance estimates in this holdout. Station and calendar alone retain a useful risk interpretation, but the forest does not overall beat a simple historical-frequency baseline in that setting. The two models answer different information-availability questions, and their limits should accompany their probabilities.}
+Finally, a rainfall threshold and an alarm cutoff are different choices. At $q=1$ mm, changing A's probability cutoff from 0.5 to the validation-selected 0.2 raises recall from 24.7\% to 46.4\%, while precision falls from 69.3\% to 47.4\%. Cutoffs are selected by 2022 F1 after fixing the 2023 temperature, without using 2024 outcomes. An always-negative rule already achieves about 97.4\% accuracy here, which is why probability quality and the precision--recall tradeoff are more informative than accuracy.

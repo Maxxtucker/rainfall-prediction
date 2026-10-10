@@ -1,37 +1,27 @@
-\clearpage
-\section{Sampling and RF sensitivity on 2022 validation}
-The original 15\% fitting sample was a computational choice, not an empirically established optimum. We subsequently compare 15\% and 30\% at identical RF settings, then broaden the search. The station/time hash and seed 2026 are unchanged, so the 30\% sample contains the original 15\%. Both use the same full 2022 validation anchors and training-only empirical supports; temperature is fixed at 1. No 2023 or 2024 partitions are read in this follow-up.
+\section{Does a larger training sample improve the forest?}\label{sec:rfsensitivity}
 
-At 15\%, the one-factor search changes depth 8 to 10, trees 40 to 80, minimum leaf size 25 to 50, or sqrt feature selection to half the features; subsampling remains 0.8. The best 15\% setting is additionally fitted at 30\%. This extends the earlier depth-5/8 search without claiming an exhaustive grid.
-\begin{table}[H]\centering\small
-\caption{Mean validation Brier across seven thresholds (lower is better). Improvement is relative to each mode's original 15\% forest; positive is better. Fit time excludes validation scoring. The original models are reused, so their fit times are not remeasured.}
-\begin{tabular}{llrrr}\toprule Mode & Candidate & Validation Brier & Improvement (\%) & Fit (min)\\\midrule
-A & Reference, 15\% & 0.01669750 & +0.000 & -- \\
-A & Reference, 30\% & 0.01669544 & +0.012 & 1.97 \\
-A & Depth 10, 15\% & 0.01664745 & +0.300 & 1.90 \\
-A & 80 trees, 15\% & 0.01669631 & +0.007 & 2.44 \\
-A & Min. leaf 50, 15\% & 0.01671066 & -0.079 & 1.16 \\
-A & Half features, 15\% & 0.01668206 & +0.092 & 1.39 \\
-A & Selected setting, 30\% & 0.01663765 & +0.358 & 3.17 \\
-\midrule
-B & Reference, 15\% & 0.02332733 & +0.000 & -- \\
-B & Reference, 30\% & 0.02332800 & -0.003 & 2.64 \\
-B & Depth 10, 15\% & 0.02331832 & +0.039 & 2.21 \\
-B & 80 trees, 15\% & 0.02332818 & -0.004 & 3.28 \\
-B & Min. leaf 50, 15\% & 0.02333420 & -0.029 & 1.41 \\
-B & Half features, 15\% & 0.02331674 & +0.045 & 1.47 \\
-B & Selected setting, 30\% & 0.02330797 & +0.083 & 2.70 \\
-\bottomrule\end{tabular}\label{tab:rfsensitivity}\end{table}
-For A at the reference setting, increasing the sample from 15\% to 30\% changes mean validation Brier by +0.012\% relative improvement (conditional 95\% interval [-0.014\%, +0.039\%]).
+The original 15\% training sample was chosen to limit computation. To assess what this choice cost in predictive performance, we compared it with a 30\% sample while keeping the reference random-forest settings fixed: 40 trees, maximum depth 8, a minimum of 25 observations per leaf, square-root feature selection and subsampling of 0.8. Both samples use the same deterministic station--time hash and seed 2026, so every anchor in the 15\% sample also appears in the 30\% sample. The larger samples contain 5,608,769 examples for A and 8,233,882 for B. Within each information setting, every candidate is evaluated on the same complete set of 2022 validation anchors. The training-derived distributions within rainfall bins remain fixed, and temperature is set to 1 throughout. This separates the effect of additional fitting data from changes in calibration or evaluation samples.
 
-For A at the selected setting, increasing the sample from 15\% to 30\% changes mean validation Brier by +0.059\% relative improvement (conditional 95\% interval [+0.036\%, +0.082\%]).
+We also tested whether the reference forest's configuration constrained its performance. At 15\%, we changed one setting at a time: depth 8 to 10, 40 to 80 trees, minimum leaf size 25 to 50, or square-root feature selection to half the features. The configuration with the lowest mean validation Brier across the seven thresholds was then fitted on the 30\% sample. These comparisons broaden the earlier depth-5/8 search, but do not explore every combination of settings. Table~\ref{tab:rfsensitivity} presents both information settings together.
 
-For B at the reference setting, increasing the sample from 15\% to 30\% changes mean validation Brier by -0.003\% relative improvement (conditional 95\% interval [-0.070\%, +0.047\%]).
+\par
+\begin{table}[htbp]\centering\small
+\begin{tabular}{lrrr}\toprule
+Configuration & Fitting sample & A mean Brier & B mean Brier\\\midrule
+Reference & 15\% & 0.01669750 & 0.02332733 \\
+Reference & 30\% & 0.01669544 & 0.02332800 \\
+Depth 10 & 15\% & 0.01664745 & 0.02331832 \\
+80 trees & 15\% & 0.01669631 & 0.02332818 \\
+Minimum leaf size 50 & 15\% & 0.01671066 & 0.02333420 \\
+Half-feature selection & 15\% & 0.01668206 & 0.02331674 \\
+Selected setting & 30\% & 0.01663765 & 0.02330797 \\
+\bottomrule\end{tabular}
+\caption{Mean Brier on the full 2022 validation set, averaged over seven rainfall thresholds. Lower is better. Changes at 15\% vary one setting from the reference. The selected 30\% row uses depth 10 for A and half-feature selection for B; it is not the same configuration for both modes.}
+\label{tab:rfsensitivity}\end{table}\par
 
-For B at the selected setting, increasing the sample from 15\% to 30\% changes mean validation Brier by +0.038\% relative improvement (conditional 95\% interval [-0.092\%, +0.148\%]).
 
-\textbf{Selected 15\% settings.} A: depth 10, 40 trees, minimum leaf 25, feature subset sqrt; B: depth 8, 40 trees, minimum leaf 25, feature subset 0.5.
+At the reference settings, doubling the fitting sample made little difference to mean Brier. For A, the score fell from 0.01669750 to 0.01669544, a relative improvement of 0.012\%; for B, it rose slightly from 0.02332733 to 0.02332800, a relative deterioration of 0.003\%. The conditional 95\% intervals for relative improvement were $[-0.014\%,\,0.039\%]$ and $[-0.070\%,\,0.047\%]$, respectively. These results support using 15\% as a computational compromise for the reference forests. They do not establish that the two sample sizes are equivalent or that further data could never help.
 
-\textbf{Interpretation and limits.} These paired intervals use 2,000 circular seven-day calendar blocks, preserving stations and thresholds together. They condition on one sampling/RF seed and the fitted models, not refitting uncertainty. A small improvement supports a computational compromise for this experiment; an interval spanning zero does not prove equivalence. Selecting on 2022 can overfit that year; intervals for selected settings are not adjusted for this search. The original calibrated forests and all reported 2024 test results remain unchanged; the new models are validation-only sensitivity candidates.
+For A, increasing depth was more useful than simply increasing the sample. Depth 10 at 15\% reduced mean Brier by 0.300\% relative to the reference forest, with a conditional interval of $[0.213\%,\,0.389\%]$. Increasing this depth-10 sample to 30\% produced a further 0.059\% improvement, with an interval of $[0.036\%,\,0.082\%]$. The resulting score, 0.01663765, was the lowest among the tested A configurations. For B, half-feature selection gave the lowest score at 15\%; its 30\% version reached 0.02330797. However, the intervals for both the initial configuration change and the subsequent sample increase included zero. The evidence for a validation gain is therefore less clear for B. All of these improvements are modest in magnitude. At the reference settings, A's Brier improves by 0.103\% at 10 mm and 0.072\% at 20 mm, while B's changes at these thresholds are negligible and slightly adverse. The follow-up records Brier scores; it does not establish whether sample size changes PR-AUC or calibration.
 
-\textbf{Overlapping examples.} Consecutive five-minute prediction anchors share 25 minutes of target rainfall. They remain distinct training examples within a chronological split, rather than being reduced to one example every 30 minutes. Training and evaluation are separated by year with target-boundary purging. Counts therefore describe anchors, not independent storms.
+The intervals use 2,000 paired circular seven-day block resamples, keeping stations and thresholds together to account for temporal dependence. They condition on the fitted models and one seed; they exclude refitting uncertainty and are not adjusted for selecting a configuration. This follow-up uses only 2017--2021 training and 2022 validation data. The candidates may benefit from selection on that validation year and have no new independent test result. The original calibrated models and their reported 2024 results remain unchanged.

@@ -42,7 +42,7 @@ def main():
     used = re.findall(r'\\plot\{([^}]+)\}', text)
     for figure in used:
         if not any((ROOT / 'figures' / folder / (figure + '.pdf')).is_file()
-                   for folder in ['task1-v5-report', 'task2-report']):
+                   for folder in ['project-report', 'task1-v5-report', 'task2-report']):
             raise FileNotFoundError('Missing report vector: ' + figure)
     if json.loads((ROOT / 'outputs/steps/task1-v5/validation.json').read_text())['status'] != 'passed':
         raise ValueError('Task 1 independent validation did not pass')

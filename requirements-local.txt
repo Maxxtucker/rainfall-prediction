@@ -1,2 +1,4 @@
 pyspark==3.5.3
 -r requirements-plot.txt
+# PySpark 3.5.3 imports distutils, removed from the Python 3.12 standard library.
+setuptools==80.9.0

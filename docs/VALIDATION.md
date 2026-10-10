@@ -28,3 +28,15 @@ Limits remain explicit: no 2026 holdout, unseen-station validation, operational 
 - Both original validation scores reproduce previous model-selection records within 3e-14. The exact old 15% sample counts and validation counts are asserted at runtime.
 - Every new forest (12) reloads locally with the recorded parameters, seven classes, expected feature count and original full-training empirical support counts. No 2023/2024 evaluation partition was accessed.
 - Outputs and paired 2022 calendar-day summaries are under `outputs/steps/rf-sensitivity-20261010/`; the cluster was deleted after collection.
+
+## Report integration and workflow cleanup (10 October 2026)
+
+The records above describe the original experiments and their checks. This revision did not retrain models, query GCP, or repeat Spark model-loading tests.
+
+- The 13 lightweight tests selected by `python -m unittest discover -s tests -p 'test_rf_sensitivity*.py' -v` passed. They cover nested samples, RF parameter overrides, summary validation, and refusal to reuse existing run output.
+- Reanalysis of a temporary copy of the recorded RF results reproduced paired-comparison values within `1e-12`, without changing model files. Preparing all 12 candidate packages twice on that copy produced identical metadata hashes. The checked-in experiment outputs were left unchanged.
+- Changed Python files parsed successfully; the report build and RF cloud launcher passed Bash syntax checks; `git diff --check` passed.
+- The canonical report compiled with XeLaTeX to 13 pages and 10 figures, with no unresolved references or overflowing boxes. The 2022 sensitivity results are separate from the original 2024 evaluation. The December maps and reliability figure were redrawn from saved data.
+- The submission packager verified archive contents, SHA-256 hashes and ZIP integrity. It includes the canonical PDF and maintained report sources alongside the saved models and evidence.
+
+These checks concern report accuracy and workflow behaviour. They add no new predictive-performance evidence.
