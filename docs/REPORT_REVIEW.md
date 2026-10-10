@@ -18,12 +18,12 @@ Opening paragraphs state the question or finding; method paragraphs explain the 
 | Claim | Evidence | Status |
 |---|---|---|
 | Source gaps affect interpretation | Daily raw/clean audit, 2018 August example and monthly coverage tables | Supported |
-| November has largest eligible-year mean monthly amount | Saved monthly qualified table; seasonal aggregation; Figure 6 | Supported for the qualified sample, not a climate normal |
-| Wet-interval frequency peaks in the afternoon | Pooled eligible-hour counts; Figure 10 | Supported descriptively, not a causal storm explanation |
-| Only 2017/2022/2024 support full-year summary | Annual and monthly coverage rules; Table 3 | Supported under declared thresholds |
-| A beats B by 29.4% mean Brier on shared anchors | Comparison metrics reconciled with paired daily squared errors; Figure 18/Table 6 | Supported for fitted pipelines, not a controlled feature ablation |
-| A beats both within-mode baselines in mean Brier | Final test metrics; Table 7/Figure 19 | Supported; LR has higher ROC-AUC at 1 mm |
-| B forest does not overall beat historical frequency | Mean Brier 0.02274 versus 0.02252 on B's population | Supported; no claim that complexity necessarily improves risk estimation |
+| November has largest eligible-year mean monthly amount | Saved monthly qualified table; seasonal aggregation; Figure 4 | Supported for the qualified sample, not a climate normal |
+| Wet-interval frequency peaks in the afternoon | Pooled eligible-hour counts; Figure 6 | Supported descriptively, not a causal storm explanation |
+| Only 2017/2022/2024 support full-year summary | Annual and monthly coverage rules; Section 3.1 | Supported under declared thresholds |
+| A beats B by 29.4% mean Brier on shared anchors | Comparison metrics reconciled with paired daily squared errors; Figure 9/Table 3 | Supported for fitted pipelines, not a controlled feature ablation |
+| A beats both within-mode baselines in mean Brier | Final test metrics; Table 4 | Supported; LR has higher ROC-AUC at 1 mm |
+| B forest does not overall beat historical frequency | Mean Brier 0.02274 versus 0.02252 on B's population; Table 4 | Supported; no claim that complexity necessarily improves risk estimation |
 | A performs well in every future year | No rolling future-year experiment | Not claimed; requires new evidence |
 | Impurity importance proves causal feature effects | Correlated rain features; no ablation | Not claimed |
 
@@ -42,3 +42,11 @@ Added a concise abstract and a combined conclusion; removed conversational/draft
 ## Sampling and RF follow-up
 
 The new validation-only section separates fixed-configuration sample-size comparisons from one-factor tuning. It reports all 14 candidates rather than only winners, preserves the original 2024-tested models, and explicitly limits conditional block intervals to one seed and fixed fitted models. Intervals for selected settings are not search-adjusted. Small improvements support a compute/accuracy compromise but do not prove equivalence or establish a universal optimum.
+
+## Integrated revision (10 October 2026)
+
+The earlier narrative rewrite and the new RF evidence now share one maintained report. Editable sections feed `project_report.template.tex`; one build command produces the canonical PDF used by the submission packager. Report generators obtain the sensitivity table and numerical claims from recorded results rather than duplicating manually entered scores.
+
+The revision distinguishes three comparisons: changing only the sample size, changing one RF setting at 15%, and increasing the sample for the selected setting. It reports the small gains in their numerical scale and does not infer unchanged PR-AUC or calibration from Brier alone. The discussion acknowledges that this follow-up occurred after the original test results were available; it is not presented as a predeclared blind study.
+
+The December maps use a common scale, and the reliability panel includes bin counts so sparse probability bins are visible. The report keeps its AI declaration and blank group details for the authors to complete. Verification for this revision is recorded separately in `VALIDATION.md`; no new training or final-test run was performed.

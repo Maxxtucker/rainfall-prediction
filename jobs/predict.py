@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Estimate P(station's next 30-minute rainfall exceeds threshold | station and calendar)."""
+"""Query next-30-minute exceedance risk with a saved calendar or history model."""
 import argparse
 from datetime import datetime
 import math
@@ -38,6 +38,12 @@ def main():
     spark.sparkContext.setLogLevel("WARN")
     model_root = args.model.rstrip("/")
     metadata = read_json(spark, model_root + "/metadata")
+    supported = metadata.get("supported_predictors", ["random_forest", "binary_logistic"])
+    if args.predictor not in supported:
+        spark.stop()
+        raise ValueError(
+            f"This model supports {', '.join(supported)}; predictor {args.predictor} is unavailable."
+        )
     mode = metadata.get("feature_mode")
     if mode not in (FEATURE_MODE, "short_term_v3"):
         raise ValueError("Incompatible legacy model; retrain.")

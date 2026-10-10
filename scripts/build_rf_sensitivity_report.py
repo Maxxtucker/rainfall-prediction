@@ -1,59 +1,86 @@
 #!/usr/bin/env python3
-"""Generate the follow-up validation section from completed sensitivity evidence."""
+"""Render the validation-only follow-up from its saved results and paired summaries."""
+import argparse
 import json
 from pathlib import Path
-from analyze_rf_sensitivity import read_document
 
 ROOT = Path(__file__).resolve().parents[1]
-RUN = ROOT / 'outputs/steps/rf-sensitivity-20261010'
+DEFAULT_RUN = ROOT / 'outputs/steps/rf-sensitivity-20261010'
+
+
+def read_document(directory):
+    parts = sorted(directory.glob('part-*'))
+    if len(parts) != 1:
+        raise ValueError(f'Expected one JSON document in {directory}')
+    return json.loads(parts[0].read_text())
+
+
+def build_section(results=DEFAULT_RUN):
+    """Return LaTeX without changing experiment outputs or fitting any models."""
+    if not read_document(results / 'completion').get('complete'):
+        raise ValueError('RF sensitivity experiment is incomplete')
+    records = read_document(results / 'results')
+    facts = json.loads((results / 'analysis.json').read_text())
+    by_name = {(r['mode'], r['name']): r for r in records}
+    if len(by_name) != len(records):
+        raise ValueError('Duplicate RF sensitivity candidates')
+    comparisons = {(r['mode'], r['reference'], r['candidate']): r for r in facts['comparisons']}
+    labels = [
+        ('original15', r'Reference', '15'), ('sample30', r'Reference', '30'),
+        ('depth10', r'Depth 10', '15'), ('trees80', r'80 trees', '15'),
+        ('leaf50', r'Minimum leaf size 50', '15'),
+        ('features_half', r'Half-feature selection', '15'),
+        ('selected30', r'Selected setting', '30'),
+    ]
+    rows = []
+    for name, label, fraction in labels:
+        a, b = [by_name[mode, name] for mode in ('short_term', 'calendar')]
+        rows.append(f"{label} & {fraction}\\% & {a['validation_macro_brier']:.8f} & {b['validation_macro_brier']:.8f}" + r' \\')
+    table = r'''\par
+\begin{table}[htbp]\centering\small
+\begin{tabular}{lrrr}\toprule
+Configuration & Fitting sample & A mean Brier & B mean Brier\\\midrule
+''' + '\n'.join(rows) + r'''
+\bottomrule\end{tabular}
+\caption{Mean Brier on the full 2022 validation set, averaged over seven rainfall thresholds. Lower is better. Changes at 15\% vary one setting from the reference. The selected 30\% row uses depth 10 for A and half-feature selection for B; it is not the same configuration for both modes.}
+\label{tab:rfsensitivity}\end{table}\par
+'''
+    values = {'RF_SENSITIVITY_TABLE': table}
+    for mode, prefix in [('short_term', 'A'), ('calendar', 'B')]:
+        for name, key in [('original15', 'REFERENCE'), ('sample30', 'SAMPLE'), ('selected30', 'SELECTED')]:
+            values[f'{prefix}_{key}_BRIER'] = f"{by_name[mode,name]['validation_macro_brier']:.8f}"
+        values[f'{prefix}_TRAIN30'] = f"{by_name[mode,'sample30']['counts']['train30']:,}"
+        change = comparisons[mode, 'original15', 'sample30']
+        values[f'{prefix}_SAMPLE_GAIN'] = f"{change['relative_improvement_percent']:.3f}"
+        values[f'{prefix}_SAMPLE_LOSS'] = f"{-change['relative_improvement_percent']:.3f}"
+        for suffix, value in zip(['LOW', 'HIGH'], change['conditional_95_percent_interval']):
+            values[f'{prefix}_SAMPLE_{suffix}'] = f'{value:.3f}'
+    for reference, candidate, label in [('original15', 'depth10', 'DEPTH'), ('depth10', 'selected30', 'SELECTED')]:
+        change = comparisons['short_term', reference, candidate]
+        values[f'A_{label}_GAIN'] = f"{change['relative_improvement_percent']:.3f}"
+        for suffix, value in zip(['LOW', 'HIGH'], change['conditional_95_percent_interval']):
+            values[f'A_{label}_{suffix}'] = f'{value:.3f}'
+    for threshold in (10, 20):
+        scores = []
+        for name in ('original15', 'sample30'):
+            metrics = by_name['short_term', name]['threshold_metrics']
+            scores.append(next(r['brier'] for r in metrics if r['threshold'] == threshold))
+        values[f'A_Q{threshold}_GAIN'] = f'{100 * (1 - scores[1] / scores[0]):.3f}'
+    text = (ROOT / 'report/task2/rf_sensitivity.template.tex').read_text()
+    for key, value in values.items():
+        text = text.replace('@@' + key + '@@', value)
+    if '@@' in text:
+        raise ValueError('Unfilled RF sensitivity report field')
+    return text
 
 
 def main():
-    results = read_document(RUN / 'results')
-    facts = json.loads((RUN / 'analysis.json').read_text())
-    labels = {'original15': 'Reference, 15\\%', 'sample30': 'Reference, 30\\%',
-              'depth10': 'Depth 10, 15\\%', 'trees80': '80 trees, 15\\%',
-              'leaf50': 'Min. leaf 50, 15\\%', 'features_half': 'Half features, 15\\%',
-              'selected30': 'Selected setting, 30\\%'}
-    rows = []
-    for mode, label in [('short_term', 'A'), ('calendar', 'B')]:
-        records = [r for r in results if r['mode'] == mode]
-        reference = next(r for r in records if r['name'] == 'original15')['validation_macro_brier']
-        for r in records:
-            change = 100 * (reference - r['validation_macro_brier']) / reference
-            elapsed = '--' if r['reuse'] else f"{r['fit_seconds']/60:.2f}"
-            rows.append(f"{label} & {labels[r['name']]} & {r['validation_macro_brier']:.8f} & {change:+.3f} & {elapsed}" + r' \\')
-        if mode == 'short_term':
-            rows.append(r'\midrule')
-    comparisons = []
-    for item in facts['comparisons']:
-        label = 'A' if item['mode'] == 'short_term' else 'B'
-        if item['candidate'] not in {'sample30', 'selected30'}:
-            continue
-        kind = 'reference setting' if item['candidate'] == 'sample30' else 'selected setting'
-        lo, hi = item['conditional_95_percent_interval']
-        comparisons.append(f"For {label} at the {kind}, increasing the sample from 15\\% to 30\\% changes mean validation Brier by {item['relative_improvement_percent']:+.3f}\\% relative improvement (conditional 95\\% interval [{lo:+.3f}\\%, {hi:+.3f}\\%]).")
-    winners = []
-    for mode, label in [('short_term', 'A'), ('calendar', 'B')]:
-        winner = min((r for r in results if r['mode'] == mode and r['fraction'] == .15), key=lambda r: r['validation_macro_brier'])
-        winners.append(f"{label}: depth {winner['depth']}, {winner['trees']} trees, minimum leaf {winner['min_instances_per_node']}, feature subset {winner['feature_subset_strategy']}")
-    text = r'''\clearpage
-\section{Sampling and RF sensitivity on 2022 validation}
-The original 15\% fitting sample was a computational choice, not an empirically established optimum. We subsequently compare 15\% and 30\% at identical RF settings, then broaden the search. The station/time hash and seed 2026 are unchanged, so the 30\% sample contains the original 15\%. Both use the same full 2022 validation anchors and training-only empirical supports; temperature is fixed at 1. No 2023 or 2024 partitions are read in this follow-up.
-
-At 15\%, the one-factor search changes depth 8 to 10, trees 40 to 80, minimum leaf size 25 to 50, or sqrt feature selection to half the features; subsampling remains 0.8. The best 15\% setting is additionally fitted at 30\%. This extends the earlier depth-5/8 search without claiming an exhaustive grid.
-\begin{table}[H]\centering\small
-\caption{Mean validation Brier across seven thresholds (lower is better). Improvement is relative to each mode's original 15\% forest; positive is better. Fit time excludes validation scoring. The original models are reused, so their fit times are not remeasured.}
-\begin{tabular}{llrrr}\toprule Mode & Candidate & Validation Brier & Improvement (\%) & Fit (min)\\\midrule
-''' + '\n'.join(rows) + r'''
-\bottomrule\end{tabular}\label{tab:rfsensitivity}\end{table}
-''' + '\n\n'.join(comparisons) + '\n\n' + r'\textbf{Selected 15\% settings.} ' + '; '.join(winners) + '.\n\n' + r'''\textbf{Interpretation and limits.} These paired intervals use 2,000 circular seven-day calendar blocks, preserving stations and thresholds together. They condition on one sampling/RF seed and the fitted models, not refitting uncertainty. A small improvement supports a computational compromise for this experiment; an interval spanning zero does not prove equivalence. Selecting on 2022 can overfit that year; intervals for selected settings are not adjusted for this search. The original calibrated forests and all reported 2024 test results remain unchanged; the new models are validation-only sensitivity candidates.
-
-\textbf{Overlapping examples.} Consecutive five-minute prediction anchors share 25 minutes of target rainfall. They remain distinct training examples within a chronological split, rather than being reduced to one example every 30 minutes. Training and evaluation are separated by year with target-boundary purging. Counts therefore describe anchors, not independent storms.
-'''
-    target = ROOT / 'report/task2/rf_sensitivity.tex'
-    target.write_text(text)
-    print(target)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--results', type=Path, default=DEFAULT_RUN)
+    parser.add_argument('--output', type=Path, default=ROOT / 'report/task2/rf_sensitivity.tex')
+    args = parser.parse_args()
+    args.output.write_text(build_section(args.results.resolve()))
+    print(args.output)
 
 
 if __name__ == '__main__':
