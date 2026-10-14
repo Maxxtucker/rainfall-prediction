@@ -9,7 +9,21 @@ We assume that observation timestamps mark the endpoints of five-minute accumula
 
 We interpret the assignment's station, prediction time and rainfall threshold inputs under two information settings. In A, recent station observations are available when the forecast is issued and are retrieved internally. In B, only station and calendar information are available, so the output describes historical risk for the requested time. We use A as the primary short-term forecasting model and B as a supplementary calendar-only baseline. Comparing them assesses the practical benefit of recent observations, although their different training populations prevent a controlled feature-ablation interpretation.
 
-\textbf{A, the short-term model}, also reads recent rainfall from a supplied clean observation table. With a ten-minute latency allowance, it uses twelve observations ending at $t-65,t-60,\ldots,t-10$ minutes. Each must be present, and both publication timestamps for each record must be available by $t$. Missing history therefore excludes an example instead of becoming zero rainfall. Figure~\ref{fig:t2timeline} shows the separation between predictors and the future label.
+\textbf{A, the short-term model}, also reads recent rainfall from a supplied clean observation table. We use a pre-specified ten-minute buffer, with twelve observations ending at $t-65,t-60,\ldots,t-10$ minutes. Each record must be present and both recorded update timestamps must be no later than $t$. Missing or not-yet-updated history excludes an example instead of becoming zero rainfall.
+
+Table~\ref{tab:updatedelay} shows a discrepancy between observation and update times, measured as the later of the two update timestamps minus the aligned observation timestamp. Median delays are close to ten minutes in both periods. In practice, the latest rainfall observation may therefore be unavailable when a forecast is issued. We use a ten-minute buffer to represent this reporting lag, together with the record-level update checks described above, rather than assuming that measurements are available immediately.
+
+\begin{table}[htbp]\centering\small
+\begin{tabular}{lrrrr}\toprule
+Period & Observations & Median (min) & P90 (min) & Within 10 min (\%)\\\midrule
+2017--2021 (training) & 28,256,245 & 9.58 & 15.08 & 68.93 \\
+2017--2024 (all years) & 48,538,625 & 9.47 & 12.68 & 76.40 \\
+\bottomrule\end{tabular}
+\caption{Observation-to-update delay in the cleaned records. All observations have both update timestamps. P90 is the 90th percentile; the final column is the percentage with the later update no more than ten minutes after observation. These counts describe observations, not eligible prediction examples.}
+\label{tab:updatedelay}
+\end{table}
+
+Figure~\ref{fig:t2timeline} shows the separation between predictors and the future label.
 \plot{17_prediction_timeline}{The information used by A at issue time $t$. Markers show interval endpoints. The latest history interval ends ten minutes before issue time; the six intervals after issue time form the target.}{fig:t2timeline}
 \textbf{B, the calendar model}, needs only station, time and threshold. It estimates the historical risk associated with that place and time of year or day. For example, B can answer a query about tomorrow afternoon; A can use tomorrow's recent observations only when they become available. Neither model uses neighbouring stations, radar or numerical weather forecasts.
 
@@ -45,6 +59,7 @@ The training pipeline indexes station IDs as categorical features and fits numer
 
 Two baselines help establish what the forest adds. Logistic regression uses the same features plus the query threshold, with each sampled example expanded to the seven thresholds. Station IDs are one-hot encoded and numeric inputs scaled; L2 regularisation 0.01 beats 0.1 on validation for both modes. These probabilities have no separate calibration fit. The historical baseline instead estimates station/month/hour event frequencies, shrunk towards the training global rate with 100 pseudo-observations; unseen groups use that global rate. It is a meaningful competitor for B because it also captures seasonal and daily patterns.
 
+\clearpage
 \section{Prediction results}
 \subsection{Does recent rainfall improve the forecast?}
 Our main score is the Brier score,
@@ -56,7 +71,7 @@ which measures probability squared error; lower is better. PR-AUC summarises the
 
 For the direct comparison, both forests predict the same 5,729,508 examples, covering 89.9\% of B's eligible 2024 set. Their labels agree. Training populations still differ, so this compares the fitted systems rather than isolating the effect of history features on identical training rows.
 \par
-\begin{table}[htbp]\centering\small
+\begin{table}[!ht]\centering\small
 \begin{tabular}{rrrrrr}\toprule
 $q$ (mm) & Event rate (\%) & Brier A & Brier B & PR-AUC A & PR-AUC B\\\midrule
 0 & 6.398 & 0.03798 & 0.05924 & 0.6091 & 0.1097 \\
@@ -71,13 +86,14 @@ $q$ (mm) & Event rate (\%) & Brier A & Brier B & PR-AUC A & PR-AUC B\\\midrule
 \caption{Forest performance on identical 2024 examples. The event rate gives context for rare-event scores: small Brier values at large thresholds alone do not establish useful prediction.}\label{tab:t2common}
 \end{table}
 \par
-Across the seven thresholds, mean Brier falls from 0.02283 for B to 0.01613 for A, a 29.4\% relative reduction in probability squared error. This is not an accuracy increase of 29.4 percentage points. The advantage is greatest for any positive rain (35.9\% reduction) and decreases to 1.7\% above 20 mm. Recent rain is therefore useful in this holdout, but the heaviest events remain difficult.
+Across the seven thresholds, mean Brier falls from 0.02283 for B to 0.01613 for A, a 29.4\% relative reduction in probability squared error. The advantage is greatest for any positive rain (35.9\% reduction) and decreases to 1.7\% above 20 mm. Recent rain is therefore useful in this holdout, but the heaviest events remain difficult.
 \plot{18_common_comparison}{Comparison on shared 2024 examples. Left: relative Brier reduction with conditional 95\% block-bootstrap intervals. Right: PR-AUC and event prevalence on a logarithmic scale. Rainfall thresholds are displayed as equally spaced categories.}{fig:t2common}
-To account for overlapping labels and shared weather across stations, we form 2,000 bootstrap replicates by resampling circular blocks of seven consecutive calendar days, retaining all stations and thresholds together. The resulting 95\% interval for the mean relative Brier reduction is 25.4--32.9\%. It describes uncertainty in the fixed 2024 predictions; it does not include refitting or establish that seven-day blocks remove all dependence.
+To account for overlapping labels and shared weather across stations, we form 2,000 bootstrap replicates by resampling circular blocks of seven consecutive calendar days, retaining all stations and thresholds together. The resulting 95\% interval for the mean relative Brier reduction is 25.4--32.9\%. These results show that Model A consistently achieves lower Brier scores than Model B across the seven evaluated thresholds on the shared 2024 test set.
 
+\clearpage
 \subsection{What the baselines and probability checks reveal}
 \par
-\begin{table}[htbp]\centering\small
+\begin{table}[!ht]\centering\small
 \begin{tabular}{llrrr}\toprule
 Mode & Model & Mean Brier & PR-AUC at 1 mm & Log loss at 1 mm\\\midrule
 A & Random forest & 0.01613 & 0.4218 & 0.0824 \\
@@ -91,7 +107,7 @@ B & Historical frequency & 0.02252 & 0.0516 & 0.1146 \\
 \caption{Baselines on each mode's eligible test population: 5,729,508 examples for A and 6,374,476 for B. Use Table~\ref{tab:t2common} for direct A/B comparisons. Small repeated AUC differences arise from Spark's partition-dependent curve downsampling.}\label{tab:t2baseline}
 \end{table}
 \par
-A's forest improves Brier over both baselines at every evaluated threshold. Logistic regression nevertheless has higher ROC-AUC at 1 mm (0.8607 versus 0.8035), despite worse PR-AUC, Brier and log loss. A single ranking metric would therefore give an incomplete assessment. For B, historical frequencies achieve the lowest mean Brier. More complex modelling has not demonstrated an overall benefit when only station and calendar information are available.
+A's forest improves Brier over both baselines at every evaluated threshold. Logistic regression nevertheless has higher ROC-AUC at 1 mm (0.8607 versus 0.8035), despite worse PR-AUC, Brier and log loss. For B, historical frequencies achieve the lowest mean Brier. More complex modelling has not demonstrated an overall benefit when only station and calendar information are available.
 \plot{20_reliability}{Calibration at 1 mm on the shared examples. Upper panels compare bin-average predictions with observed event rates; B is enlarged to show its two occupied bins. Lower panels show sample counts in fixed 0.1-wide probability bins across the full probability range.}{fig:t2reliability}
 A distinguishes a wider range of risks, but several high-probability bins underestimate the event frequency. Mean predicted risk is 2.38\%, against 2.58\% observed, and the ten-bin weighted absolute calibration error is 0.196 percentage points. These figures use A's full eligible set, which is also the shared set. The small aggregate error needs to be read alongside the uneven bin counts; it cannot establish reliable probabilities at every risk level.
 

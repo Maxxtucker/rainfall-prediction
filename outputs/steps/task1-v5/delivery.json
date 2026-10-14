@@ -4,9 +4,9 @@
   "figures": "figures/task1-v5-report",
   "report": "report/project_report.pdf",
   "source_archive_sha256": "d0f5110166032837a15a4cdbfa88dfb750a4f368ed4b1a1f2e7fc0fd40e17fab",
-  "report_sha256": "80bb05c71fbc2dd78ad4b73ad8201f416bab0b6425603a1e1d9282d493d92393",
+  "report_sha256": "14c9189f966ad750ef546f175f6a6da98480a71904e87455b78a566e79f2550f",
   "numeric_validation": "passed; see validation.json",
-  "visual_review": "Section 4.1 updated and affected PDF pages rendered and reviewed on 2026-10-12; appendices retained",
+  "visual_review": "20-page report; Figure 9 and result-section float order corrected; pages 10--12 rendered and reviewed on 2026-10-14",
   "figure_count": 46,
   "original_task1_report": {
     "path_at_time_of_run": "report/task1/task1_report.pdf",

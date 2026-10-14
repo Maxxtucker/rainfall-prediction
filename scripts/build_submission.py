@@ -89,7 +89,9 @@ def main():
     manifest = {'format': 1, 'project': 'DSA5208 Singapore rainfall 2017-2024',
                 'report': 'report/project_report.pdf', 'file_count': len(records),
                 'uncompressed_bytes': sum(r['bytes'] for r in records),
-                'group_details': 'Intentionally blank; fill before final Canvas submission',
+                'group_details': [{'name': 'Ma Xiaoxiao', 'student_id': 'A0259173X'},
+                                  {'name': 'Ye Sifan', 'student_id': 'A0262394Y'},
+                                  {'name': 'Chen Yuda', 'student_id': 'A0353182H'}],
                 'excluded': ['local cloud/env.sh', 'credentials and local runtime configuration',
                              'raw CSV/clean Parquet/large feature caches', 'old runs and caches',
                              'duplicate SVG exports'], 'files': records}

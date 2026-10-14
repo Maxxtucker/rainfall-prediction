@@ -1,0 +1,119 @@
+{
+  "source": "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/clean-all-v1/clean",
+  "definition": "max(update_timestamp, reading_update_timestamp) - aligned observation timestamp",
+  "interpretation": "Recorded update delay; not independently observed first-publication latency.",
+  "quantiles": "Exact linear interpolation, known-update records only; negative delays retained and counted.",
+  "files_read": 96,
+  "by_year": {
+    "2017": {
+      "observations": 5256018,
+      "known_updates": 5256018,
+      "missing_updates": 0,
+      "median_minutes": 8.633333333333333,
+      "p90_minutes": 17.783333333333335,
+      "p99_minutes": 330.78333333333336,
+      "negative_delay_count": 0,
+      "fraction_known_within_10m": 0.6728949558391923,
+      "fraction_known_over_10m": 0.32710504416080766
+    },
+    "2018": {
+      "observations": 4594246,
+      "known_updates": 4594246,
+      "missing_updates": 0,
+      "median_minutes": 7.35,
+      "p90_minutes": 15.483333333333333,
+      "p99_minutes": 4538.433333333333,
+      "negative_delay_count": 0,
+      "fraction_known_within_10m": 0.7866161280871768,
+      "fraction_known_over_10m": 0.21338387191282313
+    },
+    "2019": {
+      "observations": 5026862,
+      "known_updates": 5026862,
+      "missing_updates": 0,
+      "median_minutes": 7.683333333333334,
+      "p90_minutes": 12.366666666666667,
+      "p99_minutes": 6694.766666666666,
+      "negative_delay_count": 0,
+      "fraction_known_within_10m": 0.7695182402063155,
+      "fraction_known_over_10m": 0.2304817597936844
+    },
+    "2020": {
+      "observations": 6334473,
+      "known_updates": 6334473,
+      "missing_updates": 0,
+      "median_minutes": 10.05,
+      "p90_minutes": 15.016666666666667,
+      "p99_minutes": 4096.35,
+      "negative_delay_count": 0,
+      "fraction_known_within_10m": 0.4672927013817882,
+      "fraction_known_over_10m": 0.5327072986182118
+    },
+    "2021": {
+      "observations": 7044646,
+      "known_updates": 7044646,
+      "missing_updates": 0,
+      "median_minutes": 9.633333333333333,
+      "p90_minutes": 10.65,
+      "p99_minutes": 93.5,
+      "negative_delay_count": 0,
+      "fraction_known_within_10m": 0.7802793781263104,
+      "fraction_known_over_10m": 0.2197206218736896
+    },
+    "2022": {
+      "observations": 7133230,
+      "known_updates": 7133230,
+      "missing_updates": 0,
+      "median_minutes": 9.583333333333334,
+      "p90_minutes": 10.183333333333334,
+      "p99_minutes": 1215.8,
+      "negative_delay_count": 0,
+      "fraction_known_within_10m": 0.8703780755702536,
+      "fraction_known_over_10m": 0.1296219244297464
+    },
+    "2023": {
+      "observations": 6742890,
+      "known_updates": 6742890,
+      "missing_updates": 0,
+      "median_minutes": 9.433333333333334,
+      "p90_minutes": 11.3,
+      "p99_minutes": 4191.5,
+      "negative_delay_count": 0,
+      "fraction_known_within_10m": 0.8213998745345097,
+      "fraction_known_over_10m": 0.1786001254654903
+    },
+    "2024": {
+      "observations": 6406260,
+      "known_updates": 6406260,
+      "missing_updates": 0,
+      "median_minutes": 5.55,
+      "p90_minutes": 6.15,
+      "p99_minutes": 1434.75,
+      "negative_delay_count": 0,
+      "fraction_known_within_10m": 0.9150896154698686,
+      "fraction_known_over_10m": 0.08491038453013147
+    }
+  },
+  "training_2017_2021": {
+    "observations": 28256245,
+    "known_updates": 28256245,
+    "missing_updates": 0,
+    "median_minutes": 9.583333333333334,
+    "p90_minutes": 15.083333333333334,
+    "p99_minutes": 2716.4333333333334,
+    "negative_delay_count": 0,
+    "fraction_known_within_10m": 0.6892551717328329,
+    "fraction_known_over_10m": 0.31074482826716715
+  },
+  "all_2017_2024": {
+    "observations": 48538625,
+    "known_updates": 48538625,
+    "missing_updates": 0,
+    "median_minutes": 9.466666666666667,
+    "p90_minutes": 12.683333333333334,
+    "p99_minutes": 2882.3166666666666,
+    "negative_delay_count": 0,
+    "fraction_known_within_10m": 0.764036496707519,
+    "fraction_known_over_10m": 0.23596350329248097
+  }
+}

@@ -1,6 +1,6 @@
 # Project report
 
-[project_report.pdf](project_report.pdf) is the single report for submission. It combines the rainfall analysis, original 2024 model evaluation, and the follow-up sampling/tuning study evaluated on 2022. `project_report.tex` is generated; make edits in the maintained sources below. Group names and student IDs remain to be completed.
+[project_report.pdf](project_report.pdf) is the single report for submission. It combines the rainfall analysis, original 2024 model evaluation, and the follow-up sampling/tuning study evaluated on 2022. `project_report.tex` is generated; make edits in the maintained sources below. The cover lists Ma Xiaoxiao (A0259173X), Ye Sifan (A0262394Y), and Chen Yuda (A0353182H).
 
 ## Build
 
@@ -57,4 +57,4 @@ The original final-model results use a 2024 test set. The RF follow-up compares 
 
 ## Before submission
 
-Fill in all members' names and student IDs in `project_report.template.tex`, review the AI declaration, rebuild, and inspect the PDF. Run `python scripts/build_submission.py` from the project root to package this same report with the code, models and evidence. The recorded experiment and software checks are documented in [docs/VALIDATION.md](../docs/VALIDATION.md).
+Verify the group details in `project_report.template.tex`, review the AI declaration, rebuild, and inspect the PDF. Run `python scripts/build_submission.py` from the project root to package this same report with the code, models and evidence. The recorded experiment and software checks are documented in [docs/VALIDATION.md](../docs/VALIDATION.md).

@@ -40,3 +40,13 @@ The records above describe the original experiments and their checks. This revis
 - The submission packager verified archive contents, SHA-256 hashes and ZIP integrity. It includes the canonical PDF and maintained report sources alongside the saved models and evidence.
 
 These checks concern report accuracy and workflow behaviour. They add no new predictive-performance evidence.
+
+## Observation-to-update delay audit (14 October 2026)
+
+`scripts/audit_publication_delay.py` read all saved clean Parquet partitions locally, projecting only the timestamps and availability flag, without cloud compute. The count reconciles to 48,538,625 observations. Delay is the later of the two update timestamps minus the aligned observation timestamp; exact quantiles use linear interpolation. All records have both update timestamps and no negative delays. For 2017--2021 only (28,256,245 records), median delay is 9.5833 minutes, P90 is 15.0833 minutes, and 68.9255% are within ten minutes. Thus ten minutes is a buffer, not a guarantee: A still explicitly checks both timestamps at each anchor. Update metadata can reflect later revisions and must not be described as measured first-publication time. Full yearly and pooled results are in `outputs/steps/task2-dual-v2/publication_delay_audit.json`. These descriptive results do not change the fitted models or their latency setting.
+
+Reproduce after downloading the clean data:
+
+```bash
+python scripts/audit_publication_delay.py --clean /path/to/clean --output outputs/steps/task2-dual-v2/publication_delay_audit.json
+```
