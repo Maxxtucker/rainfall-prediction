@@ -1,0 +1,45 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "mode": "short_term",
+      "fraction": 0.3,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "source_hash_matches": true,
+      "reference_train_fraction": 0.15,
+      "evaluation_year": 2024
+    },
+    {
+      "mode": "short_term",
+      "fraction": 1.0,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "source_hash_matches": true,
+      "reference_train_fraction": 0.15,
+      "evaluation_year": 2024
+    },
+    {
+      "mode": "calendar",
+      "fraction": 0.3,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "source_hash_matches": true,
+      "reference_train_fraction": 0.15,
+      "evaluation_year": 2024
+    },
+    {
+      "mode": "calendar",
+      "fraction": 1.0,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "source_hash_matches": true,
+      "reference_train_fraction": 0.15,
+      "evaluation_year": 2024
+    }
+  ],
+  "full_training_daily_brier_reconciled": true,
+  "source_sha256": "f70b4a38e750f08327b3d1605d15f0f6a518b8a85636016bab3b8166c3bb78d2",
+  "gbt15_raw_verified": false,
+  "calendar15_metric_export_verified": true
+}

@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 from build_rf_sensitivity_report import build_section
-from build_teammate_report import build_section as build_teammate_section
+from build_task2_experiments import build_values as experiment_values
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,11 +19,10 @@ def latex_rows(lines):
 
 def split_table(models):
     periods = (
-        ('train_full', '2017--2021 (full)', 'Empirical supports and baseline'),
-        ('train_sample', '2017--2021 (15\\%)', 'RF and binary fitting'),
+        ('train_full', '2017--2021', 'Training population'),
         ('validation', '2022', 'Model and cutoff selection'),
-        ('calibration', '2023', 'RF temperature selection'),
-        ('test', '2024', 'Final held-out evaluation'),
+        ('calibration', '2023', 'RF and GBT temperature selection'),
+        ('test', '2024', 'Model evaluation'),
     )
     short_term_counts = models['short_term']['counts']
     calendar_counts = models['calendar']['counts']
@@ -65,37 +64,15 @@ def comparison_values(facts):
     }
 
 
-def baseline_values(facts, results_root):
-    """Keep each baseline on its own mode's eligible test population."""
-    model_names = (
-        ('random_forest', 'Random forest'),
-        ('binary_logistic', 'Binary LR'),
-        ('climatology', 'Historical frequency'),
-    )
-    values = {}
-    table = []
-    for mode, label in MODES:
-        metrics_directory = results_root / 'models' / mode / 'metrics/test_metrics'
-        metrics = pd.concat(
-            [pd.read_csv(path) for path in metrics_directory.glob('part-*.csv')]
-        )
-        threshold_metrics = metrics[
-            (metrics['threshold'] == 1) & (metrics['cutoff_kind'] == 'default_0.5')
-        ]
-        for model, name in model_names:
-            metric = threshold_metrics[threshold_metrics['model'] == model].iloc[0]
-            mean_brier = facts['models'][mode]['macro_brier'][model]
-            table.append(
-                f"{label} & {name} & {mean_brier:.5f}"
-                f" & {metric['pr_auc']:.4f} & {metric['log_loss']:.4f}"
-            )
-            if mode == 'short_term' and model == 'random_forest':
-                values['RF_ROC'] = f"{metric['roc_auc']:.4f}"
-            elif mode == 'short_term' and model == 'binary_logistic':
-                values['LR_ROC'] = f"{metric['roc_auc']:.4f}"
-
-    values['BASELINE_ROWS'] = latex_rows(table)
-    return values
+def ranking_values(results_root):
+    """Retain the original 1 mm ROC comparison alongside the new model table."""
+    metrics_directory = results_root / 'models/short_term/metrics/test_metrics'
+    metrics = pd.concat([pd.read_csv(path) for path in sorted(metrics_directory.glob('part-*.csv'))])
+    metrics = metrics[(metrics['threshold'] == 1) & (metrics['cutoff_kind'] == 'default_0.5')]
+    return {
+        key: f"{metrics.loc[metrics['model'] == model, 'roc_auc'].iloc[0]:.4f}"
+        for key, model in [('RF_ROC', 'random_forest'), ('LR_ROC', 'binary_logistic')]
+    }
 
 
 def render_task2(facts, results_root):
@@ -113,7 +90,8 @@ def render_task2(facts, results_root):
         'A_ECE': f"{100 * calibration['ece_10bin']:.3f}",
     }
     values.update(comparison_values(facts))
-    values.update(baseline_values(facts, results_root))
+    values.update(ranking_values(results_root))
+    values.update(experiment_values())
 
     section = (ROOT / 'report/task2/section_template.tex').read_text()
     for key, value in values.items():
@@ -124,9 +102,11 @@ def render_task2(facts, results_root):
 
 
 def assemble_report(task2, sensitivity):
-    sections = {'TASK2': task2, 'RF_SENSITIVITY': sensitivity, 'TEAMMATE': build_teammate_section()}
+    sections = {'TASK2': task2, 'RF_SENSITIVITY': sensitivity}
     for name in ('introduction', 'data', 'weather', 'discussion', 'appendix'):
         sections[name.upper()] = (ROOT / 'report/sections' / (name + '.tex')).read_text()
+    for key, value in experiment_values().items():
+        sections['APPENDIX'] = sections['APPENDIX'].replace('@@' + key + '@@', value)
 
     report = (ROOT / 'report/project_report.template.tex').read_text()
     for key, section in sections.items():
@@ -147,7 +127,6 @@ def main():
 
     (ROOT / 'report/task2/section.tex').write_text(task2)
     (ROOT / 'report/task2/rf_sensitivity.tex').write_text(sensitivity)
-    (ROOT / 'report/task2/teammate.tex').write_text(build_teammate_section())
     target = ROOT / 'report/project_report.tex'
     target.write_text(report)
     print(target)

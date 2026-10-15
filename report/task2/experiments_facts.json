@@ -10,7 +10,12 @@
       "depth": 5,
       "temperature": 0.75,
       "evidence": "teammate summary only",
-      "pr_auc_1mm": null
+      "pr_auc_1mm": null,
+      "log_loss_1mm": null,
+      "evaluation_year": 2024,
+      "fit_fraction": 0.15,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/teammate-summary.md"
     },
     {
       "mode": "calendar",
@@ -20,7 +25,12 @@
       "mean_log_loss": 0.10789135235946709,
       "mean_pr_auc": 0.047362677323910925,
       "pr_auc_1mm": 0.0510894246780351,
+      "log_loss_1mm": 0.1193323139220142,
       "evidence": "per-threshold text export",
+      "evaluation_year": 2024,
+      "fit_fraction": 0.15,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample15/metrics/gbt",
       "depth": 5,
       "temperature": 1.0
     },
@@ -32,7 +42,12 @@
       "mean_log_loss": 0.0700041590103285,
       "mean_pr_auc": 0.3176451344874097,
       "pr_auc_1mm": 0.4218048041070003,
-      "evidence": "raw export"
+      "log_loss_1mm": 0.0823718416580017,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 0.15,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/task2-dual-v2/models/short_term/metrics/test_metrics"
     },
     {
       "mode": "short_term",
@@ -42,7 +57,12 @@
       "mean_log_loss": 0.08278677699616176,
       "mean_pr_auc": 0.26484640191715897,
       "pr_auc_1mm": 0.3629418101065617,
-      "evidence": "raw export"
+      "log_loss_1mm": 0.0875161933693435,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 0.15,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/task2-dual-v2/models/short_term/metrics/test_metrics"
     },
     {
       "mode": "short_term",
@@ -52,7 +72,12 @@
       "mean_log_loss": 0.09992290849662375,
       "mean_pr_auc": 0.04396978773014389,
       "pr_auc_1mm": 0.0467110642656421,
-      "evidence": "raw export"
+      "log_loss_1mm": 0.1166261731023743,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 1.0,
+      "fraction_role": "comparison group; historical frequency uses full training data",
+      "source_path": "outputs/steps/task2-dual-v2/models/short_term/metrics/test_metrics"
     },
     {
       "mode": "short_term",
@@ -62,7 +87,12 @@
       "mean_log_loss": 0.07001584282367598,
       "mean_pr_auc": 0.31850767184170176,
       "pr_auc_1mm": 0.4228910350174562,
-      "evidence": "raw export"
+      "log_loss_1mm": 0.0823714874868323,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 1.0,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/task2-full-20261012/models/short_term/metrics/test_metrics"
     },
     {
       "mode": "short_term",
@@ -72,7 +102,12 @@
       "mean_log_loss": 0.08278840407145606,
       "mean_pr_auc": 0.2651897835153325,
       "pr_auc_1mm": 0.3633840659359476,
-      "evidence": "raw export"
+      "log_loss_1mm": 0.0874844704327437,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 1.0,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/task2-full-20261012/models/short_term/metrics/test_metrics"
     },
     {
       "mode": "short_term",
@@ -82,7 +117,12 @@
       "mean_log_loss": 0.09992290849655676,
       "mean_pr_auc": 0.04396941263499065,
       "pr_auc_1mm": 0.0467101651253819,
-      "evidence": "raw export"
+      "log_loss_1mm": 0.1166261731022742,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 1.0,
+      "fraction_role": "comparison group; historical frequency uses full training data",
+      "source_path": "outputs/steps/task2-full-20261012/models/short_term/metrics/test_metrics"
     },
     {
       "mode": "short_term",
@@ -92,7 +132,12 @@
       "mean_log_loss": 0.07219660286941197,
       "mean_pr_auc": 0.31394723794839924,
       "pr_auc_1mm": 0.4202592631266689,
+      "log_loss_1mm": 0.0824677219822012,
       "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 0.3,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30/metrics/gbt",
       "depth": 5,
       "temperature": 0.75,
       "train_anchors": 5608769
@@ -105,7 +150,12 @@
       "mean_log_loss": 0.07215140475375689,
       "mean_pr_auc": 0.3146464957647142,
       "pr_auc_1mm": 0.4281519865307638,
+      "log_loss_1mm": 0.08239991020002,
       "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 1.0,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample100/metrics/gbt",
       "depth": 5,
       "temperature": 0.75,
       "train_anchors": 18688263
@@ -118,7 +168,12 @@
       "mean_log_loss": 0.10001508618782674,
       "mean_pr_auc": 0.044774812952495024,
       "pr_auc_1mm": 0.0493643926190802,
-      "evidence": "raw export"
+      "log_loss_1mm": 0.1165184906420439,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 0.15,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/task2-dual-v2/models/calendar/metrics/test_metrics"
     },
     {
       "mode": "calendar",
@@ -128,7 +183,12 @@
       "mean_log_loss": 0.10452754370490218,
       "mean_pr_auc": 0.038901547418779145,
       "pr_auc_1mm": 0.0428238400347022,
-      "evidence": "raw export"
+      "log_loss_1mm": 0.1164976051059135,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 0.15,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/task2-dual-v2/models/calendar/metrics/test_metrics"
     },
     {
       "mode": "calendar",
@@ -138,7 +198,12 @@
       "mean_log_loss": 0.09865705366374154,
       "mean_pr_auc": 0.047563719128511144,
       "pr_auc_1mm": 0.0516039080173453,
-      "evidence": "raw export"
+      "log_loss_1mm": 0.1146471489393111,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 1.0,
+      "fraction_role": "comparison group; historical frequency uses full training data",
+      "source_path": "outputs/steps/task2-dual-v2/models/calendar/metrics/test_metrics"
     },
     {
       "mode": "calendar",
@@ -148,7 +213,12 @@
       "mean_log_loss": 0.10016964593036996,
       "mean_pr_auc": 0.04636148599123708,
       "pr_auc_1mm": 0.0517654969633627,
-      "evidence": "raw export"
+      "log_loss_1mm": 0.11666853837114,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 1.0,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/task2-full-20261012/models/calendar/metrics/test_metrics"
     },
     {
       "mode": "calendar",
@@ -158,7 +228,12 @@
       "mean_log_loss": 0.10453970522842378,
       "mean_pr_auc": 0.038872378047161316,
       "pr_auc_1mm": 0.0427874291234285,
-      "evidence": "raw export"
+      "log_loss_1mm": 0.1165017798968715,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 1.0,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/task2-full-20261012/models/calendar/metrics/test_metrics"
     },
     {
       "mode": "calendar",
@@ -168,7 +243,12 @@
       "mean_log_loss": 0.09865705366375559,
       "mean_pr_auc": 0.04756285956885743,
       "pr_auc_1mm": 0.0516040060845517,
-      "evidence": "raw export"
+      "log_loss_1mm": 0.1146471489392203,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 1.0,
+      "fraction_role": "comparison group; historical frequency uses full training data",
+      "source_path": "outputs/steps/task2-full-20261012/models/calendar/metrics/test_metrics"
     },
     {
       "mode": "calendar",
@@ -178,7 +258,12 @@
       "mean_log_loss": 0.10789161912010788,
       "mean_pr_auc": 0.04722623952144302,
       "pr_auc_1mm": 0.0520730302216092,
+      "log_loss_1mm": 0.1194320899181733,
       "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 0.3,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30/metrics/gbt",
       "depth": 5,
       "temperature": 1.0,
       "train_anchors": 8233882
@@ -191,7 +276,12 @@
       "mean_log_loss": 0.10782866451646525,
       "mean_pr_auc": 0.048702652509261465,
       "pr_auc_1mm": 0.052195180478957,
+      "log_loss_1mm": 0.1194079869918917,
       "evidence": "raw export",
+      "evaluation_year": 2024,
+      "fit_fraction": 1.0,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample100/metrics/gbt",
       "depth": 5,
       "temperature": 1.0,
       "train_anchors": 27434001
@@ -202,6 +292,11 @@
       "mode": "short_term",
       "fraction": 0.3,
       "threshold": 3.0,
+      "gbt_train_fraction": 0.3,
+      "random_forest_train_fraction": 0.15,
+      "binary_logistic_train_fraction": 0.15,
+      "evaluation_year": 2024,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30/metrics",
       "gbt_brier": 0.0107171351378376,
       "gbt_pr_auc": 0.2540979622982267,
       "random_forest_brier": 0.0105571370181908,
@@ -213,6 +308,11 @@
       "mode": "short_term",
       "fraction": 0.3,
       "threshold": 7.5,
+      "gbt_train_fraction": 0.3,
+      "random_forest_train_fraction": 0.15,
+      "binary_logistic_train_fraction": 0.15,
+      "evaluation_year": 2024,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30/metrics",
       "gbt_brier": 0.0051321039111285,
       "gbt_pr_auc": 0.1410086701506143,
       "random_forest_brier": 0.0050543774582957,
@@ -224,6 +324,11 @@
       "mode": "short_term",
       "fraction": 0.3,
       "threshold": 15.0,
+      "gbt_train_fraction": 0.3,
+      "random_forest_train_fraction": 0.15,
+      "binary_logistic_train_fraction": 0.15,
+      "evaluation_year": 2024,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30/metrics",
       "gbt_brier": 0.0019127055805675,
       "gbt_pr_auc": 0.0569202866655899,
       "random_forest_brier": 0.0018540165971813,
@@ -235,6 +340,11 @@
       "mode": "short_term",
       "fraction": 1.0,
       "threshold": 3.0,
+      "gbt_train_fraction": 1.0,
+      "random_forest_train_fraction": 0.15,
+      "binary_logistic_train_fraction": 0.15,
+      "evaluation_year": 2024,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample100/metrics",
       "gbt_brier": 0.0107070005085085,
       "gbt_pr_auc": 0.2533635328025131,
       "random_forest_brier": 0.0105571370181908,
@@ -246,6 +356,11 @@
       "mode": "short_term",
       "fraction": 1.0,
       "threshold": 7.5,
+      "gbt_train_fraction": 1.0,
+      "random_forest_train_fraction": 0.15,
+      "binary_logistic_train_fraction": 0.15,
+      "evaluation_year": 2024,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample100/metrics",
       "gbt_brier": 0.005119798496973,
       "gbt_pr_auc": 0.1387896145866958,
       "random_forest_brier": 0.0050543774582957,
@@ -257,6 +372,11 @@
       "mode": "short_term",
       "fraction": 1.0,
       "threshold": 15.0,
+      "gbt_train_fraction": 1.0,
+      "random_forest_train_fraction": 0.15,
+      "binary_logistic_train_fraction": 0.15,
+      "evaluation_year": 2024,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample100/metrics",
       "gbt_brier": 0.0019133118864979,
       "gbt_pr_auc": 0.055709280405957,
       "random_forest_brier": 0.0018540165971813,
@@ -268,6 +388,11 @@
       "mode": "calendar",
       "fraction": 0.3,
       "threshold": 3.0,
+      "gbt_train_fraction": 0.3,
+      "random_forest_train_fraction": 0.15,
+      "binary_logistic_train_fraction": 0.15,
+      "evaluation_year": 2024,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30/metrics",
       "gbt_brier": 0.012855961685497,
       "gbt_pr_auc": 0.0274432221696298,
       "random_forest_brier": 0.0123841775572304,
@@ -279,6 +404,11 @@
       "mode": "calendar",
       "fraction": 0.3,
       "threshold": 7.5,
+      "gbt_train_fraction": 0.3,
+      "random_forest_train_fraction": 0.15,
+      "binary_logistic_train_fraction": 0.15,
+      "evaluation_year": 2024,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30/metrics",
       "gbt_brier": 0.0061422042446367,
       "gbt_pr_auc": 0.0122969689274893,
       "random_forest_brier": 0.0055340087953065,
@@ -290,6 +420,11 @@
       "mode": "calendar",
       "fraction": 0.3,
       "threshold": 15.0,
+      "gbt_train_fraction": 0.3,
+      "random_forest_train_fraction": 0.15,
+      "binary_logistic_train_fraction": 0.15,
+      "evaluation_year": 2024,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30/metrics",
       "gbt_brier": 0.002619970810033,
       "gbt_pr_auc": 0.0042390825873371,
       "random_forest_brier": 0.001949653646964,
@@ -301,6 +436,11 @@
       "mode": "calendar",
       "fraction": 1.0,
       "threshold": 3.0,
+      "gbt_train_fraction": 1.0,
+      "random_forest_train_fraction": 0.15,
+      "binary_logistic_train_fraction": 0.15,
+      "evaluation_year": 2024,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample100/metrics",
       "gbt_brier": 0.0128568690877552,
       "gbt_pr_auc": 0.0273350591799148,
       "random_forest_brier": 0.0123841775572304,
@@ -312,6 +452,11 @@
       "mode": "calendar",
       "fraction": 1.0,
       "threshold": 7.5,
+      "gbt_train_fraction": 1.0,
+      "random_forest_train_fraction": 0.15,
+      "binary_logistic_train_fraction": 0.15,
+      "evaluation_year": 2024,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample100/metrics",
       "gbt_brier": 0.0061414804089098,
       "gbt_pr_auc": 0.0122477547526744,
       "random_forest_brier": 0.0055340087953065,
@@ -323,6 +468,11 @@
       "mode": "calendar",
       "fraction": 1.0,
       "threshold": 15.0,
+      "gbt_train_fraction": 1.0,
+      "random_forest_train_fraction": 0.15,
+      "binary_logistic_train_fraction": 0.15,
+      "evaluation_year": 2024,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample100/metrics",
       "gbt_brier": 0.0026200429289986,
       "gbt_pr_auc": 0.0042426970258924,
       "random_forest_brier": 0.001949653646964,
@@ -367,33 +517,106 @@
       "fraction": 0.3,
       "daily_brier_reconciled": true,
       "cohort_counts_and_prevalence_match": true,
-      "source_hash_matches": true
+      "source_hash_matches": true,
+      "reference_train_fraction": 0.15,
+      "evaluation_year": 2024
     },
     {
       "mode": "short_term",
       "fraction": 1.0,
       "daily_brier_reconciled": true,
       "cohort_counts_and_prevalence_match": true,
-      "source_hash_matches": true
+      "source_hash_matches": true,
+      "reference_train_fraction": 0.15,
+      "evaluation_year": 2024
     },
     {
       "mode": "calendar",
       "fraction": 0.3,
       "daily_brier_reconciled": true,
       "cohort_counts_and_prevalence_match": true,
-      "source_hash_matches": true
+      "source_hash_matches": true,
+      "reference_train_fraction": 0.15,
+      "evaluation_year": 2024
     },
     {
       "mode": "calendar",
       "fraction": 1.0,
       "daily_brier_reconciled": true,
       "cohort_counts_and_prevalence_match": true,
-      "source_hash_matches": true
+      "source_hash_matches": true,
+      "reference_train_fraction": 0.15,
+      "evaluation_year": 2024
     }
   ],
+  "primary_thresholds": [
+    0.0,
+    0.2,
+    1.0,
+    2.0,
+    5.0,
+    10.0,
+    20.0
+  ],
+  "evaluation_year": 2024,
+  "provenance": {
+    "original_models": "outputs/steps/task2-dual-v2/models",
+    "full_training_experiment": "outputs/steps/task2-full-20261012",
+    "gbt_experiment": "outputs/steps/gbt-sampling-20261014-run01",
+    "gbt_executed_source": "outputs/steps/gbt-sampling-20261014-run01/source/train_gbt_sampling.py",
+    "gbt_source_sha256": "f70b4a38e750f08327b3d1605d15f0f6a518b8a85636016bab3b8166c3bb78d2",
+    "gbt_export_rf_lr_reference_fraction": 0.15
+  },
+  "validation": {
+    "passed": true,
+    "checks": [
+      {
+        "mode": "short_term",
+        "fraction": 0.3,
+        "daily_brier_reconciled": true,
+        "cohort_counts_and_prevalence_match": true,
+        "source_hash_matches": true,
+        "reference_train_fraction": 0.15,
+        "evaluation_year": 2024
+      },
+      {
+        "mode": "short_term",
+        "fraction": 1.0,
+        "daily_brier_reconciled": true,
+        "cohort_counts_and_prevalence_match": true,
+        "source_hash_matches": true,
+        "reference_train_fraction": 0.15,
+        "evaluation_year": 2024
+      },
+      {
+        "mode": "calendar",
+        "fraction": 0.3,
+        "daily_brier_reconciled": true,
+        "cohort_counts_and_prevalence_match": true,
+        "source_hash_matches": true,
+        "reference_train_fraction": 0.15,
+        "evaluation_year": 2024
+      },
+      {
+        "mode": "calendar",
+        "fraction": 1.0,
+        "daily_brier_reconciled": true,
+        "cohort_counts_and_prevalence_match": true,
+        "source_hash_matches": true,
+        "reference_train_fraction": 0.15,
+        "evaluation_year": 2024
+      }
+    ],
+    "full_training_daily_brier_reconciled": true,
+    "source_sha256": "f70b4a38e750f08327b3d1605d15f0f6a518b8a85636016bab3b8166c3bb78d2",
+    "gbt15_raw_verified": false,
+    "calendar15_metric_export_verified": true
+  },
   "limitations": [
     "A 15% GBT is summary-only; B 15% has per-threshold text metrics. Neither 15% pipeline is supplied.",
     "Counts and prevalence agree; row-level input identity is not independently proven.",
-    "Imported 2024 results are supplementary follow-ups; original models remain unchanged."
+    "Imported 2024 results are supplementary follow-ups; original models remain unchanged.",
+    "RF/LR scores inside GBT exports use 15% reference models; no 30% RF/LR test scores are inferred.",
+    "Climatology fraction identifies its comparison group; frequencies use full training data."
   ]
 }

@@ -31,7 +31,8 @@ def json_part(directory):
 def main():
     required = ['README.md', 'requirements.txt', 'report/project_report.pdf',
                 'report/project_report.tex', 'report/project_report.template.tex',
-                'report/task2/analysis_facts.json', 'outputs/steps/task1-v5/validation.json',
+                'report/task2/analysis_facts.json', 'report/task2/experiments_facts.json',
+                'report/task2/experiments_validation.json', 'outputs/steps/task1-v5/validation.json',
                 'outputs/steps/task2-dual-v2/local_model_verification.json']
     for name in required:
         if not (ROOT / name).is_file():
@@ -46,6 +47,8 @@ def main():
             raise FileNotFoundError('Missing report vector: ' + figure)
     if json.loads((ROOT / 'outputs/steps/task1-v5/validation.json').read_text())['status'] != 'passed':
         raise ValueError('Task 1 independent validation did not pass')
+    if not json.loads((ROOT / 'report/task2/experiments_validation.json').read_text()).get('passed'):
+        raise ValueError('Part 2 experiment reconciliation did not pass')
     model_root = ROOT / 'outputs/steps/task2-dual-v2/models'
     for mode in ['calendar', 'short_term']:
         base = model_root / mode

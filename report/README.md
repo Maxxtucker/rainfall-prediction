@@ -1,61 +1,63 @@
 # Project report
 
-[project_report.pdf](project_report.pdf) is the single report for submission. It combines the rainfall analysis, original 2024 model evaluation, and the follow-up sampling/tuning study evaluated on 2022. `project_report.tex` is generated; make edits in the maintained sources below. The cover lists Ma Xiaoxiao (A0259173X), Ye Sifan (A0262394Y), and Chen Yuda (A0353182H).
+[project_report.pdf](project_report.pdf) is the submission report. Part 1 describes rainfall patterns; Part 2 presents the prediction task as one sequence of model design, model comparison, training-sample experiments and probability diagnostics. The appendices retain supplementary weather figures and the detailed RF validation study. The cover lists Ma Xiaoxiao (A0259173X), Ye Sifan (A0262394Y), and Chen Yuda (A0353182H).
 
 ## Build
 
-From the project root, with XeLaTeX and either Liberation fonts (`fonts-liberation` on Debian/Ubuntu) or the TeX Gyre fallback fonts installed:
+From the project root, with XeLaTeX and either Liberation fonts (`fonts-liberation` on Debian/Ubuntu) or the TeX Gyre fallback installed:
 
 ```bash
 python -m pip install -r requirements-report.txt
 bash report/build.sh
 ```
 
-`build.sh` runs `scripts/build_project_report.py`, then XeLaTeX twice to resolve references. The output is always `report/project_report.pdf`. It uses saved evidence and figure files, with no cloud access or model fitting. Keep the repository directory structure so relative figure paths resolve. To regenerate the LaTeX source alone, run `python scripts/build_project_report.py`.
+The build first reconciles the saved Part 2 experiment exports and refreshes the model/fraction and threshold-risk figures. It then assembles the source sections and numerical tables and runs XeLaTeX twice. It produces `report/project_report.tex` and `report/project_report.pdf`. Keep the repository structure so relative figure paths resolve. To assemble only the LaTeX source from the current summaries, run `python scripts/build_project_report.py`.
 
 ## Where to edit
 
 | Content | Maintained source |
 |---|---|
-| Layout, title, group details and assembly | `project_report.template.tex` |
+| Layout, cover, group details and assembly | `project_report.template.tex` |
 | Abstract and introduction | `sections/introduction.tex` |
 | Data preparation and computing environment | `sections/data.tex` |
-| Task 1 findings | `sections/weather.tex` |
-| Supplementary figures and captions | `sections/appendix.tex` |
-| Task 2 methods and original evaluation | `task2/section_template.tex` |
-| RF follow-up methods and findings | `task2/rf_sensitivity.template.tex` |
-| Teammate GBT, full-training and interior-threshold experiments | `task2/teammate.template.tex` |
+| Part 1 findings | `sections/weather.tex` |
+| Part 2 methods, model comparison, sample sizes and diagnostics | `task2/section_template.tex` |
+| Detailed RF validation study in the appendix | `task2/rf_sensitivity.template.tex` |
+| Supplementary weather figures and captions | `sections/appendix.tex` |
 | Discussion, conclusion and AI declaration | `sections/discussion.tex` |
-| Numerical substitutions and generated tables | `../scripts/build_project_report.py` |
+| Model/fraction numerical tables | `../scripts/build_task2_experiments.py` |
+| Other numerical substitutions and report assembly | `../scripts/build_project_report.py` |
 
-The builder inserts saved numerical results into the templates. Editing `project_report.tex` directly will lose those edits at the next build. `task2/section.tex` and `task2/rf_sensitivity.tex` are also generated outputs. Historical Task 1 templates and summary facts remain for provenance; they are not a second submission report.
+`project_report.tex`, `task2/section.tex` and `task2/rf_sensitivity.tex` are generated outputs. Edit the templates or source sections instead. The Part 2 experiment grid is documented in [TASK2_EXPERIMENTS.md](../docs/TASK2_EXPERIMENTS.md), including model availability and the evaluation years behind each table.
 
-## Figures and evidence
-
-Redrawn report panels live in `../figures/project-report/`; other panels retain the original figure sources. The complete Task 1 gallery remains in `../figures/task1-v5-report/`, and the original Task 2 exports remain in `../figures/task2-report/`. The report selects figures from these directories rather than reproducing every gallery view.
+## Evidence and figures
 
 | Evidence | Location from project root |
 |---|---|
-| Task 1 summary tables and audits | `outputs/steps/task1-v5/` |
-| Task 1 report facts | `report/task1/report_facts.json` |
-| Original models, metrics and paired test statistics | `outputs/steps/task2-dual-v2/` |
-| Derived Task 2 report facts | `report/task2/analysis_facts.json` |
-| RF candidates and validation summaries | `outputs/steps/rf-sensitivity-20261010/` |
+| Part 1 summary tables and audits | `outputs/steps/task1-v5/`, `report/task1/report_facts.json` |
+| RF/LR 15% metrics and shared A/B test comparison | `outputs/steps/task2-dual-v2/`, `report/task2/analysis_facts.json` |
+| RF/LR 100% models and metrics | `outputs/steps/task2-full-20261012/` |
+| GBT sampling experiments and threshold diagnostics | `outputs/steps/gbt-sampling-20261014-run01/` |
+| RF 15%/30% validation and tuning | `outputs/steps/rf-sensitivity-20261010/` |
+| Unified model/fraction summaries | `report/task2/experiments_facts.json`, `experiments_summary.csv`, `interior_threshold_comparison.csv`, `experiments_validation.json` |
 
-To refresh saved summaries and report figures from the project root:
+Main report comparison figures live in `figures/project-report/`. The full weather gallery remains in `figures/task1-v5-report/`, and other prediction panels in `figures/task2-report/`. The report uses selected panels; the appendix and galleries preserve additional views.
+
+To refresh the statistical summaries and figures, run from the project root:
 
 ```bash
 python scripts/validate_task1_results.py --results outputs/steps/task1-v5
 python scripts/analyze_task2_report.py
 python scripts/analyze_rf_sensitivity.py --results outputs/steps/rf-sensitivity-20261010
+python scripts/analyze_task2_experiments.py
 python scripts/redraw_report_figures.py
 bash report/build.sh
 ```
 
-These commands analyse recorded results. The original Task 2 analyser writes to `figures/task2-report/`; `redraw_report_figures.py` separately produces the enhanced panels in `figures/project-report/`. RF model packaging is a separate operation; see [the RF guide](../docs/RF_SENSITIVITY.md). To regenerate the full Task 1 gallery separately, use `python scripts/plot_task1_report.py --results outputs/steps/task1-v5 --output figures/task1-regenerated`.
+These commands read saved statistical exports. The Task 2 experiment analyser writes derived report files, while the experiment directories remain the evidence sources. `redraw_report_figures.py` creates the enhanced panels and invokes `plot_task2_experiments.py` for `22_training_fraction` and `23_threshold_risk`. To regenerate the full Part 1 gallery separately, run `python scripts/plot_task1_report.py --results outputs/steps/task1-v5 --output figures/task1-regenerated`.
 
-The original final-model results use a 2024 test set. The RF follow-up compares candidates on 2022 validation and does not replace those final models. Preserve that distinction when editing claims or captions; a small 15%–30% difference does not prove equivalence to full-data training.
+The RF 30% sensitivity results use 2022 validation; RF/LR 15% and 100% and GBT 30% and 100% have 2024 metrics. At 15%, GBT A has a rounded summary and B has per-threshold text metrics. These distinctions determine which comparisons and plots can be supported. The later full-training and GBT runs reuse the previously examined test year. See the experiment guide for the complete source and evidence map.
 
 ## Before submission
 
-Verify the group details in `project_report.template.tex`, review the AI declaration, rebuild, and inspect the PDF. Run `python scripts/build_submission.py` from the project root to package this same report with the code, models and evidence. The recorded experiment and software checks are documented in [docs/VALIDATION.md](../docs/VALIDATION.md).
+Verify the cover details and AI declaration, rebuild, and inspect the PDF. Run `python scripts/build_submission.py` from the project root to package this report with the code, saved models, figures and evidence. Recorded software and model checks are listed in [docs/VALIDATION.md](../docs/VALIDATION.md).

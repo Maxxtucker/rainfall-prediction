@@ -20,7 +20,7 @@ def main():
     parser.add_argument("--threshold", required=True, type=float, help="Strict > threshold, in mm")
     parser.add_argument("--clean", help="Clean observation Parquet; required only for short-term model")
     parser.add_argument("--predictor", choices=["random_forest", "binary_logistic", "gbt"], default="random_forest")
-    parser.add_argument("--model", required=True, help="train.py output root")
+    parser.add_argument("--model", required=True, help="Saved RF/LR/GBT model package")
     parser.add_argument("--output", required=True, help="JSON output directory")
     args = parser.parse_args()
     args.station = args.station.strip().upper()
