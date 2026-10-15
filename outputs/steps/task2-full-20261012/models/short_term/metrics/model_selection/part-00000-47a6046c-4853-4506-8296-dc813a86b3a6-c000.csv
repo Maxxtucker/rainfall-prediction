@@ -1,0 +1,3 @@
+max_depth,num_trees,validation_macro_brier
+5,40,0.016916847345081802
+8,40,0.0167035303185198

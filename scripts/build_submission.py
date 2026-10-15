@@ -71,6 +71,13 @@ def main():
         if not json.loads((sensitivity / 'local_model_verification.json').read_text()).get('passed'):
             raise ValueError('RF sensitivity model verification failed')
         selections.append(str(sensitivity.relative_to(ROOT)))
+    for extra in ['gbt-sampling-20261014-run01', 'task2-full-20261012']:
+        experiment = ROOT / 'outputs/steps' / extra
+        if experiment.exists():
+            verification = experiment / 'local_model_verification.json'
+            if not verification.is_file() or not json.loads(verification.read_text()).get('passed'):
+                raise ValueError('Imported models have not passed reload checks: ' + extra)
+            selections.append(str(experiment.relative_to(ROOT)))
     paths = [ROOT / n for n in ['README.md', '.gitignore', 'requirements.txt',
                               'requirements-local.txt', 'requirements-plot.txt',
                               'requirements-report.txt']]

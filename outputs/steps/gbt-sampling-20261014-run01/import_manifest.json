@@ -1,0 +1,20 @@
+{
+  "imported_on": "2026-10-15",
+  "archives": [
+    {
+      "name": "gbt-sampling-20261014-run01-results.zip",
+      "sha256": "328b1ee6e7c97181c6743b1521eb206c9970a6486be030c5edd63100993cedbf"
+    },
+    {
+      "name": "project_steps_task2_full_20261012t171123z_archive_task2_full_20261012t171123z.tar",
+      "sha256": "ac7fba012d4bd7078ba5d5cb910cf5a335631b1804aa5b082ce3ad2072483485"
+    },
+    {
+      "name": "sampling-comparison.md",
+      "sha256": "0ec7184ac8f8715a2408e8238e15c6f8b0c20be35b014d9addcf4fb765ae6bc5"
+    }
+  ],
+  "original_models_preserved": true,
+  "gbt15_evidence": "Summary only; no 15% pipeline or raw metrics supplied in these archives.",
+  "excluded": "Raw environment file and driver logs; archives are not copied into the repository."
+}

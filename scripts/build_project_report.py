@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 from build_rf_sensitivity_report import build_section
+from build_teammate_report import build_section as build_teammate_section
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -123,7 +124,7 @@ def render_task2(facts, results_root):
 
 
 def assemble_report(task2, sensitivity):
-    sections = {'TASK2': task2, 'RF_SENSITIVITY': sensitivity}
+    sections = {'TASK2': task2, 'RF_SENSITIVITY': sensitivity, 'TEAMMATE': build_teammate_section()}
     for name in ('introduction', 'data', 'weather', 'discussion', 'appendix'):
         sections[name.upper()] = (ROOT / 'report/sections' / (name + '.tex')).read_text()
 
@@ -146,6 +147,7 @@ def main():
 
     (ROOT / 'report/task2/section.tex').write_text(task2)
     (ROOT / 'report/task2/rf_sensitivity.tex').write_text(sensitivity)
+    (ROOT / 'report/task2/teammate.tex').write_text(build_teammate_section())
     target = ROOT / 'report/project_report.tex'
     target.write_text(report)
     print(target)

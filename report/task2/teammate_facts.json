@@ -1,0 +1,399 @@
+{
+  "summary": [
+    {
+      "mode": "short_term",
+      "model": "gbt",
+      "fraction": 0.15,
+      "mean_brier": 0.01622929,
+      "mean_log_loss": 0.07216669,
+      "mean_pr_auc": 0.315004,
+      "depth": 5,
+      "temperature": 0.75,
+      "evidence": "teammate summary only",
+      "pr_auc_1mm": null
+    },
+    {
+      "mode": "calendar",
+      "model": "gbt",
+      "fraction": 0.15,
+      "mean_brier": 0.022903205654124157,
+      "mean_log_loss": 0.10789135235946709,
+      "mean_pr_auc": 0.047362677323910925,
+      "pr_auc_1mm": 0.0510894246780351,
+      "evidence": "per-threshold text export",
+      "depth": 5,
+      "temperature": 1.0
+    },
+    {
+      "mode": "short_term",
+      "model": "random_forest",
+      "fraction": 0.15,
+      "mean_brier": 0.0161305074330134,
+      "mean_log_loss": 0.0700041590103285,
+      "mean_pr_auc": 0.3176451344874097,
+      "pr_auc_1mm": 0.4218048041070003,
+      "evidence": "raw export"
+    },
+    {
+      "mode": "short_term",
+      "model": "binary_logistic",
+      "fraction": 0.15,
+      "mean_brier": 0.019441497848072455,
+      "mean_log_loss": 0.08278677699616176,
+      "mean_pr_auc": 0.26484640191715897,
+      "pr_auc_1mm": 0.3629418101065617,
+      "evidence": "raw export"
+    },
+    {
+      "mode": "short_term",
+      "model": "climatology",
+      "fraction": 0.15,
+      "mean_brier": 0.022696284366937013,
+      "mean_log_loss": 0.09992290849662375,
+      "mean_pr_auc": 0.04396978773014389,
+      "pr_auc_1mm": 0.0467110642656421,
+      "evidence": "raw export"
+    },
+    {
+      "mode": "short_term",
+      "model": "random_forest",
+      "fraction": 1.0,
+      "mean_brier": 0.016136378544925244,
+      "mean_log_loss": 0.07001584282367598,
+      "mean_pr_auc": 0.31850767184170176,
+      "pr_auc_1mm": 0.4228910350174562,
+      "evidence": "raw export"
+    },
+    {
+      "mode": "short_term",
+      "model": "binary_logistic",
+      "fraction": 1.0,
+      "mean_brier": 0.019442999029889028,
+      "mean_log_loss": 0.08278840407145606,
+      "mean_pr_auc": 0.2651897835153325,
+      "pr_auc_1mm": 0.3633840659359476,
+      "evidence": "raw export"
+    },
+    {
+      "mode": "short_term",
+      "model": "climatology",
+      "fraction": 1.0,
+      "mean_brier": 0.022696284366959026,
+      "mean_log_loss": 0.09992290849655676,
+      "mean_pr_auc": 0.04396941263499065,
+      "pr_auc_1mm": 0.0467101651253819,
+      "evidence": "raw export"
+    },
+    {
+      "mode": "short_term",
+      "model": "gbt",
+      "fraction": 0.3,
+      "mean_brier": 0.016238892128780383,
+      "mean_log_loss": 0.07219660286941197,
+      "mean_pr_auc": 0.31394723794839924,
+      "pr_auc_1mm": 0.4202592631266689,
+      "evidence": "raw export",
+      "depth": 5,
+      "temperature": 0.75,
+      "train_anchors": 5608769
+    },
+    {
+      "mode": "short_term",
+      "model": "gbt",
+      "fraction": 1.0,
+      "mean_brier": 0.0162272447139053,
+      "mean_log_loss": 0.07215140475375689,
+      "mean_pr_auc": 0.3146464957647142,
+      "pr_auc_1mm": 0.4281519865307638,
+      "evidence": "raw export",
+      "depth": 5,
+      "temperature": 0.75,
+      "train_anchors": 18688263
+    },
+    {
+      "mode": "calendar",
+      "model": "random_forest",
+      "fraction": 0.15,
+      "mean_brier": 0.022742853398631357,
+      "mean_log_loss": 0.10001508618782674,
+      "mean_pr_auc": 0.044774812952495024,
+      "pr_auc_1mm": 0.0493643926190802,
+      "evidence": "raw export"
+    },
+    {
+      "mode": "calendar",
+      "model": "binary_logistic",
+      "fraction": 0.15,
+      "mean_brier": 0.023010064925332512,
+      "mean_log_loss": 0.10452754370490218,
+      "mean_pr_auc": 0.038901547418779145,
+      "pr_auc_1mm": 0.0428238400347022,
+      "evidence": "raw export"
+    },
+    {
+      "mode": "calendar",
+      "model": "climatology",
+      "fraction": 0.15,
+      "mean_brier": 0.022520511279100385,
+      "mean_log_loss": 0.09865705366374154,
+      "mean_pr_auc": 0.047563719128511144,
+      "pr_auc_1mm": 0.0516039080173453,
+      "evidence": "raw export"
+    },
+    {
+      "mode": "calendar",
+      "model": "random_forest",
+      "fraction": 1.0,
+      "mean_brier": 0.02275362316019866,
+      "mean_log_loss": 0.10016964593036996,
+      "mean_pr_auc": 0.04636148599123708,
+      "pr_auc_1mm": 0.0517654969633627,
+      "evidence": "raw export"
+    },
+    {
+      "mode": "calendar",
+      "model": "binary_logistic",
+      "fraction": 1.0,
+      "mean_brier": 0.02301075518943626,
+      "mean_log_loss": 0.10453970522842378,
+      "mean_pr_auc": 0.038872378047161316,
+      "pr_auc_1mm": 0.0427874291234285,
+      "evidence": "raw export"
+    },
+    {
+      "mode": "calendar",
+      "model": "climatology",
+      "fraction": 1.0,
+      "mean_brier": 0.022520511279120515,
+      "mean_log_loss": 0.09865705366375559,
+      "mean_pr_auc": 0.04756285956885743,
+      "pr_auc_1mm": 0.0516040060845517,
+      "evidence": "raw export"
+    },
+    {
+      "mode": "calendar",
+      "model": "gbt",
+      "fraction": 0.3,
+      "mean_brier": 0.022901868767548572,
+      "mean_log_loss": 0.10789161912010788,
+      "mean_pr_auc": 0.04722623952144302,
+      "pr_auc_1mm": 0.0520730302216092,
+      "evidence": "raw export",
+      "depth": 5,
+      "temperature": 1.0,
+      "train_anchors": 8233882
+    },
+    {
+      "mode": "calendar",
+      "model": "gbt",
+      "fraction": 1.0,
+      "mean_brier": 0.022884299213048225,
+      "mean_log_loss": 0.10782866451646525,
+      "mean_pr_auc": 0.048702652509261465,
+      "pr_auc_1mm": 0.052195180478957,
+      "evidence": "raw export",
+      "depth": 5,
+      "temperature": 1.0,
+      "train_anchors": 27434001
+    }
+  ],
+  "interior_thresholds": [
+    {
+      "mode": "short_term",
+      "fraction": 0.3,
+      "threshold": 3.0,
+      "gbt_brier": 0.0107171351378376,
+      "gbt_pr_auc": 0.2540979622982267,
+      "random_forest_brier": 0.0105571370181908,
+      "random_forest_pr_auc": 0.2532331499967959,
+      "binary_logistic_brier": 0.0123620008406944,
+      "binary_logistic_pr_auc": 0.1843728635112003
+    },
+    {
+      "mode": "short_term",
+      "fraction": 0.3,
+      "threshold": 7.5,
+      "gbt_brier": 0.0051321039111285,
+      "gbt_pr_auc": 0.1410086701506143,
+      "random_forest_brier": 0.0050543774582957,
+      "random_forest_pr_auc": 0.1363085631963134,
+      "binary_logistic_brier": 0.0069486619672327,
+      "binary_logistic_pr_auc": 0.0883418368888873
+    },
+    {
+      "mode": "short_term",
+      "fraction": 0.3,
+      "threshold": 15.0,
+      "gbt_brier": 0.0019127055805675,
+      "gbt_pr_auc": 0.0569202866655899,
+      "random_forest_brier": 0.0018540165971813,
+      "random_forest_pr_auc": 0.0555461797301269,
+      "binary_logistic_brier": 0.0031136317589309,
+      "binary_logistic_pr_auc": 0.0320847277662369
+    },
+    {
+      "mode": "short_term",
+      "fraction": 1.0,
+      "threshold": 3.0,
+      "gbt_brier": 0.0107070005085085,
+      "gbt_pr_auc": 0.2533635328025131,
+      "random_forest_brier": 0.0105571370181908,
+      "random_forest_pr_auc": 0.2545406615371003,
+      "binary_logistic_brier": 0.0123620008406944,
+      "binary_logistic_pr_auc": 0.1843730332384373
+    },
+    {
+      "mode": "short_term",
+      "fraction": 1.0,
+      "threshold": 7.5,
+      "gbt_brier": 0.005119798496973,
+      "gbt_pr_auc": 0.1387896145866958,
+      "random_forest_brier": 0.0050543774582957,
+      "random_forest_pr_auc": 0.1363674706024581,
+      "binary_logistic_brier": 0.0069486619672327,
+      "binary_logistic_pr_auc": 0.0883418003312763
+    },
+    {
+      "mode": "short_term",
+      "fraction": 1.0,
+      "threshold": 15.0,
+      "gbt_brier": 0.0019133118864979,
+      "gbt_pr_auc": 0.055709280405957,
+      "random_forest_brier": 0.0018540165971813,
+      "random_forest_pr_auc": 0.055552661164981,
+      "binary_logistic_brier": 0.0031136317589309,
+      "binary_logistic_pr_auc": 0.0320847731400557
+    },
+    {
+      "mode": "calendar",
+      "fraction": 0.3,
+      "threshold": 3.0,
+      "gbt_brier": 0.012855961685497,
+      "gbt_pr_auc": 0.0274432221696298,
+      "random_forest_brier": 0.0123841775572304,
+      "random_forest_pr_auc": 0.0263915718996053,
+      "binary_logistic_brier": 0.0125094014191812,
+      "binary_logistic_pr_auc": 0.0215310063202496
+    },
+    {
+      "mode": "calendar",
+      "fraction": 0.3,
+      "threshold": 7.5,
+      "gbt_brier": 0.0061422042446367,
+      "gbt_pr_auc": 0.0122969689274893,
+      "random_forest_brier": 0.0055340087953065,
+      "random_forest_pr_auc": 0.0126837486575224,
+      "binary_logistic_brier": 0.0056628449753966,
+      "binary_logistic_pr_auc": 0.0096378607800777
+    },
+    {
+      "mode": "calendar",
+      "fraction": 0.3,
+      "threshold": 15.0,
+      "gbt_brier": 0.002619970810033,
+      "gbt_pr_auc": 0.0042390825873371,
+      "random_forest_brier": 0.001949653646964,
+      "random_forest_pr_auc": 0.0051895846779186,
+      "binary_logistic_brier": 0.0020016442984562,
+      "binary_logistic_pr_auc": 0.0036504774192192
+    },
+    {
+      "mode": "calendar",
+      "fraction": 1.0,
+      "threshold": 3.0,
+      "gbt_brier": 0.0128568690877552,
+      "gbt_pr_auc": 0.0273350591799148,
+      "random_forest_brier": 0.0123841775572304,
+      "random_forest_pr_auc": 0.0263797692690674,
+      "binary_logistic_brier": 0.0125094014191812,
+      "binary_logistic_pr_auc": 0.0215309652849944
+    },
+    {
+      "mode": "calendar",
+      "fraction": 1.0,
+      "threshold": 7.5,
+      "gbt_brier": 0.0061414804089098,
+      "gbt_pr_auc": 0.0122477547526744,
+      "random_forest_brier": 0.0055340087953065,
+      "random_forest_pr_auc": 0.0126863466935205,
+      "binary_logistic_brier": 0.0056628449753966,
+      "binary_logistic_pr_auc": 0.0096379336202827
+    },
+    {
+      "mode": "calendar",
+      "fraction": 1.0,
+      "threshold": 15.0,
+      "gbt_brier": 0.0026200429289986,
+      "gbt_pr_auc": 0.0042426970258924,
+      "random_forest_brier": 0.001949653646964,
+      "random_forest_pr_auc": 0.0051900199182389,
+      "binary_logistic_brier": 0.0020016442984562,
+      "binary_logistic_pr_auc": 0.0036504941879005
+    }
+  ],
+  "threshold_order": [
+    {
+      "mode": "short_term",
+      "fraction": 0.3,
+      "adjacent_threshold_pairs": 51565572.0,
+      "violation_fraction": 0.0004910640766284916,
+      "max_probability_increase": 0.116627609964944
+    },
+    {
+      "mode": "short_term",
+      "fraction": 1.0,
+      "adjacent_threshold_pairs": 51565572.0,
+      "violation_fraction": 0.0006807642897862162,
+      "max_probability_increase": 0.1153386564463787
+    },
+    {
+      "mode": "calendar",
+      "fraction": 0.3,
+      "adjacent_threshold_pairs": 57370284.0,
+      "violation_fraction": 0.005237624411969,
+      "max_probability_increase": 0.0199830531184914
+    },
+    {
+      "mode": "calendar",
+      "fraction": 1.0,
+      "adjacent_threshold_pairs": 57370284.0,
+      "violation_fraction": 0.0061644456910828,
+      "max_probability_increase": 0.0509470811210037
+    }
+  ],
+  "checks": [
+    {
+      "mode": "short_term",
+      "fraction": 0.3,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "source_hash_matches": true
+    },
+    {
+      "mode": "short_term",
+      "fraction": 1.0,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "source_hash_matches": true
+    },
+    {
+      "mode": "calendar",
+      "fraction": 0.3,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "source_hash_matches": true
+    },
+    {
+      "mode": "calendar",
+      "fraction": 1.0,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "source_hash_matches": true
+    }
+  ],
+  "limitations": [
+    "A 15% GBT is summary-only; B 15% has per-threshold text metrics. Neither 15% pipeline is supplied.",
+    "Counts and prevalence agree; row-level input identity is not independently proven.",
+    "Imported 2024 results are supplementary follow-ups; original models remain unchanged."
+  ]
+}

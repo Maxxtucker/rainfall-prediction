@@ -1,0 +1,49 @@
+\clearpage
+\section{Supplementary GBT and full-training experiments}\label{sec:teammate}
+\subsection{Threshold-conditioned gradient boosting}
+The group also tested Spark MLlib gradient-boosted trees (GBT) with 15\%, 30\% and 100\% of the eligible training examples. This is a binary classifier of $\mathbf1(Y>q)$: the rainfall threshold is an input feature alongside the corresponding A or B features. Each training anchor is expanded to the seven original query thresholds. In contrast, the main random forest predicts seven rainfall classes and combines them with training-derived within-bin distributions.
+
+The GBT pipeline indexes station IDs, imputes numeric features and assembles them with $q$. It uses 40 boosting iterations, step size 0.1, minimum leaf size 25, subsampling 0.8, maximum feature bins 128 and seed 2026. Depths 3 and 5 are compared on 2022 mean Brier; temperature is selected on 2023, and results are exported for 2024. All reported configurations select depth 5; A selects temperature 0.75 and B selects 1. The imported 30\% and 100\% runs fit 5,608,769 and 18,688,263 anchors for A, and 8,233,882 and 27,434,001 for B. Their test counts are 5,729,508 and 6,374,476 per threshold, respectively.
+
+\begin{table}[!ht]\centering\small
+\begin{tabular}{lrrrrr}\toprule
+Mode & Training & Mean Brier & Mean log loss & Mean PR-AUC & $T$\\\midrule
+@@GBT_ROWS@@
+\bottomrule\end{tabular}
+\caption{GBT results on each mode's eligible 2024 test set, equally averaged over the seven original thresholds. The 15\% A row is from the teammate summary; the 15\% B row is recomputed from a supplied per-threshold text export. Neither 15\% pipeline was supplied. The 30\% and 100\% rows are recomputed from metric exports and reconciled against daily squared errors. Mean PR-AUC averages events with different prevalence and is supplemented by per-threshold results in the repository.}\label{tab:gbtsampling}
+\end{table}
+\FloatBarrier
+
+
+Increasing GBT training from 15\% to 100\% reduces mean Brier by approximately 0.013\% for A and 0.083\% for B. At 30\%, A is slightly worse than at 15\%, while B changes little. These are small descriptive differences, not established significance results. Each fraction undergoes depth and temperature selection, so this compares selected systems rather than changing sample size under a fixed fitting protocol. The saved 15\% RF still has lower mean Brier than these GBT configurations in both information settings.
+
+\clearpage
+\subsection{Training the original classifiers on all eligible examples}
+A separate full-training run repeats the original RF and logistic-regression workflow with a training fraction of 1.0. It retains the original year splits, features and seven evaluated thresholds, and compares RF depths 5 and 8 on validation. Both modes select RF depth 8 and temperature 1. These model packages are retained separately from the original 15\% models.
+\begin{table}[!ht]\centering\small
+\begin{tabular}{llrrr}\toprule
+Mode & Model & 15\% mean Brier & 100\% mean Brier & Change (\%)\\\midrule
+@@FULL_ROWS@@
+\bottomrule\end{tabular}
+\caption{Original 15\% and supplied full-training results on each mode's eligible 2024 population. Positive change means higher error. Historical frequency uses the full eligible training population in both runs, so its unchanged score is a consistency check, not a new 15\%-versus-100\% fitting comparison.}\label{tab:fulltraining}
+\end{table}
+\FloatBarrier
+
+The full-training RF and logistic-regression scores are close to their original values and do not show a consistent benefit from fitting on every eligible anchor. This agrees with the earlier validation study's finding that the reference configuration is relatively insensitive to increasing its fitting sample. Matching metadata, training amount supports, test counts and prevalence provide consistency evidence across exports; the imported archives do not contain row-level test predictions for an independent identity check. These follow-up 2024 results supplement, rather than replace, the original evaluation.
+
+\subsection{Thresholds inside the RF amount bins}
+The GBT experiments also evaluate 3, 7.5 and 15 mm, which are absent from the seven training query thresholds and lie inside the RF's amount bins. The archived job scores the original 15\% RF and logistic baseline alongside GBT on the same loaded test frame. Table~\ref{tab:interior} reports the 100\% GBT run; equivalent 30\% results and individual thresholds are retained in the supporting CSVs.
+\begin{table}[!ht]\centering\small
+\begin{tabular}{lrrrrr}\toprule
+Mode & $q$ (mm) & RF Brier & GBT Brier & RF PR-AUC & GBT PR-AUC\\\midrule
+@@INTERIOR_ROWS@@
+\bottomrule\end{tabular}
+\caption{Additional 2024 query thresholds: original 15\% RF versus 100\% GBT. These compare fitted systems with different training fractions. RF has lower Brier in all six rows; PR-AUC differences vary by threshold.}\label{tab:interior}
+\end{table}
+\FloatBarrier
+
+These queries give direct evidence beyond the original threshold grid. The RF's empirical within-bin approximation remains competitive with threshold-conditioned GBT at these points, although three additional thresholds do not establish accuracy for every possible query. GBT does not impose monotonicity in $q$: increasing the requested rainfall amount can sometimes increase its predicted exceedance probability. Across all ten evaluated thresholds, adjacent-threshold violations occur in 0.0491\% and 0.0681\% of A's comparisons at 30\% and 100\% training, and in 0.5238\% and 0.6164\% for B. The main RF's survival-mixture construction is non-increasing by design.
+
+These supplementary 2024 experiments leave the original models and test results unchanged. Runnable code, imported pipelines, source snapshots and reconciliation outputs accompany the report; the 15\% A GBT row remains summary-only, while B has per-threshold metric evidence.
+
+\clearpage

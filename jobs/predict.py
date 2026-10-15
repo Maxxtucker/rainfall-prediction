@@ -19,7 +19,7 @@ def main():
     parser.add_argument("--time", required=True, help="ISO time; naive times mean Asia/Singapore")
     parser.add_argument("--threshold", required=True, type=float, help="Strict > threshold, in mm")
     parser.add_argument("--clean", help="Clean observation Parquet; required only for short-term model")
-    parser.add_argument("--predictor", choices=["random_forest", "binary_logistic"], default="random_forest")
+    parser.add_argument("--predictor", choices=["random_forest", "binary_logistic", "gbt"], default="random_forest")
     parser.add_argument("--model", required=True, help="train.py output root")
     parser.add_argument("--output", required=True, help="JSON output directory")
     args = parser.parse_args()
@@ -38,7 +38,8 @@ def main():
     spark.sparkContext.setLogLevel("WARN")
     model_root = args.model.rstrip("/")
     metadata = read_json(spark, model_root + "/metadata")
-    supported = metadata.get("supported_predictors", ["random_forest", "binary_logistic"])
+    is_gbt = metadata.get("model", "").startswith("GBTClassifier")
+    supported = metadata.get("supported_predictors", ["gbt"] if is_gbt else ["random_forest", "binary_logistic"])
     if args.predictor not in supported:
         spark.stop()
         raise ValueError(
@@ -51,7 +52,7 @@ def main():
         if not args.clean:
             raise ValueError("Short-term prediction requires --clean with observations available near the requested time.")
         timestamp = F.to_timestamp(F.lit(time_text))
-        latency = int(metadata["latency_minutes"])
+        latency = int(metadata.get("latency_minutes") or 10)
         clean = (spark.read.parquet(args.clean).where((F.col("station_id") == args.station)
             & (F.col("timestamp") <= timestamp)
             & (F.col("timestamp") >= timestamp - F.expr(f"INTERVAL {latency + 70} MINUTES"))))
@@ -70,6 +71,13 @@ def main():
         scored = pipeline.transform(features)
         probabilities = calibrated_array(vector_to_array("probability"), float(metadata["temperature"]))
         probability = survival_expression(probabilities, survival_weights(supports, args.threshold))
+    elif args.predictor == "gbt":
+        pipeline = PipelineModel.load(model_root + "/pipeline")
+        scored = pipeline.transform(features.withColumn("threshold", F.lit(args.threshold)))
+        scored = scored.withColumn("_raw_probability", vector_to_array("probability")[1])
+        from rainfall.model import calibrated_survival
+        probability = F.lit(1.0) if args.threshold < 0 else calibrated_survival(
+            F.array(1.0-F.col("_raw_probability"), F.col("_raw_probability")), [0.0,1.0], float(metadata["temperature"]))
     else:
         pipeline = PipelineModel.load(model_root + "/binary_pipeline")
         scored = pipeline.transform(features.withColumn("threshold", F.lit(args.threshold)))
@@ -78,7 +86,7 @@ def main():
         .withColumn("probability_exceedance", probability)
         .withColumn("model", F.lit(args.predictor))
         .withColumn("prediction_kind", F.lit("short_term_risk" if mode == "short_term_v3" else "historical_calendar_risk"))
-        .withColumn("threshold_beyond_training_support", F.lit(args.threshold >= float(metadata["train_max_y30"])))
+        .withColumn("threshold_beyond_training_support", F.lit(args.threshold >= float(metadata["train_max_y30"]) if metadata.get("train_max_y30") is not None else None).cast("boolean"))
         .select("station_id", "timestamp", "target_end", "threshold_mm", "probability_exceedance", "model", "prediction_kind", "threshold_beyond_training_support"))
     result.coalesce(1).write.mode("overwrite").json(args.output)
     result.show(truncate=False)

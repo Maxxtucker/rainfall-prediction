@@ -1,0 +1,154 @@
+{
+  "placement": {
+    "clusterSelector": {
+      "clusterLabels": {
+        "goog-dataproc-cluster-name": "rainfall-spark"
+      }
+    }
+  },
+  "jobs": [
+    {
+      "stepId": "short-term-sample30",
+      "labels": {
+        "experiment": "gbt-sampling",
+        "sample": "30",
+        "mode": "short-term"
+      },
+      "pysparkJob": {
+        "mainPythonFileUri": "gs://gcp-test-457806-rainfall-skylarye7/project/steps/gbt-sampling-20261014-run01/source/train_gbt_sampling.py",
+        "pythonFileUris": [
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/gbt-sampling-20261014-run01/source/rainfall.zip"
+        ],
+        "properties": {
+          "spark.sql.session.timeZone": "Asia/Singapore",
+          "spark.driver.memory": "6g",
+          "spark.driver.maxResultSize": "1g"
+        },
+        "args": [
+          "--reference-model",
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/task2-reference-saved/models/short_term",
+          "--data",
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/task2-recheck/data/short_term",
+          "--output",
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/gbt-sampling-20261014-run01/short_term/sample30",
+          "--train-fraction",
+          "0.30",
+          "--depths",
+          "3,5",
+          "--iterations",
+          "40"
+        ]
+      }
+    },
+    {
+      "stepId": "calendar-sample30",
+      "labels": {
+        "experiment": "gbt-sampling",
+        "sample": "30",
+        "mode": "calendar"
+      },
+      "pysparkJob": {
+        "mainPythonFileUri": "gs://gcp-test-457806-rainfall-skylarye7/project/steps/gbt-sampling-20261014-run01/source/train_gbt_sampling.py",
+        "pythonFileUris": [
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/gbt-sampling-20261014-run01/source/rainfall.zip"
+        ],
+        "properties": {
+          "spark.sql.session.timeZone": "Asia/Singapore",
+          "spark.driver.memory": "6g",
+          "spark.driver.maxResultSize": "1g"
+        },
+        "args": [
+          "--reference-model",
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/task2-reference-saved/models/calendar",
+          "--data",
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/task2-recheck/data/calendar",
+          "--output",
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/gbt-sampling-20261014-run01/calendar/sample30",
+          "--train-fraction",
+          "0.30",
+          "--depths",
+          "3,5",
+          "--iterations",
+          "40"
+        ]
+      },
+      "prerequisiteStepIds": [
+        "short-term-sample30"
+      ]
+    },
+    {
+      "stepId": "short-term-sample100",
+      "labels": {
+        "experiment": "gbt-sampling",
+        "sample": "100",
+        "mode": "short-term"
+      },
+      "pysparkJob": {
+        "mainPythonFileUri": "gs://gcp-test-457806-rainfall-skylarye7/project/steps/gbt-sampling-20261014-run01/source/train_gbt_sampling.py",
+        "pythonFileUris": [
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/gbt-sampling-20261014-run01/source/rainfall.zip"
+        ],
+        "properties": {
+          "spark.sql.session.timeZone": "Asia/Singapore",
+          "spark.driver.memory": "6g",
+          "spark.driver.maxResultSize": "1g"
+        },
+        "args": [
+          "--reference-model",
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/task2-reference-saved/models/short_term",
+          "--data",
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/task2-recheck/data/short_term",
+          "--output",
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/gbt-sampling-20261014-run01/short_term/sample100",
+          "--train-fraction",
+          "1.00",
+          "--depths",
+          "3,5",
+          "--iterations",
+          "40"
+        ]
+      },
+      "prerequisiteStepIds": [
+        "calendar-sample30"
+      ]
+    },
+    {
+      "stepId": "calendar-sample100",
+      "labels": {
+        "experiment": "gbt-sampling",
+        "sample": "100",
+        "mode": "calendar"
+      },
+      "pysparkJob": {
+        "mainPythonFileUri": "gs://gcp-test-457806-rainfall-skylarye7/project/steps/gbt-sampling-20261014-run01/source/train_gbt_sampling.py",
+        "pythonFileUris": [
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/gbt-sampling-20261014-run01/source/rainfall.zip"
+        ],
+        "properties": {
+          "spark.sql.session.timeZone": "Asia/Singapore",
+          "spark.driver.memory": "6g",
+          "spark.driver.maxResultSize": "1g"
+        },
+        "args": [
+          "--reference-model",
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/task2-reference-saved/models/calendar",
+          "--data",
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/task2-recheck/data/calendar",
+          "--output",
+          "gs://gcp-test-457806-rainfall-skylarye7/project/steps/gbt-sampling-20261014-run01/calendar/sample100",
+          "--train-fraction",
+          "1.00",
+          "--depths",
+          "3,5",
+          "--iterations",
+          "40"
+        ]
+      },
+      "prerequisiteStepIds": [
+        "short-term-sample100"
+      ]
+    }
+  ],
+  "dagTimeout": "82800s"
+}
+

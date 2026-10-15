@@ -1,0 +1,72 @@
+{
+  "done": true,
+  "driverControlFilesUri": "gs://rainfall-full-20261012-1439-a7/google-cloud-dataproc-metainfo/2967bb10-54cf-4109-b534-11b472834a23/jobs/21ea9f87ffb543beb68bedbc8b54aff7/",
+  "driverOutputResourceUri": "gs://rainfall-full-20261012-1439-a7/google-cloud-dataproc-metainfo/2967bb10-54cf-4109-b534-11b472834a23/jobs/21ea9f87ffb543beb68bedbc8b54aff7/driveroutput",
+  "jobUuid": "1a1bdbc3-bd21-3a77-a844-0aa19fc31ab9",
+  "placement": {
+    "clusterName": "rainfall-spark-full",
+    "clusterUuid": "2967bb10-54cf-4109-b534-11b472834a23"
+  },
+  "pysparkJob": {
+    "args": [
+      "--data",
+      "gs://rainfall-full-20261012-1439-a7/project/steps/task2-full-20261012t171123z/data/short_term",
+      "--output",
+      "gs://rainfall-full-20261012-1439-a7/project/steps/task2-full-20261012t171123z/models/short_term",
+      "--train-fraction",
+      "1.0",
+      "--eval-fraction",
+      "1.0",
+      "--depths",
+      "5,8",
+      "--trees",
+      "40",
+      "--shuffle-partitions",
+      "128",
+      "--seed",
+      "2026"
+    ],
+    "mainPythonFileUri": "gs://rainfall-full-20261012-1439-a7/project/steps/task2-full-20261012t171123z/source/train.py",
+    "properties": {
+      "spark.driver.maxResultSize": "1g",
+      "spark.driver.memory": "6g",
+      "spark.sql.session.timeZone": "Asia/Singapore"
+    },
+    "pythonFileUris": [
+      "gs://rainfall-full-20261012-1439-a7/project/steps/task2-full-20261012t171123z/source/rainfall.zip"
+    ]
+  },
+  "reference": {
+    "jobId": "21ea9f87ffb543beb68bedbc8b54aff7",
+    "projectId": "rainfall-full-20261012-1439-a7"
+  },
+  "status": {
+    "state": "DONE",
+    "stateStartTime": "2026-10-12T20:21:32.045911Z"
+  },
+  "statusHistory": [
+    {
+      "state": "PENDING",
+      "stateStartTime": "2026-10-12T19:23:11.360042Z"
+    },
+    {
+      "state": "SETUP_DONE",
+      "stateStartTime": "2026-10-12T19:23:11.447981Z"
+    },
+    {
+      "details": "Agent reported job success",
+      "state": "RUNNING",
+      "stateStartTime": "2026-10-12T19:23:11.854451Z"
+    }
+  ],
+  "yarnApplications": [
+    {
+      "memoryMbSeconds": "93488952",
+      "name": "Singapore rainfall - train and evaluate",
+      "progress": 1.0,
+      "state": "FINISHED",
+      "trackingUrl": "http://rainfall-spark-full-m.asia-southeast1-c.c.rainfall-full-20261012-1439-a7.internal.:8088/proxy/application_1791825696908_0003/",
+      "vcoreSeconds": "27607"
+    }
+  ]
+}

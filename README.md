@@ -2,7 +2,7 @@
 
 DSA5208 group project using Singapore's official 2017–2024 five-minute rainfall records and Apache Spark. Task 1 explores seasonal, annual, daily and spatial patterns; Task 2 estimates the probability that a station will exceed a requested rainfall amount in the next 30 minutes.
 
-**Read the [project report](report/project_report.pdf).** This is the single submission report, including the follow-up RF sampling and tuning study. Fill in group names and student IDs before submission.
+**Read the [project report](report/project_report.pdf).** This is the single submission report, including the follow-up RF sampling and tuning study. Group names and student IDs are included on the report cover.
 
 | Deliverable | Location |
 |---|---|
@@ -96,7 +96,7 @@ Follow the [complete GCP recipe](docs/GCP_GUIDE_ZH.md) to configure your project
 
 ## Package for submission
 
-Complete the group details in `report/project_report.template.tex`, rebuild the PDF, then run:
+Verify the group details in `report/project_report.template.tex`, rebuild the PDF, then run:
 
 ```bash
 python scripts/build_submission.py
@@ -105,3 +105,23 @@ python scripts/build_submission.py
 This creates `dist/rainfall-submission.zip` with the canonical report, source, saved models, figures and evidence, plus a SHA-256 manifest. Local cloud configuration, raw data and caches are excluded. The packager checks saved verification evidence; completed software/model checks and their scope are documented in [docs/VALIDATION.md](docs/VALIDATION.md).
 
 OpenAI Codex assisted with implementation, diagnostics, cloud execution, analysis, figures, report editing and repository organisation. The report contains the AI declaration; group members must review the submitted work. Synthetic records are used only in software tests.
+
+## Teammate GBT and full-training results
+
+See [the integration guide](docs/TEAMMATE_EXPERIMENTS.md) for the imported 30%/100% GBT models, 100% RF/LR models, and 15% GBT summary. Original final models remain unchanged. These are supplementary experiments, including query thresholds 3, 7.5 and 15 mm.
+
+```bash
+python scripts/analyze_teammate_results.py
+python scripts/build_project_report.py
+```
+
+To query an imported calendar GBT with the same station/time/threshold interface:
+
+```bash
+spark-submit --master 'local[2]' jobs/predict.py \
+  --model outputs/steps/gbt-sampling-20261014-run01/calendar/sample100 \
+  --predictor gbt --station S50 --time '2026-10-15T15:00:00+08:00' \
+  --threshold 3 --output outputs/local-gbt-query
+```
+
+At 15%, A GBT is summary-only, while B has a supplied per-threshold text export. Neither 15% GBT pipeline was supplied.

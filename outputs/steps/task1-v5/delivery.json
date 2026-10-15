@@ -4,9 +4,9 @@
   "figures": "figures/task1-v5-report",
   "report": "report/project_report.pdf",
   "source_archive_sha256": "d0f5110166032837a15a4cdbfa88dfb750a4f368ed4b1a1f2e7fc0fd40e17fab",
-  "report_sha256": "14c9189f966ad750ef546f175f6a6da98480a71904e87455b78a566e79f2550f",
+  "report_sha256": "b1224b52aa609ff28ed07942a7f7a69e07238d0820a2c20481f1cf98aa341e29",
   "numeric_validation": "passed; see validation.json",
-  "visual_review": "20-page report; Figure 9 and result-section float order corrected; pages 10--12 rendered and reviewed on 2026-10-14",
+  "visual_review": "22-page combined report; supplementary GBT/full-training tables and discussion rendered and reviewed on 2026-10-15",
   "figure_count": 46,
   "original_task1_report": {
     "path_at_time_of_run": "report/task1/task1_report.pdf",

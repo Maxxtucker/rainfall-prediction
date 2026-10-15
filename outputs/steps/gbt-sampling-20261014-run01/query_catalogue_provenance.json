@@ -1,0 +1,26 @@
+[
+  {
+    "mode": "short_term",
+    "sample": "sample30",
+    "source": "outputs/steps/task2-dual-v2/models/short_term/stations",
+    "purpose": "Training-only frozen station catalogue for query interface; fitted pipeline/metadata untouched."
+  },
+  {
+    "mode": "short_term",
+    "sample": "sample100",
+    "source": "outputs/steps/task2-dual-v2/models/short_term/stations",
+    "purpose": "Training-only frozen station catalogue for query interface; fitted pipeline/metadata untouched."
+  },
+  {
+    "mode": "calendar",
+    "sample": "sample30",
+    "source": "outputs/steps/task2-dual-v2/models/calendar/stations",
+    "purpose": "Training-only frozen station catalogue for query interface; fitted pipeline/metadata untouched."
+  },
+  {
+    "mode": "calendar",
+    "sample": "sample100",
+    "source": "outputs/steps/task2-dual-v2/models/calendar/stations",
+    "purpose": "Training-only frozen station catalogue for query interface; fitted pipeline/metadata untouched."
+  }
+]

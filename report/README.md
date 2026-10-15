@@ -24,6 +24,7 @@ bash report/build.sh
 | Supplementary figures and captions | `sections/appendix.tex` |
 | Task 2 methods and original evaluation | `task2/section_template.tex` |
 | RF follow-up methods and findings | `task2/rf_sensitivity.template.tex` |
+| Teammate GBT, full-training and interior-threshold experiments | `task2/teammate.template.tex` |
 | Discussion, conclusion and AI declaration | `sections/discussion.tex` |
 | Numerical substitutions and generated tables | `../scripts/build_project_report.py` |
 

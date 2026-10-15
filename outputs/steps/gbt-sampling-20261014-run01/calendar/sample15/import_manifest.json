@@ -1,0 +1,6 @@
+{
+  "source_file": "gbt-calendar-results.txt",
+  "sha256": "eddc3317d7c54d140f0095205b973f075d59a4ca6447c215f7c5a99083fd737f",
+  "evidence": "Metadata and per-threshold metrics only; no pipeline or daily errors supplied.",
+  "threshold_order": "Unlabelled diagnostic blocks are preserved in the source text but not assigned to models."
+}

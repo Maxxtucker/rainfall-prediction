@@ -1,0 +1,1 @@
+{"depth": 5, "validation_macro_brier": 0.023539168333188056, "elapsed_seconds": 18178.438537368995}

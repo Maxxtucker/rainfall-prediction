@@ -50,3 +50,16 @@ Reproduce after downloading the clean data:
 ```bash
 python scripts/audit_publication_delay.py --clean /path/to/clean --output outputs/steps/task2-dual-v2/publication_delay_audit.json
 ```
+
+## Teammate GBT and full-training integration (15 October 2026)
+
+- Imported four selected GBT pipelines (A/B at 30% and 100%) and two full-training model packages (each RF plus LR), preserving original 15% models and original teammate pipeline/metadata files. Archive and source hashes are retained in import manifests.
+- The GBT metadata source SHA-256 matches its supplied source snapshot. Mean metrics are recomputed over the original seven thresholds, excluding diagnostic thresholds from these means. Counts and prevalence match the original per-mode test exports; daily squared-error sums reconstruct imported GBT/reference Brier within 1e-12. Full-training empirical amount supports exactly match the original full-training supports. These aggregated checks do not independently establish row-level input identity.
+- All eight selected model pipelines reload with the pinned local Spark 3.5.3 runtime and return finite normalized probabilities for fabricated feature rows. The GBT calibration output remains between zero and one. A real invocation of `jobs/predict.py --predictor gbt` using calendar/sample100 returns a valid query result at threshold 3 mm. This checks the interface, not forecast accuracy in 2026.
+- The complete regression suite passes: 56 tests in 60.607 seconds. New tests detect corrupted daily Brier, differing prevalence despite equal counts, and unsafe archive paths.
+- GBT 15% figures remain summary-only: no corresponding pipeline or raw metric export was supplied. They are explicitly distinguished in code-generated report tables and documentation.
+- No cloud model fitting or cluster operations were performed during integration. Existing trained results are supplementary, including interior-threshold diagnostics at 3, 7.5 and 15 mm.
+
+### Calendar 15% GBT text export
+
+The subsequently supplied `gbt-calendar-results.txt` contains metadata and per-threshold metrics for calendar 15% GBT and reference models. `scripts/import_gbt_text.py` parses the concatenated JSON/CSV blocks, preserves the original text and source hash, and does not assign the unlabelled threshold-order blocks. Recomputed calendar 15% means match the supplied rounded summary; metadata, test counts, event prevalence and positive confusion counts are checked. No 15% pipeline or daily-error export is present. Short-term 15% remains summary-only. This supersedes the earlier statement that both 15% modes had only summary evidence.

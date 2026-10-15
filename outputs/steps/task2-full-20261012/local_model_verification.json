@@ -1,0 +1,96 @@
+{
+  "passed": true,
+  "scope": "Pipeline reload and fabricated-feature smoke predictions; no training or test re-evaluation.",
+  "models": [
+    {
+      "mode": "short_term",
+      "kind": "gbt",
+      "path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30",
+      "reloaded": true,
+      "smoke_probability": [
+        0.9695232974705532,
+        0.030476702529446786
+      ]
+    },
+    {
+      "mode": "short_term",
+      "kind": "gbt",
+      "path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample100",
+      "reloaded": true,
+      "smoke_probability": [
+        0.9694581669109814,
+        0.03054183308901859
+      ]
+    },
+    {
+      "mode": "short_term",
+      "kind": "rf",
+      "path": "outputs/steps/task2-full-20261012/models/short_term",
+      "reloaded": true,
+      "smoke_probability": [
+        0.9273405854806935,
+        0.0534362710194237,
+        0.006177293031474073,
+        0.006156187557149663,
+        0.0036290822682957325,
+        0.002400908618311445,
+        0.0008596720246517684
+      ]
+    },
+    {
+      "mode": "short_term",
+      "kind": "lr",
+      "path": "outputs/steps/task2-full-20261012/models/short_term",
+      "reloaded": true,
+      "smoke_probability": [
+        0.8891906762305564,
+        0.11080932376944364
+      ]
+    },
+    {
+      "mode": "calendar",
+      "kind": "gbt",
+      "path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30",
+      "reloaded": true,
+      "smoke_probability": [
+        0.9673768965670269,
+        0.032623103432973144
+      ]
+    },
+    {
+      "mode": "calendar",
+      "kind": "gbt",
+      "path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample100",
+      "reloaded": true,
+      "smoke_probability": [
+        0.9663480112403177,
+        0.03365198875968234
+      ]
+    },
+    {
+      "mode": "calendar",
+      "kind": "rf",
+      "path": "outputs/steps/task2-full-20261012/models/calendar",
+      "reloaded": true,
+      "smoke_probability": [
+        0.9346616222003294,
+        0.03947380782577144,
+        0.008615761431354363,
+        0.008298522550749145,
+        0.004673097491979418,
+        0.003086823311115765,
+        0.001190365188700441
+      ]
+    },
+    {
+      "mode": "calendar",
+      "kind": "lr",
+      "path": "outputs/steps/task2-full-20261012/models/calendar",
+      "reloaded": true,
+      "smoke_probability": [
+        0.9747617067161471,
+        0.025238293283852853
+      ]
+    }
+  ]
+}
