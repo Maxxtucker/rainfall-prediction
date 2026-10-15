@@ -63,3 +63,12 @@ python scripts/audit_publication_delay.py --clean /path/to/clean --output output
 ### Calendar 15% GBT text export
 
 The subsequently supplied `gbt-calendar-results.txt` contains metadata and per-threshold metrics for calendar 15% GBT and reference models. `scripts/import_gbt_text.py` parses the concatenated JSON/CSV blocks, preserves the original text and source hash, and does not assign the unlabelled threshold-order blocks. Recomputed calendar 15% means match the supplied rounded summary; metadata, test counts, event prevalence and positive confusion counts are checked. No 15% pipeline or daily-error export is present. Short-term 15% remains summary-only. This supersedes the earlier statement that both 15% modes had only summary evidence.
+
+## Part 2 report and workflow reorganisation (15 October 2026)
+
+- `analyze_task2_experiments.py` reconciles the saved exports and writes derived facts, summaries and checks under `report/task2/`. All 18 existing summary rows preserve their original mean Brier, mean log loss, mean PR-AUC and 1 mm PR-AUC values exactly. The new 1 mm log-loss column is read from the corresponding per-threshold export.
+- Six focused aggregation/artifact tests and four existing import/reconciliation tests passed. They cover exclusion of additional thresholds from the seven-threshold means, missing or duplicate metric rows, full-training historical-frequency semantics, summary-only null fields and the report-only write boundary.
+- Figure `22_training_fraction` uses relative Brier improvement from each model's 15% result. Figure `23_threshold_risk` weights saved reliability bins by their sample counts; RF and GBT test counts and event rates agree within each mode. The weighted values reproduce the high-threshold probability findings in the text.
+- The report retains all 20 figures present in main and adds these two panels. XeLaTeX produces 22 pages without unresolved references or overflowing boxes. The methods/results, tables, figure labels and discussion were reviewed against the saved evidence; model and sampling labels were checked independently.
+- Changed Python files parse, the report build passes Bash syntax checks, and `git diff --check` passes. The build refreshes the Part 2 summaries and figures before assembling the PDF.
+- Source experiment outputs and fitted model files were not modified. This revision used saved aggregate evidence; it did not run Spark, fit models, load pipelines or launch cloud jobs. The earlier model-reload and full-suite records above describe the preceding integration.

@@ -1,7 +1,9 @@
 \clearpage
 \appendix
 \numberwithin{figure}{section}
+\numberwithin{table}{section}
 \setcounter{figure}{0}
+\setcounter{table}{0}
 \renewcommand{\thefigure}{\Alph{section}.\arabic{figure}}
 \section{Distribution and source-gap evidence}\label{app:data}
 These supplementary figures separate the distribution of measured rain from the absence of measurements. They support the data-quality discussion without treating an unrecorded interval as dry weather.
@@ -32,7 +34,21 @@ The twelve-month view complements the main December comparison. Regional colours
 
 \clearpage
 \section{Additional predictive diagnostics}\label{app:prediction}
-These figures retain the threshold-specific baseline comparison and diagnostics for the original evaluated models. They do not evaluate the later sensitivity candidates on the final test set.
+These figures describe the 15\% RF and logistic models on the 2024 test set. They show how performance varies by rainfall threshold and month, alongside the RF's feature use.
 \plot{19_baseline_skill}{Brier skill relative to each mode's historical-frequency baseline on its own eligible 2024 test population. Positive values indicate lower error than the baseline; zero indicates equal error. A's random forest improves on the baseline at every evaluated threshold, whereas A's logistic regression deteriorates at larger thresholds. B's forest has small, threshold-dependent gains and losses. The two panels use different eligible populations.}{fig:appbaselines}
-\plot{21_diagnostics}{Left: A's monthly Brier skill relative to historical frequency at a rainfall threshold of 1 mm in 2024. Right: its six largest random-forest impurity importances. Positive monthly skill describes this holdout. Correlated rainfall summaries share information, so importance does not identify an independent feature effect or establish causation.}{fig:appdiagnostics}
+\plot{21_diagnostics}{Left: A's monthly Brier skill relative to historical frequency at 1 mm in 2024. Right: its six largest random-forest impurity importances. Recent rainfall totals and persistence summaries contribute most to the fitted forest; these correlated features share information.}{fig:appdiagnostics}
+\FloatBarrier
+
+\clearpage
+\section{Model scores and experiment coverage}\label{app:experiments}
+Table~\ref{tab:allmodels} brings the recorded model and training-fraction results together. Mean Brier and mean log loss give equal weight to the seven primary thresholds; PR-AUC is shown at 1 mm. Historical frequency uses all eligible training examples in every run.
+\begin{table}[htbp]\centering\small
+\begin{tabular}{llrrrr}\toprule
+Mode & Model & Training & Mean Brier & Mean log loss & PR-AUC at 1 mm\\\midrule
+@@EXPERIMENT_METRIC_ROWS@@
+\bottomrule\end{tabular}
+\caption{2024 results on each mode's eligible population: 5,729,508 anchors for A and 6,374,476 for B. The 15\% A GBT row uses its recorded aggregate summary; the 15\% B GBT row uses per-threshold exports. All other rows use saved metric CSVs.}\label{tab:allmodels}
+\end{table}
+
+The RF/LR 15\% and 100\% runs retain both model pipelines and test metrics. GBT 30\% and 100\% retain pipelines, daily errors and reliability tables; the 15\% results are retained as summaries. RF's 30\% experiment is evaluated on 2022 validation in Appendix~\ref{sec:rfsensitivity}. The archived logistic runs use 15\% and 100\% training. Within the GBT exports, RF and logistic columns refer to the loaded 15\% comparison models, including at the additional 3, 7.5 and 15 mm queries. The repository's Part 2 guide maps these results to their source directories and query commands.
 \FloatBarrier

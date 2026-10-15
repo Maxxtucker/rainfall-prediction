@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Refresh the two edited report figures from saved summary tables."""
+"""Refresh the maintained report figures from saved summary tables."""
 from pathlib import Path
 import subprocess
 import sys
@@ -14,6 +14,7 @@ def main():
          '--output', output / '20_reliability'),
         ('plot_report_december.py', '--input', ROOT / 'outputs/steps/task1-v5/eda/spatial_month_available',
          '--boundary', ROOT / 'assets/singapore.geojson', '--output', output / '13_spatial_month_12'),
+        ('plot_task2_experiments.py', '--output', output),
     ]
     for script, *arguments in commands:
         subprocess.run([sys.executable, str(ROOT / 'scripts' / script), *map(str, arguments)], check=True)
