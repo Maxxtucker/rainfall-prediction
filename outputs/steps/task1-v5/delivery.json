@@ -4,9 +4,9 @@
   "figures": "figures/task1-v5-report",
   "report": "report/project_report.pdf",
   "source_archive_sha256": "d0f5110166032837a15a4cdbfa88dfb750a4f368ed4b1a1f2e7fc0fd40e17fab",
-  "report_sha256": "aa5fc511ae0027d1b115cfd1355360ec8c03f6f0ab0749ceb47da8ca4ab30f73",
+  "report_sha256": "38150b24019f201031afe5ee795013f96844676474960f9b23605501ec8f93c4",
   "numeric_validation": "passed; see validation.json",
-  "visual_review": "23-page report; appendix F/G provenance, score tables and tuning distinction updated and visually reviewed on 2026-10-16",
+  "visual_review": "23-page report; Figure 9 with section 5.1 and Table 6 on page 11; Figures 10\u201312 checked within their corresponding subsections on 2026-10-16",
   "figure_count": 46,
   "original_task1_report": {
     "path_at_time_of_run": "report/task1/task1_report.pdf",

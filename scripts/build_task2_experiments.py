@@ -99,34 +99,6 @@ def build_values(facts=None):
         "Across the three fitting fractions, RF has "
         "lower mean Brier than LR and GBT in both information settings."
     )
-    if all((mode, 'binary_logistic', .3) in records for mode, _ in MODES):
-        changes = {}
-        for mode, label in MODES:
-            first = records[mode, 'binary_logistic', .15]['mean_brier']
-            middle = records[mode, 'binary_logistic', .3]['mean_brier']
-            changes[label] = 100 * (1 - middle / first)
-        interpretation += (
-            " The separately fitted 30\\% LR changes mean Brier relative to 15\\% by "
-            f"{changes['A']:+.3f}\\% for A and {changes['B']:+.3f}\\% for B "
-            "(positive denotes improvement). These values come from new LR fits, "
-            "rather than the 15\\% references rescored in the GBT exports. "
-            f"At 30\\%, selected L2 regularisation is "
-            f"{records['short_term', 'binary_logistic', .3]['reg_param']:g} for A and "
-            f"{records['calendar', 'binary_logistic', .3]['reg_param']:g} for B; "
-            f"the selected fits use {records['short_term', 'binary_logistic', .3]['iterations']} "
-            f"and {records['calendar', 'binary_logistic', .3]['iterations']} iterations, respectively."
-        )
-    if all((mode, 'random_forest', .3) in records for mode, _ in MODES):
-        changes = {}
-        for mode, label in MODES:
-            changes[label] = 100 * (1 - records[mode, 'random_forest', .3]['mean_brier'] /
-                                        records[mode, 'random_forest', .15]['mean_brier'])
-        interpretation += (
-            f" The 30\\% RF changes mean Brier relative to 15\\% by {changes['A']:+.3f}\\% "
-            f"in A and {changes['B']:+.3f}\\% in B. "
-            "Its existing tree weights are unchanged; probability calibration uses 2023, "
-            "and these scores use the same eligible 2024 populations as the other fractions."
-        )
     rf = records['short_term', 'random_forest', 1.]
     lr = records['short_term', 'binary_logistic', 1.]
     gbt = records['short_term', 'gbt', 1.]
@@ -143,7 +115,7 @@ def build_values(facts=None):
                            for mode, _ in MODES for fraction in (.15, .3, 1.)]
     if set(forest_temperatures) == {1.}:
         rf_temperature_text = ("Temperature selection chooses $T=1$ for all three fractions "
-                               "in both settings, leaving the class probabilities unchanged.")
+                               "in both settings on the 2023 calibration set.")
     else:
         settings = [f"{label}: " + ", ".join(
             f"{fraction*100:g}\\% uses $T={records[mode, 'random_forest', fraction]['temperature']:g}$"
@@ -157,8 +129,7 @@ def build_values(facts=None):
         f"{100*a['mean_probability']:.3f}\\% in A and {100*b['mean_probability']:.3f}\\% in B, "
         f"compared with observed frequencies of {100*a['event_rate']:.3f}\\% and "
         f"{100*b['event_rate']:.3f}\\%. This overprediction helps explain why event ranking "
-        "and probability error can favour different models. Temperature calibration uses "
-        "aggregate Brier on 2023; this plot checks threshold-specific behaviour on 2024."
+        "and probability error can favour different models."
     )
     order = {(row['mode'], row['fraction']): 100 * row['violation_fraction']
              for row in facts['threshold_order']}
