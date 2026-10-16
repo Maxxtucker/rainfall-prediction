@@ -4,9 +4,9 @@
   "figures": "figures/task1-v5-report",
   "report": "report/project_report.pdf",
   "source_archive_sha256": "d0f5110166032837a15a4cdbfa88dfb750a4f368ed4b1a1f2e7fc0fd40e17fab",
-  "report_sha256": "b1224b52aa609ff28ed07942a7f7a69e07238d0820a2c20481f1cf98aa341e29",
+  "report_sha256": "a2d04e30304a0da73248c79cf4e510e59adb9a99d12a76ed7cb8b10696d26e06",
   "numeric_validation": "passed; see validation.json",
-  "visual_review": "22-page combined report; supplementary GBT/full-training tables and discussion rendered and reviewed on 2026-10-15",
+  "visual_review": "23-page report; unified protocol, complete 2024 grid, matched-budget algorithm/interior/risk comparisons and appendix provenance rendered and reviewed on 2026-10-16",
   "figure_count": 46,
   "original_task1_report": {
     "path_at_time_of_run": "report/task1/task1_report.pdf",

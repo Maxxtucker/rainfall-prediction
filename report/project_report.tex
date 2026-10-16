@@ -161,7 +161,7 @@ p_{s,t}(q)=P(Y_{s,t}>q\mid X_{s,t}).
 \]
 We assume that observation timestamps mark the endpoints of five-minute accumulation intervals. A training label requires all six exact future records; taking the next six available rows could incorrectly span a gap. Totals are rounded to 0.001 mm, and exceedance means strictly greater than $q$. Eligibility depends on these local windows, rather than Task 1's monthly coverage filter.
 
-We consider two information settings for this query. A uses recent rainfall from the requested station to estimate short-term risk. B uses station and calendar information to estimate historical risk at the requested time. The same model families are tested in both settings, allowing us to examine how much the available information matters alongside the choice of algorithm.
+We consider two information settings for this query. A uses recent rainfall from the requested station to estimate short-term risk. B uses station and calendar information to estimate historical risk at the requested time. Our primary focus is A: recent observations provide additional information about current rainfall conditions and, as the results show, improve predictive performance. B provides a baseline without recent rainfall and can also estimate risk for future times whose recent observations are not yet available, such as tomorrow afternoon. This estimate reflects historical station and calendar patterns rather than the weather conditions of a particular future storm. The same model families are tested in both settings, allowing us to examine how much the available information matters alongside the choice of algorithm.
 
 \textbf{A, the short-term model}, also reads recent rainfall from a supplied clean observation table. We use a pre-specified ten-minute buffer, with twelve observations ending at $t-65,t-60,\ldots,t-10$ minutes. Each record must be present and both recorded update timestamps must be no later than $t$. Missing or not-yet-updated history excludes an example instead of becoming zero rainfall.
 
@@ -183,6 +183,26 @@ Figure~\ref{fig:t2timeline} shows the separation between predictors and the futu
 
 Both models include station ID, latitude, longitude, and sine/cosine encodings of time of day and annual phase. The annual encoding accounts for leap years; numeric year is excluded. A adds the latest three five-minute amounts, 15-, 30- and 60-minute totals, the 30-minute maximum, the hour's wet count and dry fraction, and the difference between consecutive 15-minute totals. The rainfall summaries represent recent intensity, persistence and change. Cyclic time features capture the seasonal and daily patterns without introducing a discontinuity at midnight or New Year. This gives A sixteen numeric features and B six, each alongside station ID.
 
+Table~\ref{tab:input_features} lists the inputs in each setting. All rainfall windows end at $t-10$ minutes.
+\begin{table}[htbp]\centering\small
+\begin{tabular}{p{.63\linewidth}cc}\toprule
+Feature group (number of numeric features) & A & B\\\midrule
+Latitude and longitude (2) & Yes & Yes\\
+Time of day: sine and cosine (2) & Yes & Yes\\
+Annual phase: sine and cosine (2) & Yes & Yes\\
+Latest three five-minute rainfall amounts (3) & Yes & No\\
+Rainfall totals over 15, 30 and 60 minutes (3) & Yes & No\\
+Maximum five-minute rainfall within 30 minutes (1) & Yes & No\\
+Wet-interval count and dry-interval fraction over 60 minutes (2) & Yes & No\\
+Difference between the latest and preceding 15-minute totals (1) & Yes & No\\\midrule
+\textbf{Total numeric features} & \textbf{16} & \textbf{6}\\
+Station ID (categorical; counted separately) & Yes & Yes\\\bottomrule
+\end{tabular}
+\caption{Input features for the two information settings. A uses recent rainfall in addition to the station and calendar inputs shared with B. For LR and GBT, the query threshold $q$ is an additional input; RF uses it when converting class probabilities to exceedance probabilities.}
+\label{tab:input_features}
+\end{table}
+
+
 \subsection{Experimental design}
 Adjacent examples share much of their history and future rainfall, so a random train/test split would mix closely related observations. We instead assign separate years to training, selection, calibration and testing, removing labels whose target end reaches the following split boundary.
 \par
@@ -200,7 +220,21 @@ Period & A examples & B examples & Purpose\\\midrule
 \par
 A has fewer examples because it additionally requires complete, available history. We investigate fitting fractions of 15\%, 30\% and 100\%. Sampling uses a deterministic station--time hash with seed 2026 and does not depend on the label; the smaller samples are contained in the larger ones. The 30\% samples contain 5,608,769 examples for A and 8,233,882 for B. Even the 15\% samples contain millions of examples, but only 2,886 and 4,198 exceed 20 mm, respectively, and many windows overlap within a rainfall episode.
 
-The experiment compares both model families and fitting fractions. RF and logistic regression have 2024 results at 15\% and 100\%, while GBT has results at all three fractions. A separate RF study compares 15\% with 30\% and varies one fitting parameter at a time using 2022 validation data (Appendix~\ref{sec:rfsensitivity}). The RF's empirical rainfall distributions and the historical-frequency baseline always use the full eligible training population. The GBT and full-training experiments followed the initial RF/LR evaluation and reused 2024 as the evaluation year.
+We compare RF, LR and GBT at each of three fitting fractions: 15\%, 30\% and 100\%, separately in A and B. Every model uses 2017--2021 fitting data and is evaluated on the same complete eligible 2024 population within its information setting. Table~\ref{tab:comparison_protocol} summarises the common protocol. Each algorithm, fraction and information setting has its own fitted model; the models are not combined into an ensemble. The RF's within-bin rainfall distributions and the historical-frequency baseline always use the full eligible training population.
+
+\begin{table}[htbp]\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{>{\raggedright\arraybackslash}p{.12\linewidth}>{\raggedright\arraybackslash}p{.18\linewidth}>{\raggedright\arraybackslash}p{.27\linewidth}>{\raggedright\arraybackslash}p{.18\linewidth}>{\raggedright\arraybackslash}p{.14\linewidth}}\toprule
+Algorithm & Fitting fractions & 2022 selection & 2023 calibration & 2024 test\\\midrule
+RF & 15\%, 30\%, 100\% & Reference configuration; alarm cutoff & Temperature & All eligible examples\\
+LR & 15\%, 30\%, 100\% & L2 regularisation; alarm cutoff & None & All eligible examples\\
+GBT & 15\%, 30\%, 100\% & Tree depth & Temperature & All eligible examples\\\bottomrule
+\end{tabular}
+\caption{Common model-comparison protocol in both A and B. Fitting fractions apply only to 2017--2021 anchors. RF keeps the reference 40-tree, depth-8 configuration across fractions; the saved 30\% forest is calibrated and tested using the same procedure as the other forests. Historical frequency is a full-training comparator.}
+\label{tab:comparison_protocol}
+\end{table}
+
+The RF 30\% weights were already available from the earlier validation study. We reuse those standard-configuration forests without refitting and complete their 2023 calibration and 2024 evaluation. The additional one-factor RF tuning analysis remains in Appendix~\ref{sec:rfsensitivity}; it supplements the unified 2024 comparison rather than replacing a missing test cell. Model-file origins and training batches are documented in Appendix~\ref{app:experiments}.
 
 Model selection uses equally weighted mean Brier over seven rainfall thresholds: 0, 0.2, 1, 2, 5, 10 and 20 mm. Where calibration is applied, its temperature is selected on 2023 from 0.5, 0.75, 1, 1.25, 1.5 and 2. We also evaluate 3, 7.5 and 15 mm as additional test queries between the training thresholds.
 
@@ -214,9 +248,9 @@ Model selection uses equally weighted mean Brier over seven rainfall thresholds:
 \]
 Here $\pi_k(X)$ is the forest probability for bin $k$, and $\widehat S_k(q)$ is the fraction of training amounts in that bin exceeding $q$. The temperature $T$ adjusts how concentrated the bin probabilities are; $T=1$ leaves them unchanged. The resulting exceedance probability is non-increasing in the requested rainfall threshold. The within-bin distributions are shared across weather conditions and extend to the largest training total, 71.8 mm; the model returns zero above this empirical support.
 
-The pipeline indexes station IDs as categorical features and fits numeric median imputation; missing history is still excluded before fitting. We compare depths 5 and 8 with 40 trees, 25 minimum examples per node, square-root feature subsets and 0.8 subsampling. Both information settings select depth 8 and $T=1$ at 15\% and 100\%, leaving the fitted bin probabilities unchanged.
+The pipeline indexes station IDs as categorical features and fits numeric median imputation; missing history is still excluded before fitting. The reference configuration has 40 trees, 25 minimum examples per node, square-root feature subsets and 0.8 subsampling. The 15\% and 100\% searches compare depths 5 and 8 and select depth 8 in both information settings; the 30\% forests use this same reference depth. Temperature selection chooses $T=1$ for all three fractions in both settings, leaving the class probabilities unchanged.
 
-\textbf{Threshold-conditioned logistic regression (LR).} LR predicts the binary label $\mathbf1(Y>q)$ with the rainfall threshold as an additional input. Each sampled station-time example is expanded to the seven training thresholds. Station IDs are one-hot encoded and numeric inputs scaled. L2 regularisation 0.01 gives lower validation Brier than 0.1 in both modes at both fitting fractions. LR provides a relatively simple probability model against which to assess the tree methods; its probabilities receive no separate calibration fit.
+\textbf{Threshold-conditioned logistic regression (LR).} LR predicts the binary label $\mathbf1(Y>q)$ with the rainfall threshold as an additional input. Each sampled station-time example is expanded to the seven training thresholds. Station IDs are one-hot encoded and numeric inputs scaled. L2 regularisation is selected from 0.01 and 0.1 using 2022 mean Brier. Each fit allows up to 100 optimisation iterations and can stop earlier when the convergence criterion is met. LR provides a relatively simple probability model against which to assess the tree methods; its probabilities receive no separate calibration fit.
 
 \textbf{Threshold-conditioned gradient-boosted trees (GBT).} GBT uses the same binary labels and threshold expansion as LR, but learns nonlinear relationships by fitting trees sequentially. Its pipeline indexes station IDs, imputes numeric features and assembles them with $q$. We compare depths 3 and 5 with 40 boosting iterations, step size 0.1, minimum leaf size 25, subsampling 0.8 and 128 feature bins. Every reported configuration selects depth 5. Temperature calibration is applied to the binary probability pair $(1-p,p)$: A selects $T=0.75$ and B selects $T=1$ at each fraction. Unlike the RF survival mixture, this construction does not enforce decreasing probability as $q$ increases.
 
@@ -259,20 +293,20 @@ To account for overlapping labels and shared weather across stations, we form 2,
 \begin{table}[!ht]\centering\small
 \begin{tabular}{llrrrr}\toprule
 Mode & Model & Training & Mean Brier & \shortstack{PR-AUC\\at 1 mm} & \shortstack{Log loss\\at 1 mm}\\\midrule
-A & Random forest & 15\% & 0.01613 & 0.4218 & 0.0824 \\
-A & Logistic regression & 15\% & 0.01944 & 0.3629 & 0.0875 \\
+A & Random forest & 100\% & 0.01614 & 0.4229 & 0.0824 \\
+A & Logistic regression & 100\% & 0.01944 & 0.3634 & 0.0875 \\
 A & GBT & 100\% & 0.01623 & 0.4282 & 0.0824 \\
 A & Historical frequency & 100\% & 0.02270 & 0.0467 & 0.1166 \\
-B & Random forest & 15\% & 0.02274 & 0.0494 & 0.1165 \\
-B & Logistic regression & 15\% & 0.02301 & 0.0428 & 0.1165 \\
+B & Random forest & 100\% & 0.02275 & 0.0518 & 0.1167 \\
+B & Logistic regression & 100\% & 0.02301 & 0.0428 & 0.1165 \\
 B & GBT & 100\% & 0.02288 & 0.0522 & 0.1194 \\
 B & Historical frequency & 100\% & 0.02252 & 0.0516 & 0.1146 \\
 \bottomrule
 \end{tabular}
-\caption{Model comparison on each mode's eligible 2024 population: 5,729,508 examples for A and 6,374,476 for B. Training fractions are shown explicitly; historical frequency always uses the full training population. Mean Brier averages the seven original thresholds. Table~\ref{tab:t2common} provides the comparison on shared A/B examples.}\label{tab:t2baseline}
+\caption{Model comparison on each mode's eligible 2024 population: 5,729,508 examples for A and 6,374,476 for B. Every classifier in this table uses 100\% of its eligible training population, so the algorithm comparison holds fitting fraction fixed. Historical frequency also uses the full training population. Mean Brier averages the seven original thresholds. Table~\ref{tab:t2common} provides the comparison on shared A/B examples.}\label{tab:t2baseline}
 \end{table}
 \par
-For A, RF has the lowest mean Brier among the configurations in Table~\ref{tab:t2baseline}. GBT trained on all eligible examples has slightly higher PR-AUC at 1 mm (0.4282 versus 0.4218 for the 15\% RF), but higher mean probability squared error. LR offers another example of why metric choice matters: its ROC-AUC at 1 mm is 0.8607, compared with 0.8035 for RF, while RF has better PR-AUC, Brier and log loss. Ranking events well and assigning accurate probabilities are related but distinct goals.
+With every classifier fitted on the full training population, RF has the lowest mean Brier in A. GBT has slightly higher PR-AUC at 1 mm (0.4282 versus 0.4229), but higher mean probability squared error. LR has higher ROC-AUC at 1 mm (0.8611 versus 0.8036), while RF has better PR-AUC, Brier and log loss. Ranking events and assigning accurate probabilities therefore describe different aspects of performance.
 
 For B, historical frequency achieves the lowest mean Brier. GBT has slightly higher PR-AUC at 1 mm than this baseline, but its probabilities are less accurate overall. Station and calendar features describe when rain is more likely on average; they contain much less information about the development of an individual storm than recent observations do.
 
@@ -280,19 +314,19 @@ For B, historical frequency achieves the lowest mean Brier. GBT has slightly hig
 \begin{table}[!ht]\centering\small
 \begin{tabular}{llrrrr}\toprule
 Mode & Model & 15\% & 30\% & 100\% & Improvement (\%)\\\midrule
-A & Random forest & 0.01613051 & --- & 0.01613638 & -0.036 \\
-A & Logistic regression & 0.01944150 & --- & 0.01944300 & -0.008 \\
+A & Random forest & 0.01613051 & 0.01613151 & 0.01613638 & -0.036 \\
+A & Logistic regression & 0.01944150 & 0.01943988 & 0.01944300 & -0.008 \\
 A & GBT & 0.01622929 & 0.01623889 & 0.01622724 & +0.013 \\
-B & Random forest & 0.02274285 & --- & 0.02275362 & -0.047 \\
-B & Logistic regression & 0.02301006 & --- & 0.02301076 & -0.003 \\
+B & Random forest & 0.02274285 & 0.02274079 & 0.02275362 & -0.047 \\
+B & Logistic regression & 0.02301006 & 0.02301067 & 0.02301076 & -0.003 \\
 B & GBT & 0.02290321 & 0.02290187 & 0.02288430 & +0.083 \\
 \bottomrule\end{tabular}
-\caption{Mean Brier on each mode's eligible 2024 population, averaged over the seven original thresholds. Improvement is the relative Brier reduction from 15\% to 100\%; positive means lower error. Dashes indicate unavailable test results. The 30\% RF experiment is evaluated on 2022 only.}\label{tab:trainingsampling}
+\caption{Mean Brier on each mode's eligible 2024 population, averaged over the seven original thresholds. Improvement is the relative Brier reduction from 15\% to 100\%; positive means lower error. All nine algorithm/fraction combinations are evaluated on 2024 in each information setting. The 15\% A GBT mean comes from the retained aggregate summary; other cells use metric exports.}\label{tab:trainingsampling}
 \end{table}
-\plot{22_training_fraction}{Relative improvement in mean 2024 Brier over each model's 15\% result; positive values mean lower error. Points show the recorded fitting fractions, with small horizontal offsets for readability. RF and LR have points at 15\% and 100\%; GBT has all three fractions. The open A GBT marker identifies the aggregate-summary reference.}{fig:t2sampling}
-Using all eligible training examples changes mean Brier only slightly. For RF, the 100\% score is 0.036\% higher in A and 0.047\% higher in B than at 15\%. The corresponding changes for logistic regression are 0.008\% and 0.003\%. GBT's mean Brier falls by approximately 0.013\% in A and 0.083\% in B. A's 30\% GBT score is slightly higher than its 15\% score, so the observed learning curve is not monotonic. At both 15\% and 100\%, where all three classifiers have results, RF has lower mean Brier than LR and GBT in both information settings.
+\plot{22_training_fraction}{Relative improvement in mean 2024 Brier over each model's 15\% result; positive values mean lower error. Points show the recorded fitting fractions, with small horizontal offsets for readability. All three algorithms have points at 15\%, 30\% and 100\%. The open A GBT marker identifies the aggregate-summary reference.}{fig:t2sampling}
+Using all eligible training examples changes mean Brier only slightly. For RF, the 100\% score is 0.036\% higher in A and 0.047\% higher in B than at 15\%. The corresponding changes for logistic regression are 0.008\% and 0.003\%. GBT's mean Brier falls by approximately 0.013\% in A and 0.083\% in B. A's 30\% GBT score is slightly higher than its 15\% score, so the observed learning curve is not monotonic. Across the three fitting fractions, RF has lower mean Brier than LR and GBT in both information settings. The separately fitted 30\% LR changes mean Brier relative to 15\% by +0.008\% for A and -0.003\% for B (positive denotes improvement). These values come from new LR fits, rather than the 15\% references rescored in the GBT exports. At 30\%, selected L2 regularisation is 0.01 for A and 0.01 for B; the selected fits use 25 and 10 iterations, respectively. The 30\% RF changes mean Brier relative to 15\% by -0.006\% in A and +0.009\% in B. Its existing tree weights are unchanged; probability calibration uses 2023, and these scores use the same eligible 2024 populations as the other fractions.
 
-The controlled RF comparison on 2022 provides a complementary check. With fitting settings held fixed, increasing the sample from 15\% to 30\% changes mean Brier by only 0.012\% in A's favour and 0.003\% against B; both conditional intervals include zero. A modest increase in tree depth is more useful for A than doubling the sample at the reference settings. Appendix~\ref{sec:rfsensitivity} gives the individual settings and paired intervals. Together, the experiments support 15\% as a practical computing compromise for these forests, while showing why total row count alone is a poor measure of independent rainfall information.
+The controlled RF comparison on 2022 provides a complementary check. With fitting settings held fixed, increasing the sample from 15\% to 30\% changes mean Brier by only 0.012\% in A's favour and 0.003\% against B; both conditional intervals include zero. A modest increase in tree depth is more useful for A than doubling the sample at the reference settings. Appendix~\ref{sec:rfsensitivity} gives the individual settings and paired intervals. This validation analysis explains the tuning choices; the primary sample-size comparison is the complete 2024 grid in Table~\ref{tab:trainingsampling}.
 
 The 15\% GBT scores come from an aggregate summary for A and per-threshold metrics for B. Appendix~\ref{app:experiments} lists the retained results and model packages.
 
@@ -300,27 +334,27 @@ The 15\% GBT scores come from an aggregate summary for A and per-threshold metri
 A's RF distinguishes a wider range of risks, but several high-probability bins underestimate the event frequency. Mean predicted risk is 2.38\%, against 2.58\% observed, and the ten-bin weighted absolute calibration error is 0.196 percentage points. These figures use A's full eligible set, which is also the shared set. Most examples occupy low-probability bins, so the small aggregate error should be read alongside the sample counts and the deviations at higher risks.
 \plot{20_reliability}{Calibration of the 15\% RFs at 1 mm on shared examples. Upper panels compare bin-average predictions with observed event rates; B is enlarged to show its two occupied bins. Lower panels show sample counts in fixed 0.1-wide probability bins across the full probability range.}{fig:t2reliability}
 
-\plot{23_threshold_risk}{Observed event frequencies and mean predicted probabilities from the 15\% RF and 100\% GBT at the seven original thresholds. Each panel uses its mode's eligible 2024 examples. The vertical axis is logarithmic and thresholds are equally spaced categories. Agreement in the mean is one calibration check; the reliability plot examines variation within probability groups.}{fig:t2thresholdrisk}
-Figure~\ref{fig:t2thresholdrisk} shows a larger discrepancy for GBT in the upper tail. For rainfall above 20 mm, its mean predicted risk is about 0.830\% in A and 2.645\% in B, compared with observed frequencies of 0.100\% and 0.103\%. This overprediction helps explain why modest improvements in event ranking do not translate into better Brier scores. Calibration was selected by aggregate Brier on 2023, making this threshold-specific check on 2024 particularly useful.
+\plot{23_threshold_risk}{Observed event frequencies and mean predicted probabilities from RF, LR and GBT, each fitted on 30\% of training anchors, at the seven original thresholds. Each panel uses its mode's eligible 2024 examples. The vertical axis is logarithmic and thresholds are equally spaced categories. Agreement in the mean is one calibration check; the reliability plot examines variation within probability groups.}{fig:t2thresholdrisk}
+At the matched 30\% fitting fraction, GBT's mean predicted risk above 20 mm is 0.830\% in A and 2.645\% in B, compared with observed frequencies of 0.100\% and 0.103\%. This overprediction helps explain why event ranking and probability error can favour different models. Temperature calibration uses aggregate Brier on 2023; this plot checks threshold-specific behaviour on 2024.
 
 Finally, a rainfall threshold and an alarm cutoff are different choices. At $q=1$ mm, changing A's probability cutoff from 0.5 to the validation-selected 0.2 raises recall from 24.7\% to 46.4\%, while precision falls from 69.3\% to 47.4\%. Cutoffs are selected by 2022 F1 after fixing the 2023 temperature, without using 2024 outcomes. An always-negative rule already achieves about 97.4\% accuracy here, which is why probability quality and the precision--recall tradeoff are more informative than accuracy.
 
 \subsection{Queries between the training thresholds}
-The additional queries at 3, 7.5 and 15 mm test behaviour inside the RF rainfall bins and between the thresholds used to fit LR and GBT. Table~\ref{tab:interior} compares the 15\% RF with the 100\% GBT, scored on the same loaded test frame within each mode.
+The additional queries at 3, 7.5 and 15 mm test behaviour inside the RF rainfall bins and between the thresholds used to fit LR and GBT. Table~\ref{tab:interior} compares RF, LR and GBT at a matched 30\% fitting fraction on each mode's complete eligible 2024 population.
 \begin{table}[!ht]\centering\small
-\begin{tabular}{lrrrrr}\toprule
-Mode & $q$ (mm) & RF Brier & GBT Brier & RF PR-AUC & GBT PR-AUC\\\midrule
-A & 3 & 0.010557 & 0.010707 & 0.2545 & 0.2534 \\
-A & 7.5 & 0.005054 & 0.005120 & 0.1364 & 0.1388 \\
-A & 15 & 0.001854 & 0.001913 & 0.0556 & 0.0557 \\
-B & 3 & 0.012384 & 0.012857 & 0.0264 & 0.0273 \\
-B & 7.5 & 0.005534 & 0.006141 & 0.0127 & 0.0122 \\
-B & 15 & 0.001950 & 0.002620 & 0.0052 & 0.0042 \\
+\begin{tabular}{lrrrr}\toprule
+Mode & $q$ (mm) & RF Brier & LR Brier & GBT Brier\\\midrule
+A & 3 & 0.010546 & 0.012359 & 0.010717 \\
+A & 7.5 & 0.005051 & 0.006950 & 0.005132 \\
+A & 15 & 0.001854 & 0.003118 & 0.001913 \\
+B & 3 & 0.012385 & 0.012510 & 0.012856 \\
+B & 7.5 & 0.005534 & 0.005663 & 0.006142 \\
+B & 15 & 0.001950 & 0.002002 & 0.002620 \\
 \bottomrule\end{tabular}
-\caption{2024 results at thresholds absent from the fitting query grid. RF uses 15\% of training examples and GBT uses 100\%. These rows compare the fitted systems at the specified thresholds.}\label{tab:interior}
+\caption{2024 results at thresholds absent from the fitting query grid. All three algorithms use 30\% of training anchors and the same eligible test population within each mode.}\label{tab:interior}
 \end{table}
 \FloatBarrier
-RF has lower Brier in all six comparisons, while the PR-AUC ordering varies. Its global within-bin approximation therefore remains useful at these additional query points. GBT also exposes a structural issue with treating the threshold as an unconstrained predictor: a larger rainfall threshold can occasionally produce a larger exceedance probability. Across the ten evaluated thresholds, the proportion of adjacent query pairs with increasing GBT probability is 0.0491\% at 30\% training and 0.0681\% at 100\% for A, compared with 0.5238\% and 0.6164\% for B. The RF mixture preserves the expected probability ordering across thresholds by construction.
+RF has lower Brier than both alternatives in all six matched-fraction queries. Its global within-bin approximation therefore remains useful at these additional query points. GBT also exposes a structural issue with treating the threshold as an unconstrained predictor: a larger rainfall threshold can occasionally produce a larger exceedance probability. Across the ten evaluated thresholds, the proportion of adjacent query pairs with increasing GBT probability is 0.0491\% at 30\% training and 0.0681\% at 100\% for A, compared with 0.5238\% and 0.6164\% for B. The RF mixture preserves the expected probability ordering across thresholds by construction.
 
 Appendix~\ref{app:prediction} retains threshold-specific baseline skill, monthly skill and feature-importance diagnostics for the 15\% models. The repeated AUC values across tables can differ slightly because Spark downsamples the curves according to their partitions.
 
@@ -329,7 +363,7 @@ Appendix~\ref{app:prediction} retains threshold-specific baseline skill, monthly
 
 The largest predictive difference comes from the information available at issue time. Recent rainfall describes the persistence and development of local rain, while calendar features describe recurring seasonal and daily patterns. This explains why A is useful for short-term forecasting and why a historical-frequency table remains competitive in B. The weather exploration and the model comparison answer complementary questions: when rain is common across years, and how current observations change the risk for a particular half-hour.
 
-The additional training experiments sharpen the model choice. Across the available fractions, RF has the lowest mean Brier among the classifiers, while fitting every eligible training example changes its score very little. GBT's slightly higher PR-AUC at 1 mm shows useful ranking ability, but its average predicted risk at 10 and 20 mm is too high. Model development should therefore focus on the probability estimates for large accumulations as well as on ranking events. Threshold-specific calibration and a monotonic threshold-conditioned model are natural extensions of the present comparison.
+The additional training experiments sharpen the model choice. Across the complete 15\%, 30\% and 100\% comparison on 2024, RF has the lowest mean Brier among the classifiers, while fitting every eligible training example changes its score very little. At 100\% training, GBT's slightly higher PR-AUC at 1 mm shows useful ranking ability, but its average predicted risk at 10 and 20 mm is too high. Model development should therefore focus on the probability estimates for large accumulations as well as on ranking events. Threshold-specific calibration and a monotonic threshold-conditioned model are natural extensions of the present comparison.
 
 The sampling results also help allocate computation. The 15\% sample already contains millions of training anchors. Adjacent anchors share rainfall observations because they are only five minutes apart, so a larger row count includes substantial repeated information about the same weather episodes. In the RF validation study, allowing deeper trees produces a larger improvement than doubling the reference model's sample. Together, these findings favour testing model settings and tail behaviour before committing to larger fits of the same configuration.
 
@@ -402,16 +436,20 @@ Table~\ref{tab:allmodels} brings the recorded model and training-fraction result
 \begin{tabular}{llrrrr}\toprule
 Mode & Model & Training & Mean Brier & Mean log loss & PR-AUC at 1 mm\\\midrule
 A & Random forest & 15\% & 0.01613051 & 0.070004 & 0.4218 \\
+A & Random forest & 30\% & 0.01613151 & 0.070021 & 0.4225 \\
 A & Random forest & 100\% & 0.01613638 & 0.070016 & 0.4229 \\
 A & Logistic regression & 15\% & 0.01944150 & 0.082787 & 0.3629 \\
+A & Logistic regression & 30\% & 0.01943988 & 0.082783 & 0.3632 \\
 A & Logistic regression & 100\% & 0.01944300 & 0.082788 & 0.3634 \\
 A & GBT & 15\% & 0.01622929 & 0.072167 & --- \\
 A & GBT & 30\% & 0.01623889 & 0.072197 & 0.4203 \\
 A & GBT & 100\% & 0.01622724 & 0.072151 & 0.4282 \\
 A & Historical frequency & 100\% & 0.02269628 & 0.099923 & 0.0467 \\
 B & Random forest & 15\% & 0.02274285 & 0.100015 & 0.0494 \\
+B & Random forest & 30\% & 0.02274079 & 0.099983 & 0.0488 \\
 B & Random forest & 100\% & 0.02275362 & 0.100170 & 0.0518 \\
 B & Logistic regression & 15\% & 0.02301006 & 0.104528 & 0.0428 \\
+B & Logistic regression & 30\% & 0.02301067 & 0.104539 & 0.0428 \\
 B & Logistic regression & 100\% & 0.02301076 & 0.104540 & 0.0428 \\
 B & GBT & 15\% & 0.02290321 & 0.107891 & 0.0511 \\
 B & GBT & 30\% & 0.02290187 & 0.107892 & 0.0521 \\
@@ -421,7 +459,20 @@ B & Historical frequency & 100\% & 0.02252051 & 0.098657 & 0.0516 \\
 \caption{2024 results on each mode's eligible population: 5,729,508 anchors for A and 6,374,476 for B. The 15\% A GBT row uses its recorded aggregate summary; the 15\% B GBT row uses per-threshold exports. All other rows use saved metric CSVs.}\label{tab:allmodels}
 \end{table}
 
-The RF/LR 15\% and 100\% runs retain both model pipelines and test metrics. GBT 30\% and 100\% retain pipelines, daily errors and reliability tables; the 15\% results are retained as summaries. RF's 30\% experiment is evaluated on 2022 validation in Appendix~\ref{sec:rfsensitivity}. The archived logistic runs use 15\% and 100\% training. Within the GBT exports, RF and logistic columns refer to the loaded 15\% comparison models, including at the additional 3, 7.5 and 15 mm queries. The repository's Part 2 guide maps these results to their source directories and query commands.
+The RF, LR and GBT comparison contains all three fitting fractions on 2024. RF 30\% uses the standard depth-8, 40-tree pipelines from the earlier sensitivity study, with a separate 2023 calibration and 2024 evaluation. LR 30\% was fitted in a later LR-only run. RF/LR 15\% and 100\%, RF/LR 30\%, and GBT 30\% and 100\% retain model pipelines and metric exports. The 15\% A GBT row is supported only by its rounded aggregate summary; B's 15\% GBT row has per-threshold text exports. These two 15\% GBT pipelines were not supplied. Within GBT exports, RF/LR columns are scores of the loaded 15\% reference models and do not represent additional RF/LR fits. The repository's Part 2 guide maps every result to its source directory.
+
+\begin{table}[htbp]\centering\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{.27\linewidth}>{\raggedright\arraybackslash}p{.32\linewidth}>{\raggedright\arraybackslash}p{.31\linewidth}}\toprule
+Execution batch & Fitted or reused models & Recorded evaluation\\\midrule
+Initial experiment & RF and LR at 15\%, A and B & 2022 selection; 2024 test\\
+RF sensitivity & RF at 15\% and 30\%; one-factor tuning & 2022 validation\\
+Full training & RF and LR at 100\%, A and B & 2022 selection; 2024 test\\
+GBT experiment & GBT at 15\%, 30\%, 100\%, A and B & 2023 calibration; 2024 test\\
+LR 30\% completion & Newly fitted LR at 30\%, A and B & 2022 selection; 2024 test\\
+RF 30\% completion & Reused standard RF 30\% weights, A and B & 2023 calibration; 2024 test\\\bottomrule
+\end{tabular}
+\caption{Execution provenance for the unified comparison. All classifier fitting uses 2017--2021. Later batches reuse 2024 after the initial results were available; they are not a new independent test year.}\label{tab:experiment_batches}
+\end{table}
 \FloatBarrier
 
 \clearpage

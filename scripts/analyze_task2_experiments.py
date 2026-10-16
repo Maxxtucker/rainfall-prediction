@@ -18,6 +18,8 @@ GBT = ROOT / 'outputs/steps/gbt-sampling-20261014-run01'
 FULL = ROOT / 'outputs/steps/task2-full-20261012'
 ORIGINAL = ROOT / 'outputs/steps/task2-dual-v2/models'
 REPORT = ROOT / 'report/task2'
+LR30 = ROOT / 'outputs/steps/lr-sampling-20261015'
+RF30 = ROOT / 'outputs/steps/rf30-evaluation-20261016'
 REFERENCE_MODELS = ('random_forest', 'binary_logistic', 'climatology')
 
 def document(path):
@@ -82,6 +84,8 @@ def summary_record(mode, model, fraction, metrics, evidence='raw export', *, sou
     primary = primary_metrics(metrics)
     if not np.isfinite(primary[['brier', 'log_loss', 'pr_auc']].to_numpy()).all():
         raise ValueError('Primary metrics must contain finite scores')
+    if primary.n.nunique() != 1:
+        raise ValueError('Threshold evaluation denominators differ')
     at_one = primary.loc[primary.threshold == 1].iloc[0]
     record = dict(
         mode=mode, model=model, fraction=fraction,
@@ -89,7 +93,8 @@ def summary_record(mode, model, fraction, metrics, evidence='raw export', *, sou
         mean_log_loss=float(primary.log_loss.mean()),
         mean_pr_auc=float(primary.pr_auc.mean()),
         pr_auc_1mm=float(at_one.pr_auc), log_loss_1mm=float(at_one.log_loss),
-        evidence=evidence, evaluation_year=2024,
+        roc_auc_1mm=float(at_one.roc_auc) if 'roc_auc' in primary else None,
+        evidence=evidence, evaluation_year=2024, test_anchors=int(primary.n.iloc[0]),
         fit_fraction=1.0 if model == 'climatology' else fraction,
         fraction_role=('comparison group; historical frequency uses full training data'
                        if model == 'climatology' else 'model fitting fraction'),
@@ -148,7 +153,143 @@ def calendar15_record(gbt_root, original_root, reported):
     return measured, True
 
 
-def collect_facts(*, gbt_root=GBT, full_root=FULL, original_root=ORIGINAL):
+def lr30_record(base, mode, ref_meta, reference_metrics):
+    """Verify an independently fitted LR model before exposing its 30% scores."""
+    meta = document(base / 'metadata')
+    compare_protocol(meta, ref_meta, 'LR30')
+    if (not meta['test_evaluation_completed'] or meta['train_fraction'] != .3
+            or not meta.get('saved_pipeline_reload_verified')):
+        raise ValueError('LR30 is incomplete or has an incorrect fitting fraction')
+    expected = {'short_term': 5608769, 'calendar': 8233882}[mode]
+    if meta['counts']['train_sample'] != expected:
+        raise ValueError('LR30 training sample differs from the nested 30% sample')
+    if meta['counts']['train_full'] != ref_meta['counts']['train_full']:
+        raise ValueError('LR30 full training count differs')
+    source = base.parent / 'source/train_lr_sampling.py'
+    if not source.is_file() or hashlib.sha256(source.read_bytes()).hexdigest() != meta.get('source_sha256'):
+        raise ValueError('LR30 executed-source hash differs')
+    metrics = default_metrics(base / 'metrics/test_metrics')
+    if set(metrics.model) != {'binary_logistic'}:
+        raise ValueError('LR30 contains unexpected model metrics')
+    compare_cohort(metrics, reference_metrics)
+    reconcile_daily(metrics, csv(base / 'metrics/daily_scores'))
+    bins = csv(base / 'metrics/reliability').groupby('threshold').n.sum()
+    if not np.array_equal(bins.loc[metrics.threshold].to_numpy(), metrics.n.to_numpy()):
+        raise ValueError('LR30 reliability counts differ')
+    record = summary_record(mode, 'binary_logistic', .3, metrics,
+                            source=base / 'metrics/test_metrics')
+    selected = next(c for c in meta.get('candidates', []) if c['reg_param'] == meta['reg_param'])
+    history = selected['objective_history']
+    if not history or not np.isfinite(history).all():
+        raise ValueError('LR30 objective history is missing or nonfinite')
+    record.update(train_anchors=expected, reg_param=meta['reg_param'],
+                  iterations=selected['iterations'], max_iter=meta['max_iter'],
+                  objective_initial=history[0], objective_final=history[-1])
+    return record
+
+
+def rf30_record(base, mode, ref_meta, reference_metrics, original_root):
+    """Admit existing RF30 weights only after full calibration/test completion."""
+    meta = document(base / 'metadata')
+    compare_protocol(meta, ref_meta, 'RF30')
+    if (not meta['test_evaluation_completed'] or not meta['calibration_completed']
+            or meta['train_fraction'] != .3 or meta['weights_retrained']):
+        raise ValueError('RF30 evaluation is incomplete or is not the saved 30% forest')
+    if meta['counts']['train_sample'] != {'short_term':5608769, 'calendar':8233882}[mode]:
+        raise ValueError('RF30 training sample differs')
+    if meta['counts']['train_full'] != ref_meta['counts']['train_full']:
+        raise ValueError('RF30 full training population differs')
+    for split in ('validation','calibration','test'):
+        if meta['counts'][split] != ref_meta['counts'][split]:
+            raise ValueError('RF30 ' + split + ' population differs from reference')
+    expected = {'depth':ref_meta['depth'], 'num_trees':ref_meta['num_trees'],
+                'max_bins':ref_meta['max_bins'], 'min_instances_per_node':25,
+                'feature_subset_strategy':'sqrt', 'subsampling_rate':.8}
+    if any(meta[key] != value for key, value in expected.items()):
+        raise ValueError('RF30 settings differ from the reference forest')
+    source = base.parent / 'source/evaluate_rf_sampling.py'
+    if not source.is_file() or hashlib.sha256(source.read_bytes()).hexdigest() != meta['source_sha256']:
+        raise ValueError('RF30 evaluation source hash differs')
+    if document(base / 'empirical_support') != document(original_root / mode / 'empirical_support'):
+        raise ValueError('RF30 full-training empirical support differs')
+    selection = csv(base / 'metrics/calibration_selection')
+    if selection.temperature.duplicated().any() or set(selection.temperature) != {.5,.75,1.,1.25,1.5,2.}:
+        raise ValueError('RF30 temperature grid differs')
+    best = min(selection.to_dict('records'), key=lambda r:(r['macro_brier'], abs(r['temperature']-1)))
+    if best['temperature'] != meta['temperature']:
+        raise ValueError('RF30 selected temperature differs from 2023 scores')
+    metrics = default_metrics(base / 'metrics/test_metrics')
+    if set(metrics.model) != {'random_forest'}:
+        raise ValueError('RF30 contains unexpected model scores')
+    compare_cohort(metrics, reference_metrics)
+    reconcile_daily(metrics, csv(base / 'metrics/daily_scores'))
+    bins = csv(base / 'metrics/reliability').groupby('threshold').n.sum()
+    if not np.array_equal(bins.loc[metrics.threshold].to_numpy(), metrics.n.to_numpy()):
+        raise ValueError('RF30 reliability counts differ')
+    record = summary_record(mode, 'random_forest', .3, metrics, source=base / 'metrics/test_metrics')
+    record.update(temperature=meta['temperature'], depth=meta['depth'],
+                  train_anchors=meta['counts']['train_sample'], weights_retrained=False)
+    return record
+
+
+def matched30_diagnostics(rf_root, lr_root, gbt_root):
+    """Compare extra thresholds and mean risks at one matched fitting fraction."""
+    interior, risks = [], []
+    for mode in ('short_term','calendar'):
+        locations = {
+            'random_forest': (rf_root / mode / 'metrics/test_metrics', rf_root / mode / 'metrics/reliability'),
+            'binary_logistic': (lr_root / mode / 'metrics/test_metrics', lr_root / mode / 'metrics/reliability'),
+            'gbt': (gbt_root / mode / 'sample30/metrics/gbt', gbt_root / mode / 'sample30/reliability/gbt'),
+        }
+        metrics = {name:default_metrics(paths[0]) for name,paths in locations.items()}
+        for q in (3.,7.5,15.):
+            selected = {name:frame[frame.threshold == q].iloc[0] for name,frame in metrics.items()}
+            reference = selected['random_forest']
+            if any(row.n != reference.n or abs(row.prevalence-reference.prevalence)>1e-14
+                   for row in selected.values()):
+                raise ValueError('Matched 30% interior-query cohorts differ')
+            row = dict(mode=mode,fraction=.3,threshold=q,evaluation_year=2024,
+                       random_forest_train_fraction=.3,binary_logistic_train_fraction=.3,gbt_train_fraction=.3,
+                       source_paths={name:source_path(paths[0]) for name,paths in locations.items()})
+            for name,value in selected.items():
+                row[name+'_brier'], row[name+'_pr_auc'] = float(value.brier), float(value.pr_auc)
+            interior.append(row)
+        for name,(metric_path,bin_path) in locations.items():
+            bins = csv(bin_path)
+            if bins.duplicated(['threshold','bin']).any():
+                raise ValueError('Duplicate matched-risk probability bins')
+            for q in Q:
+                part = bins[bins.threshold == q]
+                metric = metrics[name][metrics[name].threshold == q].iloc[0]
+                n = int(part.n.sum())
+                if n != int(metric.n) or n == 0:
+                    raise ValueError('Matched-risk bin counts differ from test metrics')
+                predicted = float((part.n*part.mean_probability).sum()/n)
+                observed = float((part.n*part.event_rate).sum()/n)
+                if not 0 <= predicted <= 1 or abs(observed-metric.prevalence)>1e-12:
+                    raise ValueError('Matched-risk event prevalence differs')
+                risks.append(dict(mode=mode,model=name,fraction=.3,threshold=q,n=n,
+                                  mean_probability=predicted,event_rate=float(metric.prevalence),
+                                  source_path=source_path(bin_path)))
+    return interior, risks
+
+
+def require_complete_grid(records):
+    """A common-year comparison must contain all 18 classifier cells once."""
+    required = {(mode, model, fraction) for mode in ('short_term','calendar')
+                for model in ('random_forest','binary_logistic','gbt') for fraction in (.15,.3,1.)}
+    classifier_rows = [r for r in records if r['model'] != 'climatology']
+    keys = [(r['mode'], r['model'], r['fraction']) for r in classifier_rows]
+    if len(keys) != len(set(keys)):
+        raise ValueError('Duplicate classifier cells in comparison grid')
+    if any(r['evaluation_year'] != 2024 for r in classifier_rows):
+        raise ValueError('All comparison scores must use 2024')
+    missing = required - set(keys)
+    if missing:
+        raise ValueError('Unified 2024 model/fraction grid is incomplete: ' + str(sorted(missing)))
+
+
+def collect_facts(*, gbt_root=GBT, full_root=FULL, original_root=ORIGINAL, lr30_root=LR30, rf30_root=RF30):
     """Read and reconcile recorded evidence; return facts without writing files."""
     records = reported15(gbt_root)
     calendar_index = next(i for i, row in enumerate(records) if row['mode'] == 'calendar')
@@ -166,10 +307,18 @@ def collect_facts(*, gbt_root=GBT, full_root=FULL, original_root=ORIGINAL):
                 or not ref_meta['test_evaluation_completed']):
             raise ValueError('Expected completed original 15% models evaluated in 2024')
         ref = default_metrics(original_root / mode / 'metrics/test_metrics')
+        reference_rf = primary_metrics(ref[ref.model == 'random_forest'])
+        if set(reference_rf.n) != {ref_meta['counts']['test']}:
+            raise ValueError('Reference test count differs from its metadata')
+        for name in REFERENCE_MODELS:
+            compare_cohort(ref[ref.model == name], reference_rf)
+
         for model in REFERENCE_MODELS:
-            records.append(summary_record(
-                mode, model, 0.15, ref[ref.model == model],
-                source=original_root / mode / 'metrics/test_metrics'))
+            row = summary_record(mode, model, 0.15, ref[ref.model == model],
+                                 source=original_root / mode / 'metrics/test_metrics')
+            if model == 'random_forest':
+                row.update(depth=ref_meta['depth'], temperature=ref_meta['temperature'])
+            records.append(row)
         full_meta = document(full_root / 'models' / mode / 'metadata')
         compare_protocol(full_meta, ref_meta, 'Full-training')
         if (full_meta['train_fraction'] != 1
@@ -182,11 +331,30 @@ def collect_facts(*, gbt_root=GBT, full_root=FULL, original_root=ORIGINAL):
         for model in REFERENCE_MODELS:
             metrics = full_metrics[full_metrics.model == model]
             compare_cohort(metrics, ref[ref.model == model])
-            records.append(summary_record(mode, model, 1.0, metrics,
-                                          source=full_root / 'models' / mode / 'metrics/test_metrics'))
+            row = summary_record(mode, model, 1.0, metrics,
+                                 source=full_root / 'models' / mode / 'metrics/test_metrics')
+            if model == 'random_forest':
+                row.update(depth=full_meta['depth'], temperature=full_meta['temperature'])
+            records.append(row)
         full_daily = csv(full_root / 'models' / mode / 'metrics/daily_scores')
         daily_check = full_daily.rename(columns={'sum_sq_error_rf': 'sum_squared_error'})
         reconcile_daily(full_metrics[full_metrics.model == 'random_forest'], daily_check)
+
+        # Dedicated LR-only follow-up; do not infer fractions from GBT folders.
+        if lr30_root.exists():
+            records.append(lr30_record(lr30_root / mode, mode, ref_meta,
+                                      ref[ref.model == 'binary_logistic']))
+            checks.append(dict(mode=mode, model='binary_logistic', fraction=.3,
+                               daily_brier_reconciled=True, cohort_counts_and_prevalence_match=True,
+                               saved_pipeline_reload_verified=True, source_hash_matches=True, evaluation_year=2024))
+
+        if rf30_root.exists():
+            records.append(rf30_record(rf30_root / mode, mode, ref_meta,
+                                       ref[ref.model == 'random_forest'], original_root))
+            checks.append(dict(mode=mode, model='random_forest', fraction=.3,
+                               daily_brier_reconciled=True, cohort_counts_and_prevalence_match=True,
+                               calibration_2023_verified=True, source_hash_matches=True,
+                               weights_retrained=False, evaluation_year=2024))
 
         # These GBT exports also evaluate unchanged 15% RF/LR references.
         for sample, fraction in (('sample30', 0.3), ('sample100', 1.0)):
@@ -236,27 +404,32 @@ def collect_facts(*, gbt_root=GBT, full_root=FULL, original_root=ORIGINAL):
                 cohort_counts_and_prevalence_match=True, source_hash_matches=True,
                 reference_train_fraction=0.15, evaluation_year=2024,
             ))
+    require_complete_grid(records)
+    matched_interior, matched_risk = matched30_diagnostics(rf30_root, lr30_root, gbt_root)
     result = {
-        'summary': records, 'interior_thresholds': interior,
+        'summary': records, 'interior_thresholds': matched_interior,
+        'reference_export_interior_thresholds': interior, 'matched_threshold_risk': matched_risk,
         'threshold_order': violations, 'checks': checks,
         'primary_thresholds': Q, 'evaluation_year': 2024,
         'provenance': {
             'original_models': source_path(original_root),
             'full_training_experiment': source_path(full_root),
             'gbt_experiment': source_path(gbt_root),
+            'lr30_experiment': source_path(lr30_root) if lr30_root.exists() else None,
+            'rf30_evaluation': source_path(rf30_root),
             'gbt_executed_source': source_path(source), 'gbt_source_sha256': source_hash,
             'gbt_export_rf_lr_reference_fraction': 0.15,
         },
         'validation': {
-            'passed': True, 'checks': checks, 'full_training_daily_brier_reconciled': True,
+            'passed': True, 'unified_2024_grid_complete': True, 'checks': checks, 'full_training_daily_brier_reconciled': True,
             'source_sha256': source_hash, 'gbt15_raw_verified': False,
             'calendar15_metric_export_verified': calendar15_verified,
         },
         'limitations': [
             'A 15% GBT is summary-only; B 15% has per-threshold text metrics. Neither 15% pipeline is supplied.',
-            'Counts and prevalence agree; row-level input identity is not independently proven.',
+            'Available per-threshold exports agree in counts/prevalence; A15 GBT is aggregate-only and row-level identity is not independently proven.',
             'Imported 2024 results are supplementary follow-ups; original models remain unchanged.',
-            'RF/LR scores inside GBT exports use 15% reference models; no 30% RF/LR test scores are inferred.',
+            'RF/LR scores inside GBT exports use 15% reference models; separate LR30 evidence is used only when present. RF30 is calibrated/tested separately using the saved standard-configuration weights.',
             'Climatology fraction identifies its comparison group; frequencies use full training data.',
         ],
     }

@@ -1,6 +1,28 @@
 {
   "passed": true,
+  "unified_2024_grid_complete": true,
   "checks": [
+    {
+      "mode": "short_term",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "saved_pipeline_reload_verified": true,
+      "source_hash_matches": true,
+      "evaluation_year": 2024
+    },
+    {
+      "mode": "short_term",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "calibration_2023_verified": true,
+      "source_hash_matches": true,
+      "weights_retrained": false,
+      "evaluation_year": 2024
+    },
     {
       "mode": "short_term",
       "fraction": 0.3,
@@ -17,6 +39,27 @@
       "cohort_counts_and_prevalence_match": true,
       "source_hash_matches": true,
       "reference_train_fraction": 0.15,
+      "evaluation_year": 2024
+    },
+    {
+      "mode": "calendar",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "saved_pipeline_reload_verified": true,
+      "source_hash_matches": true,
+      "evaluation_year": 2024
+    },
+    {
+      "mode": "calendar",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "calibration_2023_verified": true,
+      "source_hash_matches": true,
+      "weights_retrained": false,
       "evaluation_year": 2024
     },
     {

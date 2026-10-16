@@ -26,8 +26,10 @@
       "mean_pr_auc": 0.047362677323910925,
       "pr_auc_1mm": 0.0510894246780351,
       "log_loss_1mm": 0.1193323139220142,
+      "roc_auc_1mm": 0.6804021028164001,
       "evidence": "per-threshold text export",
       "evaluation_year": 2024,
+      "test_anchors": 6374476,
       "fit_fraction": 0.15,
       "fraction_role": "model fitting fraction",
       "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample15/metrics/gbt",
@@ -43,11 +45,15 @@
       "mean_pr_auc": 0.3176451344874097,
       "pr_auc_1mm": 0.4218048041070003,
       "log_loss_1mm": 0.0823718416580017,
+      "roc_auc_1mm": 0.80348265632358,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 5729508,
       "fit_fraction": 0.15,
       "fraction_role": "model fitting fraction",
-      "source_path": "outputs/steps/task2-dual-v2/models/short_term/metrics/test_metrics"
+      "source_path": "outputs/steps/task2-dual-v2/models/short_term/metrics/test_metrics",
+      "depth": 8,
+      "temperature": 1.0
     },
     {
       "mode": "short_term",
@@ -58,8 +64,10 @@
       "mean_pr_auc": 0.26484640191715897,
       "pr_auc_1mm": 0.3629418101065617,
       "log_loss_1mm": 0.0875161933693435,
+      "roc_auc_1mm": 0.8606509160809883,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 5729508,
       "fit_fraction": 0.15,
       "fraction_role": "model fitting fraction",
       "source_path": "outputs/steps/task2-dual-v2/models/short_term/metrics/test_metrics"
@@ -73,8 +81,10 @@
       "mean_pr_auc": 0.04396978773014389,
       "pr_auc_1mm": 0.0467110642656421,
       "log_loss_1mm": 0.1166261731023743,
+      "roc_auc_1mm": 0.6644859722702333,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 5729508,
       "fit_fraction": 1.0,
       "fraction_role": "comparison group; historical frequency uses full training data",
       "source_path": "outputs/steps/task2-dual-v2/models/short_term/metrics/test_metrics"
@@ -88,11 +98,15 @@
       "mean_pr_auc": 0.31850767184170176,
       "pr_auc_1mm": 0.4228910350174562,
       "log_loss_1mm": 0.0823714874868323,
+      "roc_auc_1mm": 0.8035540149006629,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 5729508,
       "fit_fraction": 1.0,
       "fraction_role": "model fitting fraction",
-      "source_path": "outputs/steps/task2-full-20261012/models/short_term/metrics/test_metrics"
+      "source_path": "outputs/steps/task2-full-20261012/models/short_term/metrics/test_metrics",
+      "depth": 8,
+      "temperature": 1.0
     },
     {
       "mode": "short_term",
@@ -103,8 +117,10 @@
       "mean_pr_auc": 0.2651897835153325,
       "pr_auc_1mm": 0.3633840659359476,
       "log_loss_1mm": 0.0874844704327437,
+      "roc_auc_1mm": 0.8611269759583139,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 5729508,
       "fit_fraction": 1.0,
       "fraction_role": "model fitting fraction",
       "source_path": "outputs/steps/task2-full-20261012/models/short_term/metrics/test_metrics"
@@ -118,11 +134,57 @@
       "mean_pr_auc": 0.04396941263499065,
       "pr_auc_1mm": 0.0467101651253819,
       "log_loss_1mm": 0.1166261731022742,
+      "roc_auc_1mm": 0.6644725349780571,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 5729508,
       "fit_fraction": 1.0,
       "fraction_role": "comparison group; historical frequency uses full training data",
       "source_path": "outputs/steps/task2-full-20261012/models/short_term/metrics/test_metrics"
+    },
+    {
+      "mode": "short_term",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "mean_brier": 0.019439875211211554,
+      "mean_log_loss": 0.08278309373698027,
+      "mean_pr_auc": 0.26509388565860387,
+      "pr_auc_1mm": 0.3632132956777135,
+      "log_loss_1mm": 0.0875091165009053,
+      "roc_auc_1mm": 0.8608992401730291,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "test_anchors": 5729508,
+      "fit_fraction": 0.3,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/lr-sampling-20261015/short_term/metrics/test_metrics",
+      "train_anchors": 5608769,
+      "reg_param": 0.01,
+      "iterations": 25,
+      "max_iter": 100,
+      "objective_initial": 0.10221313732273163,
+      "objective_final": 0.0781694137973795
+    },
+    {
+      "mode": "short_term",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "mean_brier": 0.016131510534085063,
+      "mean_log_loss": 0.07002054165684328,
+      "mean_pr_auc": 0.3183563831610919,
+      "pr_auc_1mm": 0.4224592811776656,
+      "log_loss_1mm": 0.0824056940295197,
+      "roc_auc_1mm": 0.8029000250826874,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "test_anchors": 5729508,
+      "fit_fraction": 0.3,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/rf30-evaluation-20261016/short_term/metrics/test_metrics",
+      "temperature": 1.0,
+      "depth": 8,
+      "train_anchors": 5608769,
+      "weights_retrained": false
     },
     {
       "mode": "short_term",
@@ -133,8 +195,10 @@
       "mean_pr_auc": 0.31394723794839924,
       "pr_auc_1mm": 0.4202592631266689,
       "log_loss_1mm": 0.0824677219822012,
+      "roc_auc_1mm": 0.8475274791493849,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 5729508,
       "fit_fraction": 0.3,
       "fraction_role": "model fitting fraction",
       "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30/metrics/gbt",
@@ -151,8 +215,10 @@
       "mean_pr_auc": 0.3146464957647142,
       "pr_auc_1mm": 0.4281519865307638,
       "log_loss_1mm": 0.08239991020002,
+      "roc_auc_1mm": 0.8037253769505905,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 5729508,
       "fit_fraction": 1.0,
       "fraction_role": "model fitting fraction",
       "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample100/metrics/gbt",
@@ -169,11 +235,15 @@
       "mean_pr_auc": 0.044774812952495024,
       "pr_auc_1mm": 0.0493643926190802,
       "log_loss_1mm": 0.1165184906420439,
+      "roc_auc_1mm": 0.6822793116362144,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 6374476,
       "fit_fraction": 0.15,
       "fraction_role": "model fitting fraction",
-      "source_path": "outputs/steps/task2-dual-v2/models/calendar/metrics/test_metrics"
+      "source_path": "outputs/steps/task2-dual-v2/models/calendar/metrics/test_metrics",
+      "depth": 8,
+      "temperature": 1.0
     },
     {
       "mode": "calendar",
@@ -184,8 +254,10 @@
       "mean_pr_auc": 0.038901547418779145,
       "pr_auc_1mm": 0.0428238400347022,
       "log_loss_1mm": 0.1164976051059135,
+      "roc_auc_1mm": 0.6568050882868145,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 6374476,
       "fit_fraction": 0.15,
       "fraction_role": "model fitting fraction",
       "source_path": "outputs/steps/task2-dual-v2/models/calendar/metrics/test_metrics"
@@ -199,8 +271,10 @@
       "mean_pr_auc": 0.047563719128511144,
       "pr_auc_1mm": 0.0516039080173453,
       "log_loss_1mm": 0.1146471489393111,
+      "roc_auc_1mm": 0.6842858437964366,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 6374476,
       "fit_fraction": 1.0,
       "fraction_role": "comparison group; historical frequency uses full training data",
       "source_path": "outputs/steps/task2-dual-v2/models/calendar/metrics/test_metrics"
@@ -214,11 +288,15 @@
       "mean_pr_auc": 0.04636148599123708,
       "pr_auc_1mm": 0.0517654969633627,
       "log_loss_1mm": 0.11666853837114,
+      "roc_auc_1mm": 0.6855606805571078,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 6374476,
       "fit_fraction": 1.0,
       "fraction_role": "model fitting fraction",
-      "source_path": "outputs/steps/task2-full-20261012/models/calendar/metrics/test_metrics"
+      "source_path": "outputs/steps/task2-full-20261012/models/calendar/metrics/test_metrics",
+      "depth": 8,
+      "temperature": 1.0
     },
     {
       "mode": "calendar",
@@ -229,8 +307,10 @@
       "mean_pr_auc": 0.038872378047161316,
       "pr_auc_1mm": 0.0427874291234285,
       "log_loss_1mm": 0.1165017798968715,
+      "roc_auc_1mm": 0.6563330953029892,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 6374476,
       "fit_fraction": 1.0,
       "fraction_role": "model fitting fraction",
       "source_path": "outputs/steps/task2-full-20261012/models/calendar/metrics/test_metrics"
@@ -244,11 +324,57 @@
       "mean_pr_auc": 0.04756285956885743,
       "pr_auc_1mm": 0.0516040060845517,
       "log_loss_1mm": 0.1146471489392203,
+      "roc_auc_1mm": 0.6842901400190718,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 6374476,
       "fit_fraction": 1.0,
       "fraction_role": "comparison group; historical frequency uses full training data",
       "source_path": "outputs/steps/task2-full-20261012/models/calendar/metrics/test_metrics"
+    },
+    {
+      "mode": "calendar",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "mean_brier": 0.023010669610126468,
+      "mean_log_loss": 0.10453937991173437,
+      "mean_pr_auc": 0.03891891126944027,
+      "pr_auc_1mm": 0.0428450975683626,
+      "log_loss_1mm": 0.1165138698348576,
+      "roc_auc_1mm": 0.6564124022604716,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "test_anchors": 6374476,
+      "fit_fraction": 0.3,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/lr-sampling-20261015/calendar/metrics/test_metrics",
+      "train_anchors": 8233882,
+      "reg_param": 0.01,
+      "iterations": 10,
+      "max_iter": 100,
+      "objective_initial": 0.10463691997437835,
+      "objective_final": 0.0993598199011036
+    },
+    {
+      "mode": "calendar",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "mean_brier": 0.022740790126355073,
+      "mean_log_loss": 0.09998285550864892,
+      "mean_pr_auc": 0.04465615203391884,
+      "pr_auc_1mm": 0.0487675873146312,
+      "log_loss_1mm": 0.116484731886112,
+      "roc_auc_1mm": 0.6854455599659879,
+      "evidence": "raw export",
+      "evaluation_year": 2024,
+      "test_anchors": 6374476,
+      "fit_fraction": 0.3,
+      "fraction_role": "model fitting fraction",
+      "source_path": "outputs/steps/rf30-evaluation-20261016/calendar/metrics/test_metrics",
+      "temperature": 1.0,
+      "depth": 8,
+      "train_anchors": 8233882,
+      "weights_retrained": false
     },
     {
       "mode": "calendar",
@@ -259,8 +385,10 @@
       "mean_pr_auc": 0.04722623952144302,
       "pr_auc_1mm": 0.0520730302216092,
       "log_loss_1mm": 0.1194320899181733,
+      "roc_auc_1mm": 0.6808416868806938,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 6374476,
       "fit_fraction": 0.3,
       "fraction_role": "model fitting fraction",
       "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30/metrics/gbt",
@@ -277,8 +405,10 @@
       "mean_pr_auc": 0.048702652509261465,
       "pr_auc_1mm": 0.052195180478957,
       "log_loss_1mm": 0.1194079869918917,
+      "roc_auc_1mm": 0.6762468805791567,
       "evidence": "raw export",
       "evaluation_year": 2024,
+      "test_anchors": 6374476,
       "fit_fraction": 1.0,
       "fraction_role": "model fitting fraction",
       "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample100/metrics/gbt",
@@ -288,6 +418,128 @@
     }
   ],
   "interior_thresholds": [
+    {
+      "mode": "short_term",
+      "fraction": 0.3,
+      "threshold": 3.0,
+      "evaluation_year": 2024,
+      "random_forest_train_fraction": 0.3,
+      "binary_logistic_train_fraction": 0.3,
+      "gbt_train_fraction": 0.3,
+      "source_paths": {
+        "random_forest": "outputs/steps/rf30-evaluation-20261016/short_term/metrics/test_metrics",
+        "binary_logistic": "outputs/steps/lr-sampling-20261015/short_term/metrics/test_metrics",
+        "gbt": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30/metrics/gbt"
+      },
+      "random_forest_brier": 0.0105455296261891,
+      "random_forest_pr_auc": 0.2561645064474969,
+      "binary_logistic_brier": 0.0123587193547131,
+      "binary_logistic_pr_auc": 0.1848569742361795,
+      "gbt_brier": 0.0107171351378376,
+      "gbt_pr_auc": 0.2540979622982267
+    },
+    {
+      "mode": "short_term",
+      "fraction": 0.3,
+      "threshold": 7.5,
+      "evaluation_year": 2024,
+      "random_forest_train_fraction": 0.3,
+      "binary_logistic_train_fraction": 0.3,
+      "gbt_train_fraction": 0.3,
+      "source_paths": {
+        "random_forest": "outputs/steps/rf30-evaluation-20261016/short_term/metrics/test_metrics",
+        "binary_logistic": "outputs/steps/lr-sampling-20261015/short_term/metrics/test_metrics",
+        "gbt": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30/metrics/gbt"
+      },
+      "random_forest_brier": 0.0050514003205633,
+      "random_forest_pr_auc": 0.1379495825379805,
+      "binary_logistic_brier": 0.0069500040825898,
+      "binary_logistic_pr_auc": 0.0886342058260014,
+      "gbt_brier": 0.0051321039111285,
+      "gbt_pr_auc": 0.1410086701506143
+    },
+    {
+      "mode": "short_term",
+      "fraction": 0.3,
+      "threshold": 15.0,
+      "evaluation_year": 2024,
+      "random_forest_train_fraction": 0.3,
+      "binary_logistic_train_fraction": 0.3,
+      "gbt_train_fraction": 0.3,
+      "source_paths": {
+        "random_forest": "outputs/steps/rf30-evaluation-20261016/short_term/metrics/test_metrics",
+        "binary_logistic": "outputs/steps/lr-sampling-20261015/short_term/metrics/test_metrics",
+        "gbt": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30/metrics/gbt"
+      },
+      "random_forest_brier": 0.001854011744301,
+      "random_forest_pr_auc": 0.0555072081340489,
+      "binary_logistic_brier": 0.0031182429871021,
+      "binary_logistic_pr_auc": 0.032213002400676,
+      "gbt_brier": 0.0019127055805675,
+      "gbt_pr_auc": 0.0569202866655899
+    },
+    {
+      "mode": "calendar",
+      "fraction": 0.3,
+      "threshold": 3.0,
+      "evaluation_year": 2024,
+      "random_forest_train_fraction": 0.3,
+      "binary_logistic_train_fraction": 0.3,
+      "gbt_train_fraction": 0.3,
+      "source_paths": {
+        "random_forest": "outputs/steps/rf30-evaluation-20261016/calendar/metrics/test_metrics",
+        "binary_logistic": "outputs/steps/lr-sampling-20261015/calendar/metrics/test_metrics",
+        "gbt": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30/metrics/gbt"
+      },
+      "random_forest_brier": 0.0123850705683536,
+      "random_forest_pr_auc": 0.0254304862542733,
+      "binary_logistic_brier": 0.0125095177415133,
+      "binary_logistic_pr_auc": 0.0215695471526861,
+      "gbt_brier": 0.012855961685497,
+      "gbt_pr_auc": 0.0274432221696298
+    },
+    {
+      "mode": "calendar",
+      "fraction": 0.3,
+      "threshold": 7.5,
+      "evaluation_year": 2024,
+      "random_forest_train_fraction": 0.3,
+      "binary_logistic_train_fraction": 0.3,
+      "gbt_train_fraction": 0.3,
+      "source_paths": {
+        "random_forest": "outputs/steps/rf30-evaluation-20261016/calendar/metrics/test_metrics",
+        "binary_logistic": "outputs/steps/lr-sampling-20261015/calendar/metrics/test_metrics",
+        "gbt": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30/metrics/gbt"
+      },
+      "random_forest_brier": 0.0055343971743039,
+      "random_forest_pr_auc": 0.0122527128884287,
+      "binary_logistic_brier": 0.0056627937393822,
+      "binary_logistic_pr_auc": 0.0096743715159317,
+      "gbt_brier": 0.0061422042446367,
+      "gbt_pr_auc": 0.0122969689274893
+    },
+    {
+      "mode": "calendar",
+      "fraction": 0.3,
+      "threshold": 15.0,
+      "evaluation_year": 2024,
+      "random_forest_train_fraction": 0.3,
+      "binary_logistic_train_fraction": 0.3,
+      "gbt_train_fraction": 0.3,
+      "source_paths": {
+        "random_forest": "outputs/steps/rf30-evaluation-20261016/calendar/metrics/test_metrics",
+        "binary_logistic": "outputs/steps/lr-sampling-20261015/calendar/metrics/test_metrics",
+        "gbt": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30/metrics/gbt"
+      },
+      "random_forest_brier": 0.0019497396230177,
+      "random_forest_pr_auc": 0.0050067310931564,
+      "binary_logistic_brier": 0.0020016072536422,
+      "binary_logistic_pr_auc": 0.0036583001371112,
+      "gbt_brier": 0.002619970810033,
+      "gbt_pr_auc": 0.0042390825873371
+    }
+  ],
+  "reference_export_interior_thresholds": [
     {
       "mode": "short_term",
       "fraction": 0.3,
@@ -481,6 +733,428 @@
       "binary_logistic_pr_auc": 0.0036504941879005
     }
   ],
+  "matched_threshold_risk": [
+    {
+      "mode": "short_term",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "threshold": 0.0,
+      "n": 5729508,
+      "mean_probability": 0.06164860570736637,
+      "event_rate": 0.0639847260881737,
+      "source_path": "outputs/steps/rf30-evaluation-20261016/short_term/metrics/reliability"
+    },
+    {
+      "mode": "short_term",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "threshold": 0.2,
+      "n": 5729508,
+      "mean_probability": 0.04431817648470418,
+      "event_rate": 0.0489151948125388,
+      "source_path": "outputs/steps/rf30-evaluation-20261016/short_term/metrics/reliability"
+    },
+    {
+      "mode": "short_term",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "threshold": 1.0,
+      "n": 5729508,
+      "mean_probability": 0.0238301276097156,
+      "event_rate": 0.0257865073231418,
+      "source_path": "outputs/steps/rf30-evaluation-20261016/short_term/metrics/reliability"
+    },
+    {
+      "mode": "short_term",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "threshold": 2.0,
+      "n": 5729508,
+      "mean_probability": 0.015728095055339154,
+      "event_rate": 0.0168613081611894,
+      "source_path": "outputs/steps/rf30-evaluation-20261016/short_term/metrics/reliability"
+    },
+    {
+      "mode": "short_term",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "threshold": 5.0,
+      "n": 5729508,
+      "mean_probability": 0.008161521122297531,
+      "event_rate": 0.0082893679527107,
+      "source_path": "outputs/steps/rf30-evaluation-20261016/short_term/metrics/reliability"
+    },
+    {
+      "mode": "short_term",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "threshold": 10.0,
+      "n": 5729508,
+      "mean_probability": 0.00391338869174316,
+      "event_rate": 0.0037771131482842,
+      "source_path": "outputs/steps/rf30-evaluation-20261016/short_term/metrics/reliability"
+    },
+    {
+      "mode": "short_term",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "threshold": 20.0,
+      "n": 5729508,
+      "mean_probability": 0.0010854048892573523,
+      "event_rate": 0.0009974678454066214,
+      "source_path": "outputs/steps/rf30-evaluation-20261016/short_term/metrics/reliability"
+    },
+    {
+      "mode": "short_term",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "threshold": 0.0,
+      "n": 5729508,
+      "mean_probability": 0.030927477743610224,
+      "event_rate": 0.0639847260881737,
+      "source_path": "outputs/steps/lr-sampling-20261015/short_term/metrics/reliability"
+    },
+    {
+      "mode": "short_term",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "threshold": 0.2,
+      "n": 5729508,
+      "mean_probability": 0.030486784646251507,
+      "event_rate": 0.0489151948125388,
+      "source_path": "outputs/steps/lr-sampling-20261015/short_term/metrics/reliability"
+    },
+    {
+      "mode": "short_term",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "threshold": 1.0,
+      "n": 5729508,
+      "mean_probability": 0.02878405201832833,
+      "event_rate": 0.0257865073231418,
+      "source_path": "outputs/steps/lr-sampling-20261015/short_term/metrics/reliability"
+    },
+    {
+      "mode": "short_term",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "threshold": 2.0,
+      "n": 5729508,
+      "mean_probability": 0.026784654645380542,
+      "event_rate": 0.0168613081611894,
+      "source_path": "outputs/steps/lr-sampling-20261015/short_term/metrics/reliability"
+    },
+    {
+      "mode": "short_term",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "threshold": 5.0,
+      "n": 5729508,
+      "mean_probability": 0.021557665494249905,
+      "event_rate": 0.0082893679527107,
+      "source_path": "outputs/steps/lr-sampling-20261015/short_term/metrics/reliability"
+    },
+    {
+      "mode": "short_term",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "threshold": 10.0,
+      "n": 5729508,
+      "mean_probability": 0.014948742607077231,
+      "event_rate": 0.0037771131482842,
+      "source_path": "outputs/steps/lr-sampling-20261015/short_term/metrics/reliability"
+    },
+    {
+      "mode": "short_term",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "threshold": 20.0,
+      "n": 5729508,
+      "mean_probability": 0.007064965707452485,
+      "event_rate": 0.0009974678454066214,
+      "source_path": "outputs/steps/lr-sampling-20261015/short_term/metrics/reliability"
+    },
+    {
+      "mode": "short_term",
+      "model": "gbt",
+      "fraction": 0.3,
+      "threshold": 0.0,
+      "n": 5729508,
+      "mean_probability": 0.05190476547759502,
+      "event_rate": 0.0639847260881737,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30/reliability/gbt"
+    },
+    {
+      "mode": "short_term",
+      "model": "gbt",
+      "fraction": 0.3,
+      "threshold": 0.2,
+      "n": 5729508,
+      "mean_probability": 0.04135418738707383,
+      "event_rate": 0.0489151948125388,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30/reliability/gbt"
+    },
+    {
+      "mode": "short_term",
+      "model": "gbt",
+      "fraction": 0.3,
+      "threshold": 1.0,
+      "n": 5729508,
+      "mean_probability": 0.022346816061995237,
+      "event_rate": 0.0257865073231418,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30/reliability/gbt"
+    },
+    {
+      "mode": "short_term",
+      "model": "gbt",
+      "fraction": 0.3,
+      "threshold": 2.0,
+      "n": 5729508,
+      "mean_probability": 0.016461830087676804,
+      "event_rate": 0.0168613081611894,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30/reliability/gbt"
+    },
+    {
+      "mode": "short_term",
+      "model": "gbt",
+      "fraction": 0.3,
+      "threshold": 5.0,
+      "n": 5729508,
+      "mean_probability": 0.011127628522521209,
+      "event_rate": 0.0082893679527107,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30/reliability/gbt"
+    },
+    {
+      "mode": "short_term",
+      "model": "gbt",
+      "fraction": 0.3,
+      "threshold": 10.0,
+      "n": 5729508,
+      "mean_probability": 0.009244560290448277,
+      "event_rate": 0.0037771131482842,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30/reliability/gbt"
+    },
+    {
+      "mode": "short_term",
+      "model": "gbt",
+      "fraction": 0.3,
+      "threshold": 20.0,
+      "n": 5729508,
+      "mean_probability": 0.008295156813746945,
+      "event_rate": 0.0009974678454066214,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/short_term/sample30/reliability/gbt"
+    },
+    {
+      "mode": "calendar",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "threshold": 0.0,
+      "n": 6374476,
+      "mean_probability": 0.058994511131015046,
+      "event_rate": 0.0636020905875243,
+      "source_path": "outputs/steps/rf30-evaluation-20261016/calendar/metrics/reliability"
+    },
+    {
+      "mode": "calendar",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "threshold": 0.2,
+      "n": 6374476,
+      "mean_probability": 0.04256272474527573,
+      "event_rate": 0.0485809343387597,
+      "source_path": "outputs/steps/rf30-evaluation-20261016/calendar/metrics/reliability"
+    },
+    {
+      "mode": "calendar",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "threshold": 1.0,
+      "n": 6374476,
+      "mean_probability": 0.022904585524590952,
+      "event_rate": 0.0256946610199803,
+      "source_path": "outputs/steps/rf30-evaluation-20261016/calendar/metrics/reliability"
+    },
+    {
+      "mode": "calendar",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "threshold": 2.0,
+      "n": 6374476,
+      "mean_probability": 0.015183725219824348,
+      "event_rate": 0.0168271086125353,
+      "source_path": "outputs/steps/rf30-evaluation-20261016/calendar/metrics/reliability"
+    },
+    {
+      "mode": "calendar",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "threshold": 5.0,
+      "n": 6374476,
+      "mean_probability": 0.0078614722322317,
+      "event_rate": 0.0083446859004567,
+      "source_path": "outputs/steps/rf30-evaluation-20261016/calendar/metrics/reliability"
+    },
+    {
+      "mode": "calendar",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "threshold": 10.0,
+      "n": 6374476,
+      "mean_probability": 0.0037652693275281,
+      "event_rate": 0.0038164705616587,
+      "source_path": "outputs/steps/rf30-evaluation-20261016/calendar/metrics/reliability"
+    },
+    {
+      "mode": "calendar",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "threshold": 20.0,
+      "n": 6374476,
+      "mean_probability": 0.0010298926669687,
+      "event_rate": 0.001027378564136,
+      "source_path": "outputs/steps/rf30-evaluation-20261016/calendar/metrics/reliability"
+    },
+    {
+      "mode": "calendar",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "threshold": 0.0,
+      "n": 6374476,
+      "mean_probability": 0.031119983534519405,
+      "event_rate": 0.0636020905875243,
+      "source_path": "outputs/steps/lr-sampling-20261015/calendar/metrics/reliability"
+    },
+    {
+      "mode": "calendar",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "threshold": 0.2,
+      "n": 6374476,
+      "mean_probability": 0.0306156839525626,
+      "event_rate": 0.0485809343387597,
+      "source_path": "outputs/steps/lr-sampling-20261015/calendar/metrics/reliability"
+    },
+    {
+      "mode": "calendar",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "threshold": 1.0,
+      "n": 6374476,
+      "mean_probability": 0.028676291696636304,
+      "event_rate": 0.0256946610199803,
+      "source_path": "outputs/steps/lr-sampling-20261015/calendar/metrics/reliability"
+    },
+    {
+      "mode": "calendar",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "threshold": 2.0,
+      "n": 6374476,
+      "mean_probability": 0.026418769743363095,
+      "event_rate": 0.0168271086125353,
+      "source_path": "outputs/steps/lr-sampling-20261015/calendar/metrics/reliability"
+    },
+    {
+      "mode": "calendar",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "threshold": 5.0,
+      "n": 6374476,
+      "mean_probability": 0.0206341141251048,
+      "event_rate": 0.0083446859004567,
+      "source_path": "outputs/steps/lr-sampling-20261015/calendar/metrics/reliability"
+    },
+    {
+      "mode": "calendar",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "threshold": 10.0,
+      "n": 6374476,
+      "mean_probability": 0.013626978715052,
+      "event_rate": 0.0038164705616587,
+      "source_path": "outputs/steps/lr-sampling-20261015/calendar/metrics/reliability"
+    },
+    {
+      "mode": "calendar",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "threshold": 20.0,
+      "n": 6374476,
+      "mean_probability": 0.005901260958961,
+      "event_rate": 0.001027378564136,
+      "source_path": "outputs/steps/lr-sampling-20261015/calendar/metrics/reliability"
+    },
+    {
+      "mode": "calendar",
+      "model": "gbt",
+      "fraction": 0.3,
+      "threshold": 0.0,
+      "n": 6374476,
+      "mean_probability": 0.06578920071739218,
+      "event_rate": 0.0636020905875243,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30/reliability/gbt"
+    },
+    {
+      "mode": "calendar",
+      "model": "gbt",
+      "fraction": 0.3,
+      "threshold": 0.2,
+      "n": 6374476,
+      "mean_probability": 0.05605509684516695,
+      "event_rate": 0.0485809343387597,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30/reliability/gbt"
+    },
+    {
+      "mode": "calendar",
+      "model": "gbt",
+      "fraction": 0.3,
+      "threshold": 1.0,
+      "n": 6374476,
+      "mean_probability": 0.0396750007589418,
+      "event_rate": 0.0256946610199803,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30/reliability/gbt"
+    },
+    {
+      "mode": "calendar",
+      "model": "gbt",
+      "fraction": 0.3,
+      "threshold": 2.0,
+      "n": 6374476,
+      "mean_probability": 0.0349698980179205,
+      "event_rate": 0.0168271086125353,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30/reliability/gbt"
+    },
+    {
+      "mode": "calendar",
+      "model": "gbt",
+      "fraction": 0.3,
+      "threshold": 5.0,
+      "n": 6374476,
+      "mean_probability": 0.0303664319527611,
+      "event_rate": 0.0083446859004567,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30/reliability/gbt"
+    },
+    {
+      "mode": "calendar",
+      "model": "gbt",
+      "fraction": 0.3,
+      "threshold": 10.0,
+      "n": 6374476,
+      "mean_probability": 0.027854680604164395,
+      "event_rate": 0.0038164705616587,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30/reliability/gbt"
+    },
+    {
+      "mode": "calendar",
+      "model": "gbt",
+      "fraction": 0.3,
+      "threshold": 20.0,
+      "n": 6374476,
+      "mean_probability": 0.026451517336954302,
+      "event_rate": 0.001027378564136,
+      "source_path": "outputs/steps/gbt-sampling-20261014-run01/calendar/sample30/reliability/gbt"
+    }
+  ],
   "threshold_order": [
     {
       "mode": "short_term",
@@ -514,6 +1188,27 @@
   "checks": [
     {
       "mode": "short_term",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "saved_pipeline_reload_verified": true,
+      "source_hash_matches": true,
+      "evaluation_year": 2024
+    },
+    {
+      "mode": "short_term",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "calibration_2023_verified": true,
+      "source_hash_matches": true,
+      "weights_retrained": false,
+      "evaluation_year": 2024
+    },
+    {
+      "mode": "short_term",
       "fraction": 0.3,
       "daily_brier_reconciled": true,
       "cohort_counts_and_prevalence_match": true,
@@ -528,6 +1223,27 @@
       "cohort_counts_and_prevalence_match": true,
       "source_hash_matches": true,
       "reference_train_fraction": 0.15,
+      "evaluation_year": 2024
+    },
+    {
+      "mode": "calendar",
+      "model": "binary_logistic",
+      "fraction": 0.3,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "saved_pipeline_reload_verified": true,
+      "source_hash_matches": true,
+      "evaluation_year": 2024
+    },
+    {
+      "mode": "calendar",
+      "model": "random_forest",
+      "fraction": 0.3,
+      "daily_brier_reconciled": true,
+      "cohort_counts_and_prevalence_match": true,
+      "calibration_2023_verified": true,
+      "source_hash_matches": true,
+      "weights_retrained": false,
       "evaluation_year": 2024
     },
     {
@@ -563,13 +1279,37 @@
     "original_models": "outputs/steps/task2-dual-v2/models",
     "full_training_experiment": "outputs/steps/task2-full-20261012",
     "gbt_experiment": "outputs/steps/gbt-sampling-20261014-run01",
+    "lr30_experiment": "outputs/steps/lr-sampling-20261015",
+    "rf30_evaluation": "outputs/steps/rf30-evaluation-20261016",
     "gbt_executed_source": "outputs/steps/gbt-sampling-20261014-run01/source/train_gbt_sampling.py",
     "gbt_source_sha256": "f70b4a38e750f08327b3d1605d15f0f6a518b8a85636016bab3b8166c3bb78d2",
     "gbt_export_rf_lr_reference_fraction": 0.15
   },
   "validation": {
     "passed": true,
+    "unified_2024_grid_complete": true,
     "checks": [
+      {
+        "mode": "short_term",
+        "model": "binary_logistic",
+        "fraction": 0.3,
+        "daily_brier_reconciled": true,
+        "cohort_counts_and_prevalence_match": true,
+        "saved_pipeline_reload_verified": true,
+        "source_hash_matches": true,
+        "evaluation_year": 2024
+      },
+      {
+        "mode": "short_term",
+        "model": "random_forest",
+        "fraction": 0.3,
+        "daily_brier_reconciled": true,
+        "cohort_counts_and_prevalence_match": true,
+        "calibration_2023_verified": true,
+        "source_hash_matches": true,
+        "weights_retrained": false,
+        "evaluation_year": 2024
+      },
       {
         "mode": "short_term",
         "fraction": 0.3,
@@ -586,6 +1326,27 @@
         "cohort_counts_and_prevalence_match": true,
         "source_hash_matches": true,
         "reference_train_fraction": 0.15,
+        "evaluation_year": 2024
+      },
+      {
+        "mode": "calendar",
+        "model": "binary_logistic",
+        "fraction": 0.3,
+        "daily_brier_reconciled": true,
+        "cohort_counts_and_prevalence_match": true,
+        "saved_pipeline_reload_verified": true,
+        "source_hash_matches": true,
+        "evaluation_year": 2024
+      },
+      {
+        "mode": "calendar",
+        "model": "random_forest",
+        "fraction": 0.3,
+        "daily_brier_reconciled": true,
+        "cohort_counts_and_prevalence_match": true,
+        "calibration_2023_verified": true,
+        "source_hash_matches": true,
+        "weights_retrained": false,
         "evaluation_year": 2024
       },
       {
@@ -614,9 +1375,9 @@
   },
   "limitations": [
     "A 15% GBT is summary-only; B 15% has per-threshold text metrics. Neither 15% pipeline is supplied.",
-    "Counts and prevalence agree; row-level input identity is not independently proven.",
+    "Available per-threshold exports agree in counts/prevalence; A15 GBT is aggregate-only and row-level identity is not independently proven.",
     "Imported 2024 results are supplementary follow-ups; original models remain unchanged.",
-    "RF/LR scores inside GBT exports use 15% reference models; no 30% RF/LR test scores are inferred.",
+    "RF/LR scores inside GBT exports use 15% reference models; separate LR30 evidence is used only when present. RF30 is calibrated/tested separately using the saved standard-configuration weights.",
     "Climatology fraction identifies its comparison group; frequencies use full training data."
   ]
 }

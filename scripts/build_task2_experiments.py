@@ -32,16 +32,20 @@ def record_index(facts):
 
 
 def build_values(facts=None):
-    """Return report placeholders; a missing experiment stays a missing cell."""
+    """Return report placeholders for the complete common-year comparison grid."""
     if facts is None:
         facts = json.loads(FACTS.read_text())
     records = record_index(facts)
+    required = {(mode, model, fraction) for mode, _ in MODES
+                for model, _ in MODELS for fraction in (.15, .3, 1.)}
+    if required - records.keys():
+        raise ValueError('Complete 2024 comparison grid required; missing classifier cells')
     comparison, sampling, complete, interior = [], [], [], []
     for mode, label in MODES:
-        # Use the initial RF/LR models and the largest GBT fit in the overview.
+        # Hold training fraction fixed at 100% in the algorithm overview.
         for model, name, fraction in (
-            ('random_forest', 'Random forest', .15),
-            ('binary_logistic', 'Logistic regression', .15),
+            ('random_forest', 'Random forest', 1.),
+            ('binary_logistic', 'Logistic regression', 1.),
             ('gbt', 'GBT', 1.),
             ('climatology', 'Historical frequency', 1.),
         ):
@@ -72,11 +76,10 @@ def build_values(facts=None):
             f" & {baseline['mean_log_loss']:.6f} & {baseline['pr_auc_1mm']:.4f}"
         )
         for row in facts['interior_thresholds']:
-            if row['mode'] == mode and row['fraction'] == 1.:
+            if row['mode'] == mode and row['fraction'] == .3:
                 interior.append(
                     f"{label} & {row['threshold']:g} & {row['random_forest_brier']:.6f}"
-                    f" & {row['gbt_brier']:.6f} & {row['random_forest_pr_auc']:.4f}"
-                    f" & {row['gbt_pr_auc']:.4f}"
+                    f" & {row['binary_logistic_brier']:.6f} & {row['gbt_brier']:.6f}"
                 )
 
     gains = {}
@@ -93,8 +96,69 @@ def build_values(facts=None):
         f"GBT's mean Brier falls by approximately {gains['A', 'gbt']:.3f}\\% in A "
         f"and {gains['B', 'gbt']:.3f}\\% in B. A's 30\\% GBT score is slightly higher "
         "than its 15\\% score, so the observed learning curve is not monotonic. "
-        "At both 15\\% and 100\\%, where all three classifiers have results, RF has "
+        "Across the three fitting fractions, RF has "
         "lower mean Brier than LR and GBT in both information settings."
+    )
+    if all((mode, 'binary_logistic', .3) in records for mode, _ in MODES):
+        changes = {}
+        for mode, label in MODES:
+            first = records[mode, 'binary_logistic', .15]['mean_brier']
+            middle = records[mode, 'binary_logistic', .3]['mean_brier']
+            changes[label] = 100 * (1 - middle / first)
+        interpretation += (
+            " The separately fitted 30\\% LR changes mean Brier relative to 15\\% by "
+            f"{changes['A']:+.3f}\\% for A and {changes['B']:+.3f}\\% for B "
+            "(positive denotes improvement). These values come from new LR fits, "
+            "rather than the 15\\% references rescored in the GBT exports. "
+            f"At 30\\%, selected L2 regularisation is "
+            f"{records['short_term', 'binary_logistic', .3]['reg_param']:g} for A and "
+            f"{records['calendar', 'binary_logistic', .3]['reg_param']:g} for B; "
+            f"the selected fits use {records['short_term', 'binary_logistic', .3]['iterations']} "
+            f"and {records['calendar', 'binary_logistic', .3]['iterations']} iterations, respectively."
+        )
+    if all((mode, 'random_forest', .3) in records for mode, _ in MODES):
+        changes = {}
+        for mode, label in MODES:
+            changes[label] = 100 * (1 - records[mode, 'random_forest', .3]['mean_brier'] /
+                                        records[mode, 'random_forest', .15]['mean_brier'])
+        interpretation += (
+            f" The 30\\% RF changes mean Brier relative to 15\\% by {changes['A']:+.3f}\\% "
+            f"in A and {changes['B']:+.3f}\\% in B. "
+            "Its existing tree weights are unchanged; probability calibration uses 2023, "
+            "and these scores use the same eligible 2024 populations as the other fractions."
+        )
+    rf = records['short_term', 'random_forest', 1.]
+    lr = records['short_term', 'binary_logistic', 1.]
+    gbt = records['short_term', 'gbt', 1.]
+    algorithm_comparison = (
+        "With every classifier fitted on the full training population, RF has the lowest "
+        "mean Brier in A. GBT has slightly higher PR-AUC at 1 mm "
+        f"({gbt['pr_auc_1mm']:.4f} versus {rf['pr_auc_1mm']:.4f}), but higher mean "
+        "probability squared error. LR has higher ROC-AUC at 1 mm "
+        f"({lr['roc_auc_1mm']:.4f} versus {rf['roc_auc_1mm']:.4f}), "
+        "while RF has better PR-AUC, Brier and log loss. Ranking events and assigning "
+        "accurate probabilities therefore describe different aspects of performance."
+    )
+    forest_temperatures = [records[mode, 'random_forest', fraction]['temperature']
+                           for mode, _ in MODES for fraction in (.15, .3, 1.)]
+    if set(forest_temperatures) == {1.}:
+        rf_temperature_text = ("Temperature selection chooses $T=1$ for all three fractions "
+                               "in both settings, leaving the class probabilities unchanged.")
+    else:
+        settings = [f"{label}: " + ", ".join(
+            f"{fraction*100:g}\\% uses $T={records[mode, 'random_forest', fraction]['temperature']:g}$"
+            for fraction in (.15,.3,1.)) for mode,label in MODES]
+        rf_temperature_text = "Selected temperatures are " + "; ".join(settings) + "."
+    risk = {(row['mode'], row['model'], row['threshold']):row
+            for row in facts['matched_threshold_risk']}
+    a, b = risk['short_term','gbt',20.], risk['calendar','gbt',20.]
+    tail_text = (
+        "At the matched 30\\% fitting fraction, GBT's mean predicted risk above 20 mm is "
+        f"{100*a['mean_probability']:.3f}\\% in A and {100*b['mean_probability']:.3f}\\% in B, "
+        f"compared with observed frequencies of {100*a['event_rate']:.3f}\\% and "
+        f"{100*b['event_rate']:.3f}\\%. This overprediction helps explain why event ranking "
+        "and probability error can favour different models. Temperature calibration uses "
+        "aggregate Brier on 2023; this plot checks threshold-specific behaviour on 2024."
     )
     order = {(row['mode'], row['fraction']): 100 * row['violation_fraction']
              for row in facts['threshold_order']}
@@ -107,6 +171,9 @@ def build_values(facts=None):
     )
     return {
         'MODEL_COMPARISON_ROWS': latex_rows(comparison),
+        'ALGORITHM_COMPARISON_TEXT': algorithm_comparison,
+        'RF_TEMPERATURE_TEXT': rf_temperature_text,
+        'MATCHED_TAIL_RISK_TEXT': tail_text,
         'SAMPLING_ROWS': latex_rows(sampling),
         'SAMPLING_INTERPRETATION': interpretation,
         'INTERIOR_ROWS': latex_rows(interior),

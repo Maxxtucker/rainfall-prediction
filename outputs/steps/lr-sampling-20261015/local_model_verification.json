@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "scope": "Local saved-pipeline reload and fabricated-feature query checks; not predictive evaluation.",
+  "models": [
+    {
+      "mode": "short_term",
+      "reloaded": true,
+      "spark_version_trained": "3.5.3",
+      "reg_param": 0.01,
+      "num_features": 106,
+      "query_checks": 12,
+      "coefficient_and_probability_checks": "passed"
+    },
+    {
+      "mode": "calendar",
+      "reloaded": true,
+      "spark_version_trained": "3.5.3",
+      "reg_param": 0.01,
+      "num_features": 96,
+      "query_checks": 12,
+      "coefficient_and_probability_checks": "passed"
+    }
+  ]
+}

@@ -50,5 +50,18 @@ Mode & Model & Training & Mean Brier & Mean log loss & PR-AUC at 1 mm\\\midrule
 \caption{2024 results on each mode's eligible population: 5,729,508 anchors for A and 6,374,476 for B. The 15\% A GBT row uses its recorded aggregate summary; the 15\% B GBT row uses per-threshold exports. All other rows use saved metric CSVs.}\label{tab:allmodels}
 \end{table}
 
-The RF/LR 15\% and 100\% runs retain both model pipelines and test metrics. GBT 30\% and 100\% retain pipelines, daily errors and reliability tables; the 15\% results are retained as summaries. RF's 30\% experiment is evaluated on 2022 validation in Appendix~\ref{sec:rfsensitivity}. The archived logistic runs use 15\% and 100\% training. Within the GBT exports, RF and logistic columns refer to the loaded 15\% comparison models, including at the additional 3, 7.5 and 15 mm queries. The repository's Part 2 guide maps these results to their source directories and query commands.
+The RF, LR and GBT comparison contains all three fitting fractions on 2024. RF 30\% uses the standard depth-8, 40-tree pipelines from the earlier sensitivity study, with a separate 2023 calibration and 2024 evaluation. LR 30\% was fitted in a later LR-only run. RF/LR 15\% and 100\%, RF/LR 30\%, and GBT 30\% and 100\% retain model pipelines and metric exports. The 15\% A GBT row is supported only by its rounded aggregate summary; B's 15\% GBT row has per-threshold text exports. These two 15\% GBT pipelines were not supplied. Within GBT exports, RF/LR columns are scores of the loaded 15\% reference models and do not represent additional RF/LR fits. The repository's Part 2 guide maps every result to its source directory.
+
+\begin{table}[htbp]\centering\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{.27\linewidth}>{\raggedright\arraybackslash}p{.32\linewidth}>{\raggedright\arraybackslash}p{.31\linewidth}}\toprule
+Execution batch & Fitted or reused models & Recorded evaluation\\\midrule
+Initial experiment & RF and LR at 15\%, A and B & 2022 selection; 2024 test\\
+RF sensitivity & RF at 15\% and 30\%; one-factor tuning & 2022 validation\\
+Full training & RF and LR at 100\%, A and B & 2022 selection; 2024 test\\
+GBT experiment & GBT at 15\%, 30\%, 100\%, A and B & 2023 calibration; 2024 test\\
+LR 30\% completion & Newly fitted LR at 30\%, A and B & 2022 selection; 2024 test\\
+RF 30\% completion & Reused standard RF 30\% weights, A and B & 2023 calibration; 2024 test\\\bottomrule
+\end{tabular}
+\caption{Execution provenance for the unified comparison. All classifier fitting uses 2017--2021. Later batches reuse 2024 after the initial results were available; they are not a new independent test year.}\label{tab:experiment_batches}
+\end{table}
 \FloatBarrier

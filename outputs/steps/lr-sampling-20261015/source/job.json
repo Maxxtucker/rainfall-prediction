@@ -1,0 +1,64 @@
+{
+  "done": true,
+  "driverControlFilesUri": "gs://rainfall-project-511007-rainfall-maxiaoxiao/google-cloud-dataproc-metainfo/93881ada-8d3b-4fca-8bf5-920313ffbb8b/jobs/57c574abd2e24b2bad508f468354b5d4/",
+  "driverOutputResourceUri": "gs://rainfall-project-511007-rainfall-maxiaoxiao/google-cloud-dataproc-metainfo/93881ada-8d3b-4fca-8bf5-920313ffbb8b/jobs/57c574abd2e24b2bad508f468354b5d4/driveroutput",
+  "jobUuid": "bd11a2c3-f45c-39e4-a4cb-820c1b7a94ad",
+  "placement": {
+    "clusterName": "rainfall-lr30-20261015",
+    "clusterUuid": "93881ada-8d3b-4fca-8bf5-920313ffbb8b"
+  },
+  "pysparkJob": {
+    "args": [
+      "--reference-root",
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/task2-dual-v2/models",
+      "--data-root",
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/task2-dual-v1/data",
+      "--output",
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/lr-sampling-20261015",
+      "--train-fraction",
+      "0.30"
+    ],
+    "mainPythonFileUri": "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/lr-sampling-20261015-source/train_lr_sampling.py",
+    "properties": {
+      "spark.driver.maxResultSize": "1g",
+      "spark.driver.memory": "6g",
+      "spark.sql.session.timeZone": "Asia/Singapore"
+    },
+    "pythonFileUris": [
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/lr-sampling-20261015-source/rainfall.zip"
+    ]
+  },
+  "reference": {
+    "jobId": "57c574abd2e24b2bad508f468354b5d4",
+    "projectId": "rainfall-project-511007"
+  },
+  "status": {
+    "state": "DONE",
+    "stateStartTime": "2026-10-15T12:35:47.461530Z"
+  },
+  "statusHistory": [
+    {
+      "state": "PENDING",
+      "stateStartTime": "2026-10-15T11:30:33.954554Z"
+    },
+    {
+      "state": "SETUP_DONE",
+      "stateStartTime": "2026-10-15T11:30:34.087883Z"
+    },
+    {
+      "details": "Agent reported job success",
+      "state": "RUNNING",
+      "stateStartTime": "2026-10-15T11:30:34.617101Z"
+    }
+  ],
+  "yarnApplications": [
+    {
+      "memoryMbSeconds": "105155518",
+      "name": "rainfall-lr-sampling",
+      "progress": 1.0,
+      "state": "FINISHED",
+      "trackingUrl": "http://rainfall-lr30-20261015-m.asia-southeast1-c.c.rainfall-project-511007.internal.:8088/proxy/application_1792063768337_0001/",
+      "vcoreSeconds": "31053"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "scope": "Exact original forest/support/catalogue byte checks and fabricated-feature query checks; not performance estimation.",
+  "models": [
+    {
+      "mode": "short_term",
+      "pipeline_bytes_unchanged": true,
+      "pipeline_files_verified": 18,
+      "reloaded": true,
+      "temperature": 1.0,
+      "finite_monotone_query_checks": 30
+    },
+    {
+      "mode": "calendar",
+      "pipeline_bytes_unchanged": true,
+      "pipeline_files_verified": 18,
+      "reloaded": true,
+      "temperature": 1.0,
+      "finite_monotone_query_checks": 30
+    }
+  ]
+}

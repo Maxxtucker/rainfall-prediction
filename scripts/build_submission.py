@@ -47,7 +47,8 @@ def main():
             raise FileNotFoundError('Missing report vector: ' + figure)
     if json.loads((ROOT / 'outputs/steps/task1-v5/validation.json').read_text())['status'] != 'passed':
         raise ValueError('Task 1 independent validation did not pass')
-    if not json.loads((ROOT / 'report/task2/experiments_validation.json').read_text()).get('passed'):
+    validation = json.loads((ROOT / 'report/task2/experiments_validation.json').read_text())
+    if not validation.get('passed') or not validation.get('unified_2024_grid_complete'):
         raise ValueError('Part 2 experiment reconciliation did not pass')
     model_root = ROOT / 'outputs/steps/task2-dual-v2/models'
     for mode in ['calendar', 'short_term']:
@@ -74,7 +75,7 @@ def main():
         if not json.loads((sensitivity / 'local_model_verification.json').read_text()).get('passed'):
             raise ValueError('RF sensitivity model verification failed')
         selections.append(str(sensitivity.relative_to(ROOT)))
-    for extra in ['gbt-sampling-20261014-run01', 'task2-full-20261012']:
+    for extra in ['gbt-sampling-20261014-run01', 'task2-full-20261012', 'lr-sampling-20261015', 'rf30-evaluation-20261016']:
         experiment = ROOT / 'outputs/steps' / extra
         if experiment.exists():
             verification = experiment / 'local_model_verification.json'

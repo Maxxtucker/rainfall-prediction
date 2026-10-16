@@ -1,0 +1,64 @@
+{
+  "done": true,
+  "driverControlFilesUri": "gs://rainfall-project-511007-rainfall-maxiaoxiao/google-cloud-dataproc-metainfo/5f253115-af22-4f6e-9c45-12b9cb2fd0a1/jobs/f186b6b0db764f05b5401a5a5920666e/",
+  "driverOutputResourceUri": "gs://rainfall-project-511007-rainfall-maxiaoxiao/google-cloud-dataproc-metainfo/5f253115-af22-4f6e-9c45-12b9cb2fd0a1/jobs/f186b6b0db764f05b5401a5a5920666e/driveroutput",
+  "jobUuid": "b7a613c3-ea5d-357a-a694-dbae83d11479",
+  "placement": {
+    "clusterName": "rainfall-rf30-20261016",
+    "clusterUuid": "5f253115-af22-4f6e-9c45-12b9cb2fd0a1"
+  },
+  "pysparkJob": {
+    "args": [
+      "--reference-root",
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/task2-dual-v2/models",
+      "--sensitivity-root",
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/rf-sensitivity-20261010",
+      "--data-root",
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/task2-dual-v1/data",
+      "--output",
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/rf30-evaluation-20261016"
+    ],
+    "mainPythonFileUri": "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/rf30-evaluation-20261016-source/evaluate_rf_sampling.py",
+    "properties": {
+      "spark.driver.maxResultSize": "1g",
+      "spark.driver.memory": "6g",
+      "spark.sql.session.timeZone": "Asia/Singapore"
+    },
+    "pythonFileUris": [
+      "gs://rainfall-project-511007-rainfall-maxiaoxiao/project/steps/rf30-evaluation-20261016-source/rainfall.zip"
+    ]
+  },
+  "reference": {
+    "jobId": "f186b6b0db764f05b5401a5a5920666e",
+    "projectId": "rainfall-project-511007"
+  },
+  "status": {
+    "state": "DONE",
+    "stateStartTime": "2026-10-16T03:36:11.825484Z"
+  },
+  "statusHistory": [
+    {
+      "state": "PENDING",
+      "stateStartTime": "2026-10-16T03:05:41.417887Z"
+    },
+    {
+      "state": "SETUP_DONE",
+      "stateStartTime": "2026-10-16T03:05:41.510852Z"
+    },
+    {
+      "details": "Agent reported job success",
+      "state": "RUNNING",
+      "stateStartTime": "2026-10-16T03:05:42.072687Z"
+    }
+  ],
+  "yarnApplications": [
+    {
+      "memoryMbSeconds": "48046192",
+      "name": "rainfall-rf30-calibrate-test",
+      "progress": 1.0,
+      "state": "FINISHED",
+      "trackingUrl": "http://rainfall-rf30-20261016-m.asia-southeast1-c.c.rainfall-project-511007.internal.:8088/proxy/application_1792119857800_0001/",
+      "vcoreSeconds": "14187"
+    }
+  ]
+}

@@ -8,6 +8,8 @@ DSA5208 group project using Singapore's official 2017–2024 five-minute rainfal
 |---|---|
 | Report and generated LaTeX | [report/project_report.pdf](report/project_report.pdf), [report/project_report.tex](report/project_report.tex) |
 | RF/LR models at 15% and 100% | `outputs/steps/task2-dual-v2/models/`, `outputs/steps/task2-full-20261012/models/` |
+| RF models at 30%, calibrated and tested | `outputs/steps/rf30-evaluation-20261016/{short_term,calendar}/` |
+| Separate LR models at 30% | `outputs/steps/lr-sampling-20261015/{short_term,calendar}/` |
 | GBT models at 30% and 100% | `outputs/steps/gbt-sampling-20261014-run01/{short_term,calendar}/{sample30,sample100}/` |
 | Task 1 summaries and audits | `outputs/steps/task1-v5/` |
 | Task 2 experiment and artifact map | [models, fractions, evidence and commands](docs/TASK2_EXPERIMENTS.md) |
@@ -54,7 +56,7 @@ spark-submit --master 'local[2]' jobs/predict.py \
   --threshold 3 --output outputs/local-gbt-query
 ```
 
-The [Task 2 guide](docs/TASK2_EXPERIMENTS.md) maps every model and sampling fraction. RF has 2024 results at 15% and 100%, plus 2022-only tuning/sampling results at 15% and 30%; LR has 15% and 100% results. GBT has saved pipelines at 30% and 100%; its 15% evidence consists of an A summary and B per-threshold metrics. Historical frequency uses all eligible training data.
+The [Task 2 guide](docs/TASK2_EXPERIMENTS.md) maps the complete RF/LR/GBT × 15%/30%/100% comparison on 2024 in both information settings. The RF30 test package reuses the standard forest weights from the earlier 2022 sensitivity study, with 2023 calibration completed separately. LR30 was fitted in an LR-only run. GBT has saved pipelines at 30% and 100%; 15% evidence consists of an A aggregate summary and B per-threshold metrics. Historical frequency uses all eligible training data.
 
 ## Source and task map
 
