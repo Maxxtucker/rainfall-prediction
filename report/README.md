@@ -37,6 +37,8 @@ The build first reconciles the saved Part 2 experiment exports and refreshes the
 | Part 1 summary tables and audits | `outputs/steps/task1-v5/`, `report/task1/report_facts.json` |
 | RF/LR 15% metrics and shared A/B test comparison | `outputs/steps/task2-dual-v2/`, `report/task2/analysis_facts.json` |
 | RF/LR 100% models and metrics | `outputs/steps/task2-full-20261012/` |
+| RF 30% calibration/test package | `outputs/steps/rf30-evaluation-20261016/` |
+| LR 30% independent fits and metrics | `outputs/steps/lr-sampling-20261015/` |
 | GBT sampling experiments and threshold diagnostics | `outputs/steps/gbt-sampling-20261014-run01/` |
 | RF 15%/30% validation and tuning | `outputs/steps/rf-sensitivity-20261010/` |
 | Unified model/fraction summaries | `report/task2/experiments_facts.json`, `experiments_summary.csv`, `interior_threshold_comparison.csv`, `experiments_validation.json` |
@@ -56,7 +58,7 @@ bash report/build.sh
 
 These commands read saved statistical exports. The Task 2 experiment analyser writes derived report files, while the experiment directories remain the evidence sources. `redraw_report_figures.py` creates the enhanced panels and invokes `plot_task2_experiments.py` for `22_training_fraction` and `23_threshold_risk`. To regenerate the full Part 1 gallery separately, run `python scripts/plot_task1_report.py --results outputs/steps/task1-v5 --output figures/task1-regenerated`.
 
-The RF 30% sensitivity results use 2022 validation; RF/LR 15% and 100% and GBT 30% and 100% have 2024 metrics. At 15%, GBT A has a rounded summary and B has per-threshold text metrics. These distinctions determine which comparisons and plots can be supported. The later full-training and GBT runs reuse the previously examined test year. See the experiment guide for the complete source and evidence map.
+The RF/LR/GBT × 15%/30%/100% comparison now contains 2024 scores in both settings. Standard RF30 weights were reused from the 2022 sensitivity study and calibrated/tested in a separate package; the other RF tuning candidates remain validation-only. LR30 was fitted separately. At 15%, GBT A has a rounded summary and B has per-threshold text metrics. These distinctions determine which comparisons and plots can be supported. The later full-training and GBT runs reuse the previously examined test year. See the experiment guide for the complete source and evidence map.
 
 ## Before submission
 

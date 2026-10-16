@@ -2,7 +2,7 @@
 
 This experiment varies the training fraction and RF settings on the 2022 validation population. The reference forest uses 40 trees, depth 8, minimum leaf size 25, square-root feature selection and subsampling of 0.8. A deterministic station--time hash with seed 2026 gives nested 15\% and 30\% samples. The 30\% samples contain 5,608,769 anchors for A and 8,233,882 for B. Every candidate within a mode uses the same validation anchors, training-derived within-bin distributions and temperature $T=1$.
 
-At 15\%, the one-factor comparisons increase depth to 10, increase the number of trees to 80, increase minimum leaf size to 50, or use half the features at each split. The lowest-Brier configuration at 15\% is then fitted at 30\%. Table~\ref{tab:rfsensitivity} gives all candidate scores.
+At 15\%, the one-factor comparisons increase depth to 10, increase the number of trees to 80, increase minimum leaf size to 50, or use half the features at each split. The lowest-Brier configuration at 15\% is then fitted at 30\%. Table~\ref{tab:rfsensitivity} gives all candidate scores. These are one-factor comparisons, rather than a search over all parameter combinations.
 
 \par
 \begin{table}[htbp]\centering\small
@@ -25,3 +25,5 @@ At the reference settings, increasing the sample to 30\% reduces A's mean Brier 
 Depth has a larger effect for A. Moving from depth 8 to 10 at 15\% improves mean Brier by 0.300\%, with interval $[0.213\%,\,0.389\%]$. Fitting that depth-10 configuration at 30\% adds a further 0.059\% improvement, with interval $[0.036\%,\,0.082\%]$, and reaches 0.01663765. B's best tested 15\% setting uses half the features; its 30\% version reaches 0.02330797. Both B intervals for the configuration and subsequent sample changes cross zero. At the reference settings, A's Brier improves by 0.103\% at 10 mm and 0.072\% at 20 mm.
 
 Intervals use 2,000 paired circular resamples of seven-day blocks, retaining all stations and thresholds together. They describe validation-day variation for the fitted models and seed used here. Configuration selection uses the same validation year. These Brier comparisons complement the 2024 model and sample-size results in the main text.
+
+The reference 30\% forests in this table were subsequently reused for the 2024 comparison in Appendix~\ref{app:experiments}, with temperature selected on 2023 ($T=1$ in both settings). The selected-setting 30\% forests remain validation-only candidates. The scores here describe 2022, while the main sample-size table describes 2024, so the numerical gains refer to different evaluation years.

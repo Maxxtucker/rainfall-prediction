@@ -426,15 +426,15 @@ The twelve-month view complements the main December comparison. Regional colours
 \section{Additional predictive diagnostics}\label{app:prediction}
 These figures describe the 15\% RF and logistic models on the 2024 test set. They show how performance varies by rainfall threshold and month, alongside the RF's feature use.
 \plot{19_baseline_skill}{Brier skill relative to each mode's historical-frequency baseline on its own eligible 2024 test population. Positive values indicate lower error than the baseline; zero indicates equal error. A's random forest improves on the baseline at every evaluated threshold, whereas A's logistic regression deteriorates at larger thresholds. B's forest has small, threshold-dependent gains and losses. The two panels use different eligible populations.}{fig:appbaselines}
-\plot{21_diagnostics}{Left: A's monthly Brier skill relative to historical frequency at 1 mm in 2024. Right: its six largest random-forest impurity importances. Recent rainfall totals and persistence summaries contribute most to the fitted forest; these correlated features share information.}{fig:appdiagnostics}
+\plot{21_diagnostics}{Left: A's monthly Brier skill relative to historical frequency at 1 mm in 2024. Right: its six largest random-forest impurity importances. The 15-minute total has the largest impurity importance. These importances describe split use in the fitted forest; correlated rainfall summaries share information and the bars do not measure independent causal effects.}{fig:appdiagnostics}
 \FloatBarrier
 
 \clearpage
 \section{Model scores and experiment coverage}\label{app:experiments}
-Table~\ref{tab:allmodels} brings the recorded model and training-fraction results together. Mean Brier and mean log loss give equal weight to the seven primary thresholds; PR-AUC is shown at 1 mm. Historical frequency uses all eligible training examples in every run.
+Table~\ref{tab:allmodels} brings the recorded model and training-fraction results together. Mean Brier and mean log loss give equal weight to the seven primary thresholds; PR-AUC is shown at 1 mm. Historical frequency uses all eligible training examples in every run. The fitting fraction refers to classifier anchors before LR/GBT expansion into seven threshold-specific examples; it does not subsample the test set.
 \begin{table}[htbp]\centering\small
 \begin{tabular}{llrrrr}\toprule
-Mode & Model & Training & Mean Brier & Mean log loss & PR-AUC at 1 mm\\\midrule
+Mode & Model & Fitting sample & Mean Brier & Mean log loss & PR-AUC at 1 mm\\\midrule
 A & Random forest & 15\% & 0.01613051 & 0.070004 & 0.4218 \\
 A & Random forest & 30\% & 0.01613151 & 0.070021 & 0.4225 \\
 A & Random forest & 100\% & 0.01613638 & 0.070016 & 0.4229 \\
@@ -459,17 +459,17 @@ B & Historical frequency & 100\% & 0.02252051 & 0.098657 & 0.0516 \\
 \caption{2024 results on each mode's eligible population: 5,729,508 anchors for A and 6,374,476 for B. The 15\% A GBT row uses its recorded aggregate summary; the 15\% B GBT row uses per-threshold exports. All other rows use saved metric CSVs.}\label{tab:allmodels}
 \end{table}
 
-The RF, LR and GBT comparison contains all three fitting fractions on 2024. RF 30\% uses the standard depth-8, 40-tree pipelines from the earlier sensitivity study, with a separate 2023 calibration and 2024 evaluation. LR 30\% was fitted in a later LR-only run. RF/LR 15\% and 100\%, RF/LR 30\%, and GBT 30\% and 100\% retain model pipelines and metric exports. The 15\% A GBT row is supported only by its rounded aggregate summary; B's 15\% GBT row has per-threshold text exports. These two 15\% GBT pipelines were not supplied. Within GBT exports, RF/LR columns are scores of the loaded 15\% reference models and do not represent additional RF/LR fits. The repository's Part 2 guide maps every result to its source directory.
+The table covers all three fitting fractions for RF, LR and GBT. RF 30\% reuses the standard depth-8, 40-tree forests; LR 30\% uses separate fits. All classifier rows retain pipelines and metric exports except GBT 15\%: A has an aggregate summary and B has per-threshold text exports. RF/LR columns inside GBT exports rescore the 15\% reference models. The Part 2 repository guide records the source paths.
 
 \begin{table}[htbp]\centering\small
 \begin{tabular}{>{\raggedright\arraybackslash}p{.27\linewidth}>{\raggedright\arraybackslash}p{.32\linewidth}>{\raggedright\arraybackslash}p{.31\linewidth}}\toprule
 Execution batch & Fitted or reused models & Recorded evaluation\\\midrule
-Initial experiment & RF and LR at 15\%, A and B & 2022 selection; 2024 test\\
+Initial experiment & RF and LR at 15\%, A and B & 2022 selection; RF calibration on 2023; 2024 test\\
 RF sensitivity & RF at 15\% and 30\%; one-factor tuning & 2022 validation\\
-Full training & RF and LR at 100\%, A and B & 2022 selection; 2024 test\\
-GBT experiment & GBT at 15\%, 30\%, 100\%, A and B & 2023 calibration; 2024 test\\
+Full training & RF and LR at 100\%, A and B & 2022 selection; RF calibration on 2023; 2024 test\\
+GBT experiment & GBT at 15\%, 30\%, 100\%, A and B & 2022 selection; 2023 calibration; 2024 test\\
 LR 30\% completion & Newly fitted LR at 30\%, A and B & 2022 selection; 2024 test\\
-RF 30\% completion & Reused standard RF 30\% weights, A and B & 2023 calibration; 2024 test\\\bottomrule
+RF 30\% completion & Reused standard RF 30\% weights, A and B & 2023 calibration; 2022 cutoff selection; 2024 test\\\bottomrule
 \end{tabular}
 \caption{Execution provenance for the unified comparison. All classifier fitting uses 2017--2021. Later batches reuse 2024 after the initial results were available; they are not a new independent test year.}\label{tab:experiment_batches}
 \end{table}
@@ -480,7 +480,7 @@ RF 30\% completion & Reused standard RF 30\% weights, A and B & 2023 calibration
 
 This experiment varies the training fraction and RF settings on the 2022 validation population. The reference forest uses 40 trees, depth 8, minimum leaf size 25, square-root feature selection and subsampling of 0.8. A deterministic station--time hash with seed 2026 gives nested 15\% and 30\% samples. The 30\% samples contain 5,608,769 anchors for A and 8,233,882 for B. Every candidate within a mode uses the same validation anchors, training-derived within-bin distributions and temperature $T=1$.
 
-At 15\%, the one-factor comparisons increase depth to 10, increase the number of trees to 80, increase minimum leaf size to 50, or use half the features at each split. The lowest-Brier configuration at 15\% is then fitted at 30\%. Table~\ref{tab:rfsensitivity} gives all candidate scores.
+At 15\%, the one-factor comparisons increase depth to 10, increase the number of trees to 80, increase minimum leaf size to 50, or use half the features at each split. The lowest-Brier configuration at 15\% is then fitted at 30\%. Table~\ref{tab:rfsensitivity} gives all candidate scores. These are one-factor comparisons, rather than a search over all parameter combinations.
 
 \par
 \begin{table}[htbp]\centering\small
@@ -503,5 +503,7 @@ At the reference settings, increasing the sample to 30\% reduces A's mean Brier 
 Depth has a larger effect for A. Moving from depth 8 to 10 at 15\% improves mean Brier by 0.300\%, with interval $[0.213\%,\,0.389\%]$. Fitting that depth-10 configuration at 30\% adds a further 0.059\% improvement, with interval $[0.036\%,\,0.082\%]$, and reaches 0.01663765. B's best tested 15\% setting uses half the features; its 30\% version reaches 0.02330797. Both B intervals for the configuration and subsequent sample changes cross zero. At the reference settings, A's Brier improves by 0.103\% at 10 mm and 0.072\% at 20 mm.
 
 Intervals use 2,000 paired circular resamples of seven-day blocks, retaining all stations and thresholds together. They describe validation-day variation for the fitted models and seed used here. Configuration selection uses the same validation year. These Brier comparisons complement the 2024 model and sample-size results in the main text.
+
+The reference 30\% forests in this table were subsequently reused for the 2024 comparison in Appendix~\ref{app:experiments}, with temperature selected on 2023 ($T=1$ in both settings). The selected-setting 30\% forests remain validation-only candidates. The scores here describe 2022, while the main sample-size table describes 2024, so the numerical gains refer to different evaluation years.
 
 \end{document}
