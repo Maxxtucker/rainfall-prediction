@@ -88,23 +88,19 @@ def build_values(facts=None):
             first, last = (records[mode, model, fraction]['mean_brier'] for fraction in (.15, 1.))
             gains[label, model] = 100 * (1 - last / first)
     interpretation = (
-        "Using all eligible training examples changes mean Brier only slightly. "
         f"For RF, the 100\\% score is {abs(gains['A', 'random_forest']):.3f}\\% higher in A "
         f"and {abs(gains['B', 'random_forest']):.3f}\\% higher in B than at 15\\%. "
-        f"The corresponding changes for logistic regression are "
-        f"{abs(gains['A', 'binary_logistic']):.3f}\\% and {abs(gains['B', 'binary_logistic']):.3f}\\%. "
-        f"GBT's mean Brier falls by approximately {gains['A', 'gbt']:.3f}\\% in A "
-        f"and {gains['B', 'gbt']:.3f}\\% in B. A's 30\\% GBT score is slightly higher "
-        "than its 15\\% score, so the observed learning curve is not monotonic. "
-        "Across the three fitting fractions, RF has "
-        "lower mean Brier than LR and GBT in both information settings."
+        "LR also changes little, while GBT improves slightly at full training. "
+        "A's 30\\% GBT score is worse than its 15\\% score, so the observed learning "
+        "curve is not monotonic. The model ordering is unchanged: RF has lower "
+        "mean Brier than LR and GBT at every fitting fraction in both settings."
     )
     rf = records['short_term', 'random_forest', 1.]
     lr = records['short_term', 'binary_logistic', 1.]
     gbt = records['short_term', 'gbt', 1.]
     algorithm_comparison = (
-        "With every classifier fitted on the full training population, RF has the lowest "
-        "mean Brier in A. GBT has slightly higher PR-AUC at 1 mm "
+        "The ranking metrics explain why model choice depends on the objective. "
+        "In A, GBT has slightly higher PR-AUC at 1 mm "
         f"({gbt['pr_auc_1mm']:.4f} versus {rf['pr_auc_1mm']:.4f}), but higher mean "
         "probability squared error. LR has higher ROC-AUC at 1 mm "
         f"({lr['roc_auc_1mm']:.4f} versus {rf['roc_auc_1mm']:.4f}), "
