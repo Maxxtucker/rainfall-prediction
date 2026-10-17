@@ -1,3 +1,4 @@
+% !TEX root = ../project_report.tex
 \section{Random-forest tuning on 2022 validation}\label{sec:rfsensitivity}
 
 This experiment varies the training fraction and RF settings on the 2022 validation population. The reference forest uses 40 trees, depth 8, minimum leaf size 25, square-root feature selection and subsampling of 0.8. A deterministic station--time hash with seed 2026 gives nested 15\% and 30\% samples. The 30\% samples contain @@A_TRAIN30@@ anchors for A and @@B_TRAIN30@@ for B. Every candidate within a mode uses the same validation anchors, training-derived within-bin distributions and temperature $T=1$.

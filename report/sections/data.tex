@@ -1,3 +1,4 @@
+% !TEX root = ../project_report.tex
 \section{Data and methods}
 
 \subsection{What the records contain}
@@ -18,14 +19,14 @@ For station $s$, year $y$ and month $m$, we measure completeness as
 \[
  C_{sym}=\frac{N_{sym}}{288D_{ym}},
 \]
-where $N_{sym}$ is the number of valid unique observations and $D_{ym}$ is the number of calendar days. Every station is represented in all 96 year-months; absent months have zero observations and an undefined rainfall total. Low coverage can consequently reflect a station's operating period as well as missing records.
+where $N_{sym}$ is the number of valid unique observations and $D_{ym}$ is the number of calendar days. The analysis constructs a 91-station by 96-month grid; absent months have zero observations and an undefined rainfall total. This grid does not imply that every station operated throughout the study. Low coverage can reflect both operating periods and missing records.
 
 \plot{03_coverage}{Monthly data availability. The upper panel gives median coverage among stations with any observations; the lower panel counts stations meeting the 90\% rule. Grey cells in the lower panel have no qualifying stations.}{fig:coverage}
 
 \subsection{Comparing rainfall over time}
 Monthly summaries require at least 90\% coverage. Annual summaries require 95\% coverage overall and 90\% in every month, preventing a concentrated seasonal gap from being hidden by a high annual average. Daily-distribution summaries require 95\% daily coverage within eligible months. These rules limit missing-data exposure but cannot remove bias if missingness is related to weather. Totals remain observed amounts, without gap filling or scaling by inverse coverage.
 
-Within each year-month, we average eligible station totals equally. Seasonal curves then weight available years equally. Wet frequency is the number of positive intervals divided by observed intervals; conditional intensity is their rainfall sum divided by positive intervals. Hourly summaries pool eligible observations, giving more weight to periods with more observed intervals. Station means describe the sampled network, rather than an area-weighted national rainfall total.
+Within each year-month, rainfall amount gives eligible station totals equal weight. Wet frequency and conditional intensity instead pool eligible observed intervals: wet frequency is the number of positive intervals divided by observed intervals, and conditional intensity is their rainfall sum divided by positive intervals. Seasonal curves then give available years equal weight. Hourly summaries pool eligible observations, giving more weight to periods with more observed intervals. Station means describe the sampled network, rather than an area-weighted national rainfall total.
 
 Cross-year comparisons match station IDs within the same calendar month for each year pair. Coordinate stability screens use a tolerance of 0.005 degrees per axis within and between paired periods. We average the within-station changes and express percentage change relative to the earlier pair mean. Plots show only comparisons with at least five common stations; this is a display threshold, not a significance test. Different year pairs can contain different stations.
 

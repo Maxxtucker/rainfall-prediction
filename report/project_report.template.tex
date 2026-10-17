@@ -1,9 +1,10 @@
+% !TEX root = project_report.tex
 \documentclass[11pt,a4paper]{article}
 \usepackage[margin=22mm,headheight=15pt]{geometry}
 \usepackage{fontspec}
-\IfFontExistsTF{Liberation Serif}{\setmainfont{Liberation Serif}}{\setmainfont{texgyretermes-regular.otf}[BoldFont=texgyretermes-bold.otf,ItalicFont=texgyretermes-italic.otf,BoldItalicFont=texgyretermes-bolditalic.otf]}
-\IfFontExistsTF{Liberation Sans}{\setsansfont{Liberation Sans}}{\setsansfont{texgyreheros-regular.otf}[BoldFont=texgyreheros-bold.otf,ItalicFont=texgyreheros-italic.otf,BoldItalicFont=texgyreheros-bolditalic.otf]}
-\IfFontExistsTF{Liberation Mono}{\setmonofont{Liberation Mono}[Scale=MatchLowercase]}{\setmonofont{texgyrecursor-regular.otf}[BoldFont=texgyrecursor-bold.otf,ItalicFont=texgyrecursor-italic.otf,BoldItalicFont=texgyrecursor-bolditalic.otf,Scale=MatchLowercase]}
+\IfFontExistsTF{Liberation Serif}{\setmainfont{Liberation Serif}}{\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{\setmainfont{Latin Modern Roman}}}
+\IfFontExistsTF{Liberation Sans}{\setsansfont{Liberation Sans}}{\IfFontExistsTF{Arial}{\setsansfont{Arial}}{\setsansfont{Latin Modern Sans}}}
+\IfFontExistsTF{Liberation Mono}{\setmonofont{Liberation Mono}[Scale=MatchLowercase]}{\IfFontExistsTF{Courier New}{\setmonofont{Courier New}[Scale=MatchLowercase]}{\setmonofont{Latin Modern Mono}[Scale=MatchLowercase]}}
 \usepackage{graphicx,booktabs,array,amsmath,xcolor,hyperref,fancyhdr,caption,titlesec,microtype,tabularx,placeins}
 \definecolor{ink}{HTML}{213B48}
 \definecolor{teal}{HTML}{086D78}
@@ -65,12 +66,10 @@ Chen Yuda & A0353182H\\
 \begin{thebibliography}{9}
 \bibitem{data} National Environment Agency. \emph{Historical Rainfall across Singapore}, annual datasets 2017--2024. Data.gov.sg. \url{https://data.gov.sg/collections/2279/view}. Accessed 9 October 2026.
 \bibitem{climate} Meteorological Service Singapore. \emph{Climate of Singapore}. \url{https://www.weather.gov.sg/climate-climate-of-singapore/}. Accessed 9 October 2026.
-\bibitem{geo} geoBoundaries / Urban Redevelopment Authority. Singapore outline and planning-area geometries. Source and licence records are retained in the project assets; planning-area geometry is based on URA Master Plan 2014.
-\bibitem{sparkml} Apache Spark. \emph{Classification and regression}, Spark 3.5.3 documentation. \url{https://dlcdn.apache.org/spark/docs/3.5.3/ml-classification-regression.html}. Accessed 9 October 2026.
-\bibitem{sparkeval} Apache Spark. \emph{BinaryClassificationMetrics}, Spark 3.5.3 Java API. \url{https://spark.apache.org/docs/3.5.3/api/java/org/apache/spark/mllib/evaluation/BinaryClassificationMetrics.html}. Accessed 9 October 2026.
+\bibitem{geo} geoBoundaries / Urban Redevelopment Authority. Singapore ADM0 (SGP-ADM0-21272760) and ADM2 (SGP-ADM2-91842731), commit \texttt{9469f09}, built 12 December 2023; based on URA Master Plan 2014. Retained metadata identifies ODbL 1.0 for ADM0 and Singapore Open Data Licence 1.0 for ADM2. \url{https://github.com/wmgeolab/geoBoundaries/tree/9469f09/releaseData/gbOpen/SGP}. Retrieved 8 October 2026.
+\bibitem{sparkml} Apache Spark. \emph{Classification and regression}, Spark 3.5.3 documentation. \url{https://archive.apache.org/dist/spark/docs/3.5.3/ml-classification-regression.html}. Accessed 17 October 2026.
+\bibitem{sparkeval} Apache Spark. \emph{BinaryClassificationMetrics}, Spark 3.5.3 Java API. \url{https://archive.apache.org/dist/spark/docs/3.5.3/api/java/org/apache/spark/mllib/evaluation/BinaryClassificationMetrics.html}. Accessed 17 October 2026.
 \end{thebibliography}
 \endgroup
 @@APPENDIX@@
-\clearpage
-@@RF_SENSITIVITY@@
 \end{document}

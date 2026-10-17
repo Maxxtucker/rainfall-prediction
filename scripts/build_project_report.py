@@ -102,11 +102,13 @@ def render_task2(facts, results_root):
 
 
 def assemble_report(task2, sensitivity):
-    sections = {'TASK2': task2, 'RF_SENSITIVITY': sensitivity}
+    sections = {'TASK2': task2}
     for name in ('introduction', 'data', 'weather', 'discussion', 'appendix'):
         sections[name.upper()] = (ROOT / 'report/sections' / (name + '.tex')).read_text()
     for key, value in experiment_values().items():
         sections['APPENDIX'] = sections['APPENDIX'].replace('@@' + key + '@@', value)
+
+    sections['APPENDIX'] = sections['APPENDIX'].replace('@@RF_SENSITIVITY@@', sensitivity)
 
     report = (ROOT / 'report/project_report.template.tex').read_text()
     for key, section in sections.items():

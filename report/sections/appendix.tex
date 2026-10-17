@@ -1,3 +1,4 @@
+% !TEX root = ../project_report.tex
 \clearpage
 \appendix
 \numberwithin{figure}{section}
@@ -50,6 +51,8 @@ Mode & Model & Fitting sample & Mean Brier & Mean log loss & PR-AUC at 1 mm\\\mi
 \caption{2024 results on each mode's eligible population: 5,729,508 anchors for A and 6,374,476 for B. The 15\% A GBT row uses its recorded aggregate summary; the 15\% B GBT row uses per-threshold exports. All other rows use saved metric CSVs.}\label{tab:allmodels}
 \end{table}
 
+\plot{22_training_fraction}{Relative improvement in mean 2024 Brier over each model's 15\% result; positive means lower error. The open A GBT marker identifies its aggregate-summary reference. Small point differences should be read with the paired intervals in the main results.}{fig:t2sampling}
+
 The table covers all three fitting fractions for RF, LR and GBT. RF 30\% reuses the standard depth-8, 40-tree forests; LR 30\% uses separate fits. All classifier rows retain pipelines and metric exports except GBT 15\%: A has an aggregate summary and B has per-threshold text exports. RF/LR columns inside GBT exports rescore the 15\% reference models. The Part 2 repository guide records the source paths.
 
 \begin{table}[htbp]\centering\small
@@ -64,4 +67,8 @@ RF 30\% completion & Reused standard RF 30\% weights, A and B & 2023 calibration
 \end{tabular}
 \caption{Execution provenance for the unified comparison. All classifier fitting uses 2017--2021. Later batches reuse 2024 after the initial results were available; they are not a new independent test year.}\label{tab:experiment_batches}
 \end{table}
+\FloatBarrier
+
+\clearpage
+@@RF_SENSITIVITY@@
 \FloatBarrier
