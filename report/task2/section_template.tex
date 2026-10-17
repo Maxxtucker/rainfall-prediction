@@ -1,3 +1,4 @@
+% !TEX root = ../project_report.tex
 \section{Predicting the next 30 minutes}
 \subsection{Prediction target and available information}
 For station $s$, issue time $t$ and threshold $q$ in millimetres, the target is
@@ -7,7 +8,7 @@ p_{s,t}(q)=P(Y_{s,t}>q\mid X_{s,t}).
 \]
 The output is the probability of exceeding the requested amount. Observation timestamps mark the assumed endpoints of five-minute accumulation intervals. Labels require all six exact future observations; totals are rounded to 0.001 mm and exceedance is strictly greater than $q$. Examples with missing future observations are excluded.
 
-\textbf{A (short-term forecasting)} uses recent station rainfall as well as station and calendar features. \textbf{B (calendar risk)} uses only station and calendar features to estimate historical risk at a requested time. We fit the same model families in both settings to assess the value of recent rainfall for our primary task, short-term forecasting.
+\textbf{A (short-term forecasting)} uses recent station rainfall as well as station and calendar features. \textbf{B (calendar risk)} uses only station and calendar features to estimate historical risk at a requested time. We fit the same model families in both settings to compare short-term forecasting with calendar risk. The query's three user inputs are station, issue time and threshold; A derives additional features internally from the supplied observation archive.
 
 A reads a supplied clean observation table and requires twelve history endpoints at $t-65,t-60,\ldots,t-10$ minutes. Both recorded update timestamps for every history record must be no later than $t$. The ten-minute buffer reflects the typical publication delay (Table~\ref{tab:updatedelay}); the record-level checks also exclude observations with longer delays. Missing or unavailable history rejects the example or query. Figure~\ref{fig:t2timeline} separates this history from the future target.
 
@@ -56,9 +57,9 @@ We compare a historical-frequency baseline with three Spark MLlib classifiers~\c
 \qquad
 \widetilde\pi_k=\frac{\pi_k^{1/T}}{\sum_\ell\pi_\ell^{1/T}}.
 \]
-Here $\pi_k(X)$ is the forest probability for bin $k$, and $\widehat S_k(q)$ is the fraction of training amounts in that bin exceeding $q$. The temperature $T$ adjusts how concentrated the bin probabilities are; $T=1$ leaves them unchanged. The resulting exceedance probability is non-increasing in the requested rainfall threshold. The within-bin distributions are shared across weather conditions and extend to the largest training total, @@MAX_TRAIN@@ mm; the model returns zero above this empirical support.
+Here $\pi_k(X)$ is the forest probability for bin $k$, and $\widehat S_k(q)$ is the fraction of training amounts in that bin exceeding $q$. The temperature $T$ adjusts how concentrated the bin probabilities are; $T=1$ leaves them unchanged. The resulting exceedance probability is non-increasing in the requested rainfall threshold. The within-bin distributions are shared across weather conditions and extend to the largest training total, @@MAX_TRAIN@@ mm; the model returns zero at or above this empirical maximum. This is a finite-support limitation, not a claim that larger future accumulations are impossible. The query output flags thresholds outside the training support.
 
-Station IDs are encoded as categorical features, and numeric imputation uses training-set medians. Each reported forest uses 40 trees, depth 8, a minimum of 25 examples per child node, square-root feature selection, subsampling 0.8 and at most 90 feature bins. The 15\% and 100\% searches select depth 8 from 5 and 8; the 30\% comparison reuses the same reference configuration. @@RF_TEMPERATURE_TEXT@@
+Station IDs are encoded as categorical features, and numeric imputation uses training-set medians. The forests in the main model/fraction comparison use 40 trees, depth 8, a minimum of 25 examples per child node, square-root feature selection, subsampling 0.8 and at most 90 feature bins. The 15\% and 100\% searches select depth 8 from 5 and 8; the 30\% comparison reuses the same reference configuration. @@RF_TEMPERATURE_TEXT@@
 
 \textbf{Threshold-conditioned logistic regression (LR)} instead treats $q$ as an input and predicts the binary label $\mathbf1(Y>q)$. Each sampled station-time example is expanded to seven thresholds: 0, 0.2, 1, 2, 5, 10 and 20 mm. Station IDs are one-hot encoded and numeric inputs scaled. L2 regularisation is selected from 0.01 and 0.1, with at most 100 optimisation iterations. LR supplies a simple direct-probability comparator and receives no separate calibration fit.
 
@@ -74,7 +75,7 @@ Period & A examples & B examples & Purpose\\\midrule
 \caption{Eligible station-time examples after completeness checks and boundary purging. A additionally requires complete published history.}\label{tab:t2splits}
 \end{table}
 
-For each classifier in each setting, we compare 15\%, 30\% and 100\% of the eligible training anchors. A deterministic station--time hash (seed 2026) gives nested, label-independent samples. The 30\% samples contain 5,608,769 anchors for A and 8,233,882 for B. Historical frequencies and RF within-bin distributions always use all eligible training anchors; only classifier fitting is subsampled. Selection, calibration and evaluation use the full eligible populations within each setting.
+For each classifier in each setting, we compare 15\%, 30\% and 100\% of the eligible training anchors. A deterministic station--time hash (seed 2026) gives nested, label-independent samples. The 30\% samples contain 5,608,769 anchors for A and 8,233,882 for B. Historical frequencies and RF within-bin distributions always use all eligible training anchors; only classifier fitting is subsampled. Selection, calibration and evaluation use the full eligible populations within each setting. Thus the experiment measures classifier fitting-fraction sensitivity; a 15\% fit still uses the full training population for the empirical supports and historical frequencies.
 
 Our primary criterion is mean Brier across the seven fitting thresholds, giving each threshold equal weight. At a particular threshold,
 \[
@@ -83,7 +84,7 @@ Our primary criterion is mean Brier across the seven fitting thresholds, giving 
 \]
 which measures squared probability error; lower is better. We prioritise this score because the task requests probabilities. PR-AUC and ROC-AUC measure event ranking, log loss penalises confident errors, and reliability compares predicted probabilities with observed frequencies. Spark computes AUC with 1,000-bin curve downsampling~\cite{sparkeval}. We examine baseline skill and high-threshold calibration alongside mean Brier to assess performance on rare heavy-rainfall events.
 
-Hyperparameters are selected by 2022 mean Brier. RF/GBT temperature is selected on 2023 from 0.5, 0.75, 1, 1.25, 1.5 and 2; alarm cutoffs use 2022 after applying the selected temperature. RF30 reuses saved reference-configuration weights before calibration and testing. The model/fraction comparison uses 2024 throughout; execution history and available artifacts are documented in Appendix~\ref{app:experiments}.
+Hyperparameters are selected by 2022 mean Brier. RF/GBT temperature is selected on 2023 from 0.5, 0.75, 1, 1.25, 1.5 and 2; alarm cutoffs use 2022 after applying the selected temperature. RF30 reuses saved reference-configuration weights before calibration and testing. The model/fraction comparison uses 2024 throughout. Later full-training and GBT experiments were developed after the initial 2024 results were inspected. Although 2024 is excluded from fitting and temperature selection, these later comparisons and the final model choice are exploratory rather than an untouched confirmatory test. Execution history and available artifacts are documented in Appendix~\ref{app:experiments}.
 
 \clearpage
 \section{Prediction results}
@@ -106,9 +107,11 @@ The benefit is greatest for any positive rain (@@SKILL_ZERO@@\% Brier reduction)
 \plot{18_common_comparison}{The 15\% RF comparison on shared 2024 examples. Left: relative Brier reduction with conditional 95\% block-bootstrap intervals. Right: PR-AUC and event prevalence on a logarithmic scale. Rainfall thresholds are displayed as equally spaced categories.}{fig:t2common}
 To account for overlapping labels and shared weather across stations, we form 2,000 bootstrap replicates by resampling circular blocks of seven consecutive calendar days, retaining all stations and thresholds together. The 95\% interval for the mean relative Brier reduction is @@CI_LOW@@--@@CI_HIGH@@\%, conditional on these fitted models and the observed 2024 network.
 
+Equal threshold weights do not equalise the attainable absolute error reduction. The 0 and 0.2~mm queries account for 77.8\% of A's total absolute Brier improvement over B. At 20~mm there are 5,715 positive, overlapping station-time windows: A's Brier is 0.0009791 versus 0.0009975 for always predicting zero probability, only 1.84\% lower; its skill over historical frequency is 2.18\%. Its PR-AUC of 0.0304 still exceeds the event prevalence of about 0.001. Heavy-rain ranking is useful, while the probability-error gain is modest.
+
 \FloatBarrier
-\subsection{RF leads the classifiers; historical frequency leads calendar risk}
-Holding the fitting fraction at 100\%, \textbf{RF has the lowest mean Brier among the classifiers in both settings}. In B, however, the historical-frequency baseline has lower error than all three classifiers (Table~\ref{tab:t2baseline}).
+\subsection{Model comparison and uncertainty}
+Holding the fitting fraction at 100\%, \textbf{RF has the lowest observed mean Brier among the tested classifier pipelines in both settings}. In B, however, the historical-frequency baseline has lower error than all three classifiers (Table~\ref{tab:t2baseline}).
 \par
 \begin{table}[!ht]\centering\small
 \begin{tabular}{llrrrr}\toprule
@@ -121,11 +124,22 @@ Mode & Model & Training & Mean Brier & \shortstack{PR-AUC\\at 1 mm} & \shortstac
 \par
 @@ALGORITHM_COMPARISON_TEXT@@
 
-For B, GBT's small PR-AUC advantage over historical frequency at 1 mm does not translate into lower mean probability error. The extra model complexity offers no overall Brier improvement over recurring station/month/hour frequencies in this setting.
+The paired uncertainty analysis in Table~\ref{tab:pairedmodels} supports a small RF advantage over GBT in A. In B, the mean difference is less clear: the interval includes zero, and GBT has lower Brier at the two lowest thresholds, whereas RF performs better at higher thresholds. Historical frequency has the lowest mean Brier in B; the full RF's mean error is 1.04\% higher, with conditional interval 0.22--1.79\%. This favours the simpler calendar baseline at the evaluated thresholds.
+
+\begin{table}[htbp]\centering\small
+\begin{tabular}{llrr}\toprule
+Candidate versus reference & Mode & Reduction (\%) & Conditional 95\% interval\\\midrule
+RF 100\% versus GBT 100\% & A & +0.560 & [0.222, 0.923] \\
+RF 100\% versus GBT 100\% & B & +0.571 & [-0.229, 1.605] \\
+RF 100\% versus RF 15\% & A & -0.036 & [-0.092, 0.019] \\
+RF 100\% versus RF 15\% & B & -0.047 & [-0.133, 0.021] \\
+\bottomrule\end{tabular}
+\caption{Relative reduction in mean 2024 Brier, $100(1-\mathrm{BS}_{candidate}/\mathrm{BS}_{reference})$. Point estimates use observed 2024 scores; 95\% intervals use 2,000 paired circular seven-day block resamples. Positive values favour the candidate. Fractions refer to classifier fitting anchors.}\label{tab:pairedmodels}
+\end{table}
 
 \FloatBarrier
 \subsection{Larger fitting samples bring little improvement at these settings}
-The three-fraction comparison tests whether limited fitting data explains the model differences. \textbf{The recorded mean Brier changes from 15\% to 100\% are below 0.1\% in magnitude for every classifier and setting.}
+The three-fraction comparison examines sensitivity to the number of classifier fitting anchors at the reported settings. \textbf{The recorded mean Brier changes from 15\% to 100\% are below 0.1\% in magnitude for every classifier and setting.}
 \begin{table}[!ht]\centering\small
 \begin{tabular}{llrrrr}\toprule
 Mode & Model & 15\% & 30\% & 100\% & Improvement (\%)\\\midrule
@@ -133,8 +147,7 @@ Mode & Model & 15\% & 30\% & 100\% & Improvement (\%)\\\midrule
 \bottomrule\end{tabular}
 \caption{Mean 2024 Brier over seven thresholds on each mode's eligible population. Improvement is the relative Brier reduction from 15\% to 100\%; positive means lower error. The 15\% A GBT value comes from a retained aggregate summary; other cells use metric exports.}\label{tab:trainingsampling}
 \end{table}
-\plot{22_training_fraction}{Relative improvement in mean 2024 Brier over each model's 15\% result; positive means lower error. Points are offset horizontally for readability. The open A GBT marker identifies the aggregate-summary reference.}{fig:t2sampling}
-@@SAMPLING_INTERPRETATION@@
+@@SAMPLING_INTERPRETATION@@ The paired RF intervals in Table~\ref{tab:pairedmodels} include zero for both settings. These observations apply to one sampling seed, the tested model capacities and the threshold-average objective; they do not establish equivalence at every rainfall threshold or an end-to-end computing-cost reduction. The detailed learning-curve figure is retained in Appendix~\ref{app:experiments}.
 
 The controlled RF comparison on 2022 provides a complementary check. With fitting settings held fixed, increasing the sample from 15\% to 30\% changes mean Brier by only 0.012\% in A's favour and 0.003\% against B; both conditional intervals include zero. A modest increase in tree depth is more useful for A than doubling the sample at the reference settings. Appendix~\ref{sec:rfsensitivity} gives the individual settings and paired intervals.
 
@@ -148,10 +161,10 @@ For the 15\% RFs at $q=1$ mm, A distinguishes a wider range of risks than B. Mea
 The rainfall threshold defines the event, while the probability cutoff determines whether to issue an alarm. For the 15\% A RF at $q=1$ mm, changing the probability cutoff from 0.5 to the validation-selected 0.2 raises recall from 24.7\% to 46.4\%, while precision falls from 69.3\% to 47.4\%. Alarm cutoffs maximise F1 on 2022 data after applying the temperature selected on 2023. An always-negative rule already achieves about 97.4\% accuracy here, which is why probability quality and the precision--recall tradeoff are more informative than accuracy.
 
 \FloatBarrier
-\subsection{Threshold diagnostics: tail calibration and unseen query values}
+\subsection{Threshold diagnostics: mean-risk bias and unseen queries}
 This comparison uses RF, LR and GBT all fitted at 30\%, evaluated on the same eligible population within each setting. It tests two requirements of the probability interface: plausible risk at large rainfall thresholds, and useful predictions between the fitted query values.
 
-\textbf{Large-accumulation risk.} @@MATCHED_TAIL_RISK_TEXT@@
+\textbf{Large-accumulation risk.} @@MATCHED_TAIL_RISK_TEXT@@ Figure~\ref{fig:t2thresholdrisk} assesses mean-risk bias: agreement of the overall mean with prevalence alone does not establish calibration across individual risk levels. The retained 15\% RF reliability tables put 99.983\% of A's 20~mm cases and all of B's cases in the first 0.1-wide bin. Finer low-risk reliability bins with event counts and block intervals require rescoring individual predictions; they cannot be reconstructed from these coarse aggregates.
 \plot{23_threshold_risk}{Observed frequencies and mean predicted probabilities for matched 30\% models at the seven fitting thresholds, on each mode's eligible 2024 examples. The vertical axis is logarithmic and thresholds are equally spaced categories.}{fig:t2thresholdrisk}
 
 \textbf{Queries between fitted thresholds.} The additional queries at 3, 7.5 and 15 mm fall inside RF amount bins and between the values used to fit LR and GBT. RF has lower Brier at all three query values in both settings (Table~\ref{tab:interior}), supporting its within-bin conversion at these evaluated points.
@@ -168,5 +181,17 @@ GBT also exposes a structural issue with an unconstrained threshold predictor: a
 Appendix~\ref{app:prediction} retains threshold-specific baseline skill, monthly skill and feature-importance diagnostics for the 15\% models.
 
 \FloatBarrier
-\subsection{Model choice}
-We recommend the \textbf{15\% A RF for short-term queries with complete published history}. RF gives the lowest mean Brier among the classifiers, and increasing its fitting fraction brings little improvement. For calendar-only risk, historical frequency gives the lowest mean Brier. The next modelling priority is heavy-rainfall probability calibration, where the threshold diagnostics show the clearest remaining errors.
+\subsection{Worked probability query and model choice}
+Table~\ref{tab:workedquery} illustrates the required interface using archived comparison scores for station S06 at 07:10 SGT on 8 November 2024. A retrieves the twelve published history endpoints from 06:05 to 07:00 and predicts accumulation over 07:10--07:40. Changing only $q$ gives non-increasing probabilities. The realised half-hour was dry despite A assigning 53.63\% probability above 1~mm; this illustrates forecast uncertainty and is not a representative performance sample or a newly executed live query.
+\begin{table}[htbp]\centering\small
+\begin{tabular}{rrr}\toprule
+Threshold $q$ (mm) & A RF probability (\%) & B RF probability (\%)\\\midrule
+0 & 82.50 & 6.67 \\
+1 & 53.63 & 2.66 \\
+10 & 13.01 & 0.43 \\
+20 & 4.04 & 0.12 \\
+\bottomrule\end{tabular}
+\caption{Archived 15\% RF scores for one common station-time example. Both columns predict $P(Y>q)$; the observed $Y$ was 0~mm.}\label{tab:workedquery}
+\end{table}
+
+The \textbf{15\% depth-8 A RF is the fully evaluated reference for queries with complete published history}. Increasing its fitting fraction gives no clear mean improvement. Appendix~\ref{sec:rfsensitivity} finds lower 2022 Brier for depth 10 (0.01664745 versus 0.01669750 at 15\%), but that validation-only candidate needs calibration and subsequent evaluation before replacing the reference. For calendar-only risk, historical frequency remains the preferred baseline at the evaluated thresholds. Fine-resolution heavy-rain calibration and chronological confirmation of validation-selected candidates are the next priorities.
